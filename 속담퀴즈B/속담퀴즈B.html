@@ -1,1 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>속담 퀴즈 B형</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Swiper.js for swipeable cards -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .swiper {
+            width: 100%;
+            height: 100%;
+            padding-top: 10px;
+            padding-bottom: 40px;
+        }
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .quiz-card {
+            background-color: white;
+            border-radius: 1.5rem; /* rounded-3xl */
+            padding: 2rem 2.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            width: 100%;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+            position: relative;
+        }
+        .option-btn {
+            transition: all 0.25s ease;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border-color: #6366f1; /* indigo-500 */
+            background-color: #eef2ff; /* indigo-50 */
+        }
+        .option-btn.correct {
+            background-color: #10b981; /* emerald-500 */
+            border-color: #059669; /* emerald-600 */
+            color: white;
+            transform: scale(1.02);
+        }
+        .option-btn.incorrect {
+            background-color: #ef4444; /* red-500 */
+            border-color: #dc2626; /* red-600 */
+            color: white;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #6366f1;
+            --swiper-navigation-size: 32px;
+        }
+        .swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
+            background: #6366f1;
+        }
+        .custom-checkbox:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+        .custom-checkbox:checked::before {
+            content: '✔';
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            line-height: 16px;
+            display: block;
+        }
+        .favorite-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            color: #cbd5e1; /* slate-300 */
+        }
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+        .favorite-btn.favorited {
+            color: #f59e0b; /* amber-500 */
+        }
+        .blank-space {
+            background-color: #d1fae5; /* A pastel green color */
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.375rem;
+            margin: 0 0.2rem;
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+            color: transparent;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl lg:max-w-[640px] mx-auto mb-4">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">속담 퀴즈 B형</h1>
+                    <p class="text-gray-500">빈칸에 들어갈 핵심어를 맞춰보세요!</p>
+                </div>
+                <div class="text-right text-xs space-y-1">
+                    <div class="font-medium text-gray-600">
+                        <i class="fas fa-book text-gray-400"></i> 총 문제: <span id="total-count">0</span>
+                    </div>
+                    <div class="text-gray-500">
+                        <i class="fas fa-check-double text-green-500"></i> 암기: <span id="learned-count">0</span>
+                    </div>
+                     <div class="text-gray-500">
+                        <i class="fas fa-list-check text-orange-500"></i> 미암기: <span id="remaining-count">0</span>
+                    </div>
+                    <div class="text-gray-500">
+                        <i class="fas fa-star text-yellow-400"></i> 즐겨찾기: <span id="favorite-count">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 mt-3 pt-3 flex items-center justify-between">
+                <div class="flex items-center">
+                    <label for="quiz-filter" class="text-gray-600 text-sm font-medium mr-2">문제 보기:</label>
+                    <select id="quiz-filter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-auto p-1.5">
+                        <option value="all">전체</option>
+                        <option value="not-learned" selected>미암기</option>
+                        <option value="learned">암기</option>
+                        <option value="favorites">즐겨찾기</option>
+                    </select>
+                </div>
+                <button id="stats-btn" class="bg-indigo-500 text-white font-bold px-4 py-1.5 rounded-lg hover:bg-indigo-600 transition">
+                    <i class="fas fa-chart-pie mr-2"></i>학습 통계
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper -->
+    <div id="swiper-container" class="swiper w-full max-w-3xl lg:max-w-[640px] h-[580px]">
+        <div class="swiper-wrapper" id="quiz-wrapper">
+            <!-- Quiz slides will be inserted here -->
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+        <!-- Add Navigation -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    
+    <!-- Completion Screen -->
+    <div id="completion-screen" class="hidden fixed inset-0 bg-black bg-opacity-60 flex-col items-center justify-center text-white text-center p-8 z-50">
+        <div class="bg-white text-gray-800 p-8 rounded-2xl shadow-2xl transform transition-all scale-95 opacity-0">
+            <i class="fas fa-trophy text-7xl text-yellow-300 mb-6 animate-bounce"></i>
+            <h2 class="text-4xl font-bold mb-4">축하합니다!</h2>
+            <p class="text-xl mb-2">모든 속담 학습을 완료하셨습니다.</p>
+            <button id="reset-btn" class="mt-8 bg-indigo-600 text-white font-bold px-8 py-3 rounded-full hover:bg-indigo-700 transition-transform duration-300 hover:scale-105">
+                <i class="fas fa-redo-alt mr-2"></i>퀴즈 초기화하고 다시 풀기
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div id="stats-modal" class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative transform transition-all scale-95 opacity-0">
+            <button id="stats-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">학습 통계</h2>
+            <div class="space-y-3 text-gray-700">
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="font-semibold">총 학습 횟수</span>
+                    <span id="stats-total-attempts" class="font-bold text-lg text-indigo-600">0</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="font-semibold">정답률</span>
+                    <span id="stats-correct-rate" class="font-bold text-lg text-green-600">0%</span>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">가장 많이 틀린 속담 Top 3</h3>
+            <div id="stats-most-incorrect" class="space-y-2">
+                <p class="text-gray-500">아직 데이터가 부족합니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORTANT: This file requires 'proverbs-data.js' in the same folder -->
+    <script src="./proverbs-data.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizWrapper = document.getElementById('quiz-wrapper');
+            const learnedCountEl = document.getElementById('learned-count');
+            const totalCountEl = document.getElementById('total-count');
+            const remainingCountEl = document.getElementById('remaining-count');
+            const favoriteCountEl = document.getElementById('favorite-count');
+            const completionScreen = document.getElementById('completion-screen');
+            const completionScreenContent = completionScreen.querySelector('div');
+            const resetBtn = document.getElementById('reset-btn');
+            const quizFilter = document.getElementById('quiz-filter');
+            const statsBtn = document.getElementById('stats-btn');
+            const statsModalOverlay = document.getElementById('stats-modal-overlay');
+            const statsModal = document.getElementById('stats-modal');
+            const statsCloseBtn = document.getElementById('stats-close-btn');
+            
+            let swiper;
+            let currentQuizSet = [];
+            let learnedProverbs = [];
+            let favoriteProverbs = [];
+            let statsData = {};
+            let allKeywordSets = [];
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            function extractKeywords(proverb) {
+                const stopwords = ['은', '는', '이', '가', '도', '다', '고', '을', '를', '의', '에', '에서', '으로', '로', '와', '과', '하다', '한다', '하고', '하랴', '된다', '못한다', '없다', '있다', '줄', '것', '속', '적', '만', '못하다', '아니', '더러', '밑에'];
+                const words = proverb.split(' ');
+                const keywords = words.filter(word => !stopwords.includes(word) && word.length > 1);
+                
+                if (keywords.length === 0) {
+                    return [words[0]];
+                }
+                
+                const keywordCount = Math.min(keywords.length, 2);
+                return keywords.slice(0, keywordCount);
+            }
+
+            function initializeQuiz() {
+                completionScreen.classList.add('hidden');
+                document.getElementById('swiper-container').classList.remove('hidden');
+
+                learnedProverbs = JSON.parse(localStorage.getItem('learnedProverbs_v7')) || [];
+                favoriteProverbs = JSON.parse(localStorage.getItem('favoriteProverbs_v7')) || [];
+                statsData = JSON.parse(localStorage.getItem('statsData_v7')) || {};
+                
+                allKeywordSets = [...new Set(allProverbs.map(p => extractKeywords(p.proverb).join(', ')))];
+
+                const filterValue = quizFilter.value;
+
+                if (filterValue === 'learned') {
+                    currentQuizSet = allProverbs.filter(p => learnedProverbs.includes(p.proverb));
+                } else if (filterValue === 'not-learned') {
+                    currentQuizSet = allProverbs.filter(p => !learnedProverbs.includes(p.proverb));
+                } else if (filterValue === 'favorites') {
+                    currentQuizSet = allProverbs.filter(p => favoriteProverbs.includes(p.proverb));
+                } else {
+                    currentQuizSet = [...allProverbs];
+                }
+                
+                if (currentQuizSet.length === 0) {
+                    let message = "표시할 속담이 없습니다.";
+                    if (filterValue === 'learned') message = "아직 암기한 속담이 없습니다.";
+                    if (filterValue === 'not-learned') message = "모든 속담 학습을 완료했습니다! 🎉";
+                    if (filterValue === 'favorites') message = "아직 즐겨찾기한 속담이 없습니다.";
+                    
+                    quizWrapper.innerHTML = `<div class="flex items-center justify-center h-full text-center text-gray-500 p-8">${message}</div>`;
+                    if(swiper) {
+                        swiper.destroy(true, true);
+                        swiper = null;
+                    }
+                    updateStatus();
+                    return;
+                }
+
+                shuffleArray(currentQuizSet);
+                createQuizSlides();
+                initSwiper();
+                updateStatus();
+            }
+
+            function createQuizSlides() {
+                quizWrapper.innerHTML = '';
+                currentQuizSet.forEach((proverb, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.dataset.proverb = proverb.proverb;
+                    slide.dataset.example = proverb.example;
+                    slide.dataset.explanation = proverb.explanation;
+
+                    const keywords = extractKeywords(proverb.proverb);
+                    const correctAnswer = keywords.join(', ');
+                    slide.dataset.answer = correctAnswer;
+
+                    let questionText = proverb.proverb;
+                    keywords.forEach(kw => {
+                        questionText = questionText.replace(kw, `<span class="blank-space">${'_'.repeat(kw.length)}</span>`);
+                    });
+
+                    const isFavorited = favoriteProverbs.includes(proverb.proverb);
+                    
+                    const incorrectOptions = [...allKeywordSets]
+                        .filter(k => k !== correctAnswer)
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, 3);
+                    
+                    const options = [correctAnswer, ...incorrectOptions];
+                    shuffleArray(options);
+
+                    slide.innerHTML = `
+                        <div class="quiz-card">
+                             <i class="favorite-btn ${isFavorited ? 'fas favorited' : 'far'} fa-star" data-action="toggle-favorite"></i>
+                            <div class="text-left">
+                                <span class="inline-block bg-indigo-100 text-indigo-600 font-semibold px-4 py-1 rounded-full text-sm">
+                                    <i class="fas fa-book-open mr-2"></i>문제 ${index + 1}
+                                </span>
+                            </div>
+                            <div class="text-center flex-grow flex flex-col justify-center">
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800 mt-2">${questionText}</p>
+                                <p class="text-sm text-gray-500 mt-2">${proverb.explanation.replace(/\n/g, '<br>')}</p>
+                            </div>
+                            <div class="options-container grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+                                ${options.map(opt => `<button class="option-btn w-full text-gray-700 font-medium py-3 px-4 rounded-lg">${opt}</button>`).join('')}
+                            </div>
+                            <div class="feedback-container mt-4 min-h-[80px] flex flex-col items-center justify-center"></div>
+                        </div>
+                    `;
+                    quizWrapper.appendChild(slide);
+                });
+            }
+            
+            function initSwiper() {
+                if (swiper) swiper.destroy(true, true);
+                swiper = new Swiper('.swiper', {
+                    loop: false,
+                    pagination: { el: '.swiper-pagination', type: 'progressbar' },
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                    allowTouchMove: false, 
+                });
+                swiper.on('slideChange', handleLearnedProverbUpdate);
+            }
+            
+            quizWrapper.addEventListener('click', (e) => {
+                const target = e.target;
+                const slide = target.closest('.swiper-slide');
+                if (!slide) return;
+
+                if (target.classList.contains('option-btn') && !slide.dataset.answered) {
+                    slide.dataset.answered = 'true';
+                    const buttons = slide.querySelectorAll('.option-btn');
+                    const feedbackContainer = slide.querySelector('.feedback-container');
+                    const correctAnswer = slide.dataset.answer;
+                    const fullProverb = slide.dataset.proverb;
+                    const userAnswer = target.textContent;
+
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.textContent === correctAnswer) btn.classList.add('correct');
+                    });
+
+                    updateStats(fullProverb, userAnswer === correctAnswer);
+
+                    let feedbackHTML = '';
+                    if (userAnswer === correctAnswer) {
+                        feedbackHTML = `<div class="flex items-center"><i class="fas fa-check-circle text-xl text-emerald-500 mr-2"></i><p class="text-md font-bold text-emerald-600">정답입니다!</p></div>`;
+                    } else {
+                        target.classList.add('incorrect');
+                        feedbackHTML = `<div><div class="flex items-center"><i class="fas fa-times-circle text-xl text-rose-500 mr-2"></i><p class="text-md font-bold text-rose-500">오답입니다</p></div><p class="text-sm text-gray-600 mt-1 ml-1">정답: ${correctAnswer}</p></div>`;
+                    }
+                    
+                    const isLearnedMode = quizFilter.value === 'learned';
+                    const checkboxId = `action-checkbox-${swiper.activeIndex}`;
+                    const checkboxLabel = isLearnedMode ? '복원' : '암기';
+
+                    feedbackContainer.innerHTML = `<div class="flex justify-between items-center w-full">${feedbackHTML}<div class="flex items-center"><input type="checkbox" id="${checkboxId}" data-action="toggle-learned" class="custom-checkbox w-5 h-5 mr-2 border-2 border-gray-300 rounded-sm appearance-none cursor-pointer"><label for="${checkboxId}" class="text-gray-700 cursor-pointer text-sm">${checkboxLabel}</label></div></div>`;
+                }
+
+                if (target.dataset.action === 'toggle-learned') {
+                    const proverbToUpdate = slide.dataset.proverb;
+                    const isLearnedMode = quizFilter.value === 'learned';
+
+                    if (isLearnedMode) {
+                        const index = learnedProverbs.indexOf(proverbToUpdate);
+                        if (index > -1) learnedProverbs.splice(index, 1);
+                    } else {
+                        if (!learnedProverbs.includes(proverbToUpdate)) learnedProverbs.push(proverbToUpdate);
+                    }
+                    localStorage.setItem('learnedProverbs_v7', JSON.stringify(learnedProverbs));
+                    
+                    const currentSlideIndex = swiper.activeIndex;
+                    swiper.removeSlide(currentSlideIndex);
+                    swiper.update();
+                    
+                    if (swiper.slides.length === 0) {
+                        if (quizFilter.value === 'not-learned') {
+                           showCompletionMessage();
+                        } else {
+                           initializeQuiz();
+                        }
+                    }
+                    updateStatus();
+                }
+
+                if (target.dataset.action === 'toggle-favorite') {
+                    const proverbToFavorite = slide.dataset.proverb;
+                    const index = favoriteProverbs.indexOf(proverbToFavorite);
+                    if (index > -1) {
+                        favoriteProverbs.splice(index, 1);
+                        target.classList.remove('fas', 'favorited');
+                        target.classList.add('far');
+                    } else {
+                        favoriteProverbs.push(proverbToFavorite);
+                        target.classList.remove('far');
+                        target.classList.add('fas', 'favorited');
+                    }
+                    localStorage.setItem('favoriteProverbs_v7', JSON.stringify(favoriteProverbs));
+                    
+                    if (quizFilter.value === 'favorites' && index > -1) {
+                        const currentSlideIndex = swiper.activeIndex;
+                        swiper.removeSlide(currentSlideIndex);
+                        swiper.update();
+                        if (swiper.slides.length === 0) {
+                            initializeQuiz();
+                        }
+                    }
+                    updateStatus();
+                }
+
+                if (target.dataset.action === 'show-hint') {
+                    const explanation = slide.dataset.explanation;
+                    const hintText = `설명: ${explanation.replace(/\n/g, '<br>')}`;
+                    
+                    const existingHint = slide.querySelector('.hint-popup');
+                    if (existingHint) existingHint.remove();
+
+                    const hintPopup = document.createElement('div');
+                    hintPopup.className = 'hint-popup';
+                    hintPopup.innerHTML = hintText;
+                    slide.querySelector('.quiz-card').appendChild(hintPopup);
+                    
+                    setTimeout(() => {
+                        if(hintPopup) hintPopup.remove();
+                    }, 4000);
+                }
+            });
+
+            function handleLearnedProverbUpdate() {
+                const previousSlideIndex = swiper.previousIndex;
+                if (typeof previousSlideIndex === 'undefined') return;
+
+                const prevSlide = swiper.slides[previousSlideIndex];
+                if (!prevSlide) return;
+
+                const checkbox = prevSlide.querySelector(`input[type="checkbox"]`);
+                if (checkbox && checkbox.checked) {
+                    const proverbToUpdate = prevSlide.dataset.proverb;
+                    const isLearnedMode = quizFilter.value === 'learned';
+
+                    if (isLearnedMode) {
+                        if (learnedProverbs.includes(proverbToUpdate)) {
+                           const index = learnedProverbs.indexOf(proverbToUpdate);
+                           if (index > -1) learnedProverbs.splice(index, 1);
+                        }
+                    } else {
+                        if (!learnedProverbs.includes(proverbToUpdate)) {
+                            learnedProverbs.push(proverbToUpdate);
+                        }
+                    }
+                    localStorage.setItem('learnedProverbs_v7', JSON.stringify(learnedProverbs));
+                    updateStatus();
+                }
+            }
+
+            function updateStatus() {
+                totalCountEl.textContent = allProverbs.length;
+                learnedCountEl.textContent = learnedProverbs.length;
+                remainingCountEl.textContent = allProverbs.length - learnedProverbs.length;
+                favoriteCountEl.textContent = favoriteProverbs.length;
+            }
+            
+            function showCompletionMessage() {
+                handleLearnedProverbUpdate();
+                document.getElementById('swiper-container').classList.add('hidden');
+                completionScreen.classList.remove('hidden');
+                completionScreen.classList.add('flex');
+                setTimeout(() => {
+                    completionScreen.querySelector('div').classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            }
+
+            function updateStats(proverb, isCorrect) {
+                if (!statsData[proverb]) {
+                    statsData[proverb] = { correct: 0, incorrect: 0 };
+                }
+                isCorrect ? statsData[proverb].correct++ : statsData[proverb].incorrect++;
+                localStorage.setItem('statsData_v7', JSON.stringify(statsData));
+            }
+
+            function showStatsModal() {
+                let totalAttempts = 0;
+                let totalCorrect = 0;
+                const incorrectCounts = [];
+
+                for (const proverb in statsData) {
+                    const data = statsData[proverb];
+                    totalAttempts += data.correct + data.incorrect;
+                    totalCorrect += data.correct;
+                    if (data.incorrect > 0) {
+                        incorrectCounts.push({ proverb, count: data.incorrect });
+                    }
+                }
+
+                const correctRate = totalAttempts > 0 ? ((totalCorrect / totalAttempts) * 100).toFixed(1) : 0;
+                
+                document.getElementById('stats-total-attempts').textContent = totalAttempts;
+                document.getElementById('stats-correct-rate').textContent = `${correctRate}%`;
+
+                const mostIncorrectEl = document.getElementById('stats-most-incorrect');
+                mostIncorrectEl.innerHTML = '';
+                if (incorrectCounts.length > 0) {
+                    incorrectCounts.sort((a, b) => b.count - a.count);
+                    const top3 = incorrectCounts.slice(0, 3);
+                    top3.forEach(item => {
+                        const p = document.createElement('p');
+                        p.className = 'text-gray-600';
+                        p.innerHTML = `<span class="font-semibold">${item.proverb}</span>: ${item.count}회`;
+                        mostIncorrectEl.appendChild(p);
+                    });
+                } else {
+                    mostIncorrectEl.innerHTML = '<p class="text-gray-500">틀린 문제가 없습니다!</p>';
+                }
+
+                statsModalOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    statsModal.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            }
+
+            function hideStatsModal() {
+                statsModal.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    statsModalOverlay.classList.add('hidden');
+                }, 200);
+            }
+
+            resetBtn.addEventListener('click', () => {
+                localStorage.removeItem('learnedProverbs_v7');
+                localStorage.removeItem('favoriteProverbs_v7');
+                localStorage.removeItem('statsData_v7');
+                window.location.reload();
+            });
+
+            quizFilter.addEventListener('change', initializeQuiz);
+            statsBtn.addEventListener('click', showStatsModal);
+            statsCloseBtn.addEventListener('click', hideStatsModal);
+            statsModalOverlay.addEventListener('click', (e) => {
+                if (e.target === statsModalOverlay) {
+                    hideStatsModal();
+                }
+            });
+
+            initializeQuiz();
+        });
+    </script>
+</body>
+</html>
 
