@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML 태그 변환기</title>
+    <!-- Tailwind CSS CDN (스타일링을 위해 필요합니다) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter (폰트 스타일을 위해 필요합니다) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- React 및 ReactDOM 라이브러리 (React 앱 실행에 필수) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone (JSX를 브라우저가 이해할 수 있는 JavaScript로 변환하는 데 필요합니다) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 전역 변수 설정 (App 컴포넌트에서 사용하기 위함)
+        window.firebaseApp = initializeApp(JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}'));
+        window.firebaseAuth = getAuth(window.firebaseApp);
+        window.firebaseDb = getFirestore(window.firebaseApp);
+        window.initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // React App에서 직접 사용할 Firebase 함수들을 window 객체에 노출
+        window.onAuthStateChangedFirebase = onAuthStateChanged;
+        window.signInAnonymouslyFirebase = signInAnonymously;
+        window.signInWithCustomTokenFirebase = signInWithCustomToken;
+        window.docFirebase = doc;
+        window.setDocFirebase = setDoc;
+        window.getDocFirebase = getDoc;
+    </script>
+</head>
+<body>
+    <noscript>JavaScript를 활성화해주세요。</noscript>
+    <!-- React 앱이 렌더링될 위치 -->
+    <div id="root"></div>
+
+    <!-- React 앱 코드 -->
+    <!-- type="text/babel"로 변경하여 Babel이 JSX를 처리하도록 합니다. -->
+    <script type="text/babel">
+        // App component
+        function App() {
+          // Firebase related states
+          const [db, setDb] = React.useState(null);
+          const [auth, setAuth] = React.useState(null);
+          const [userId, setUserId] = React.useState(null);
+          const [isAuthReady, setIsAuthReady] = React.useState(false); // Authentication state ready
+          const [saveStatus, setSaveStatus] = React.useState('저장'); // 저장 버튼 피드백
+
+          // User input text (can contain HTML tags)
+          const [inputText, setInputText] = React.useState('');
+          // Currently selected plain text
+          const [selectedText, setSelectedText] = React.useState('');
+          // Value for abbr tag's title attribute
+          const [abbrTitle, setAbbrTitle] = React.useState('');
+          // Final generated HTML code (for preview and output)
+          const [generatedHtml, setGeneratedHtml] = React.useState('');
+          // Visibility of abbr title input field
+          const [showTitleInput, setShowTitleInput] = React.useState(false);
+          // Start index of text selection
+          const [selectionStart, setSelectionStart] = React.useState(0);
+          // End index of text selection
+          const [selectionEnd, setSelectionEnd] = React.useState(0);
+          // Ref to access the input textarea DOM element (used only for input textarea)
+          const inputRef = React.useRef(null);
+          // Visibility of preview
+          const [showPreview, setShowPreview] = React.useState(false);
+          // Selected tag type (abbr, blockquote, mark)
+          const [selectedTagType, setSelectedTagType] = React.useState('abbr'); // Default to abbr
+
+          // Visibility of settings modal
+          const [showSettingsModal, setShowSettingsModal] = React.useState(false);
+          // Worksheet title for the generated file
+          const [worksheetTitle, setWorksheetTitle] = React.useState('학습지 제목을 입력하세요');
+          // Subject name
+          const [subjectName, setSubjectName] = React.useState('과목명');
+          // Author name
+          const [authorName, setAuthorName] = React.useState('지은이');
+          // HTML file generation option (whether to include comments)
+          const [outputOption, setOutputOption] = React.useState('with-comments'); // Default to 'with-comments'
+
+          // Firebase initialization and authentication listener
+          React.useEffect(() => {
+              let intervalId;
+
+              const checkAndInitFirebase = () => {
+                  // Check if all necessary Firebase SDK functions are loaded onto window
+                  if (window.firebaseApp && window.firebaseAuth && window.firebaseDb &&
+                      window.onAuthStateChangedFirebase && window.signInAnonymouslyFirebase &&
+                      window.signInWithCustomTokenFirebase && window.docFirebase &&
+                      window.setDocFirebase && window.getDocFirebase) {
+
+                      clearInterval(intervalId); // Stop polling once SDKs are confirmed loaded
+
+                      const firebaseApp = window.firebaseApp;
+                      const authInstance = window.firebaseAuth;
+                      const firestore = window.firebaseDb;
+
+                      setDb(firestore);
+                      setAuth(authInstance);
+
+                      const unsubscribe = window.onAuthStateChangedFirebase(authInstance, async (user) => {
+                          if (user) {
+                              setUserId(user.uid);
+                          } else {
+                              try {
+                                  if (window.initialAuthToken) {
+                                      await window.signInWithCustomTokenFirebase(authInstance, window.initialAuthToken);
+                                  } else {
+                                      await window.signInAnonymouslyFirebase(authInstance);
+                                  }
+                              } catch (authError) {
+                                  console.error("Firebase Auth Error:", authError);
+                                  setUserId(crypto.randomUUID()); // Fallback for non-authenticated state
+                              }
+                          }
+                          setIsAuthReady(true); // Auth state is ready regardless of success/failure
+                      });
+
+                      return () => unsubscribe(); // Cleanup on unmount
+                  } else {
+                      console.warn("Waiting for Firebase SDKs to load...");
+                  }
+              };
+
+              // Start polling to check for Firebase SDKs loading
+              intervalId = setInterval(checkAndInitFirebase, 100); // Check every 100ms
+
+              return () => clearInterval(intervalId); // Cleanup on unmount
+          }, []); // Run once on mount
+
+          // Load state from Firestore (after authentication is ready)
+          React.useEffect(() => {
+              const loadState = async () => {
+                  if (db && userId) { // Ensure db and userId are available
+                      try {
+                          const docRef = window.docFirebase(db, `artifacts/${window.appId}/users/${userId}/appState/current`);
+                          const docSnap = await window.getDocFirebase(docRef);
+
+                          if (docSnap.exists()) {
+                              const data = docSnap.data();
+                              setInputText(data.inputText || '');
+                              setWorksheetTitle(data.worksheetTitle || '학습지 제목을 입력하세요');
+                              setSubjectName(data.subjectName || '과목명');
+                              setAuthorName(data.authorName || '지은이');
+                              setOutputOption(data.outputOption || 'with-comments');
+                              setGeneratedHtml(data.inputText ? data.inputText.replace(/\n/g, '<br>') : '');
+                              console.log("State loaded from Firestore.");
+                          } else {
+                              console.log("No saved state in Firestore.");
+                          }
+                      } catch (error) {
+                          console.error("Error loading state from Firestore:", error);
+                      }
+                  }
+              };
+
+              if (isAuthReady) { // Attempt to load only after authentication is ready
+                  loadState();
+              }
+          }, [db, userId, isAuthReady]); // React to changes in db, userId, isAuthReady states
+
+          // Save state to Firestore
+          const saveState = async () => {
+              if (db && userId) {
+                  setSaveStatus('저장 중...'); // Visual feedback: Saving...
+                  try {
+                      const docRef = window.docFirebase(db, `artifacts/${window.appId}/users/${userId}/appState/current`);
+                      const stateToSave = {
+                          inputText,
+                          worksheetTitle,
+                          subjectName,
+                          authorName,
+                          outputOption,
+                      };
+                      await window.setDocFirebase(docRef, stateToSave);
+                      console.log("State saved to Firestore!");
+                      setSaveStatus('저장 완료!'); // Visual feedback: Saved!
+                      setTimeout(() => setSaveStatus('저장'), 2000); // Reset after 2 seconds
+                  } catch (error) {
+                      console.error("Error saving state to Firestore:", error);
+                      setSaveStatus('저장 실패!'); // Visual feedback: Save failed!
+                      setTimeout(() => setSaveStatus('저장'), 2000); // Reset after 2 seconds
+                  }
+              } else {
+                  console.warn("Firestore or User ID not ready for saving.");
+                  setSaveStatus('저장 불가'); // Visual feedback: Not ready to save
+                  setTimeout(() => setSaveStatus('저장'), 2000); // Reset after 2 seconds
+              }
+          };
+
+
+          // useEffect to maintain text area selection state
+          React.useEffect(() => {
+            const textarea = inputRef.current;
+            if (textarea && selectionStart !== null && selectionEnd !== null) {
+              if (selectionStart !== selectionEnd) {
+                const currentTextLength = textarea.value.length;
+                const validStart = Math.min(selectionStart, currentTextLength);
+                const validEnd = Math.min(selectionEnd, currentTextLength);
+
+                textarea.setSelectionRange(validStart, validEnd);
+                textarea.focus(); // Maintain focus to keep selection
+              }
+            }
+          }, [selectionStart, selectionEnd, inputText, selectedTagType]);
+
+          // Input text change handler
+          const handleInputChange = (e) => {
+            const rawInput = e.target.value;
+            setInputText(rawInput);
+            setGeneratedHtml(rawInput.replace(/\n/g, '<br>'));
+            setShowTitleInput(false);
+            setAbbrTitle('');
+            setSelectedText('');
+            setSelectionStart(0);
+            setSelectionEnd(0);
+            setSaveStatus('저장'); // 입력 변경 시 저장 상태 초기화
+          };
+
+          // Text selection handler
+          const handleTextSelect = () => {
+            const textarea = inputRef.current;
+            if (textarea) {
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const text = textarea.value.substring(start, end);
+
+              if (text.length > 0) {
+                setSelectedText(text);
+                setSelectionStart(start);
+                setSelectionEnd(end);
+                if (selectedTagType === 'abbr') {
+                  setShowTitleInput(true);
+                } else {
+                  setShowTitleInput(false);
+                }
+              } else {
+                setShowTitleInput(false);
+                setAbbrTitle('');
+                setSelectedText('');
+                setSelectionStart(0);
+                setSelectionEnd(0);
+              }
+            }
+          };
+
+          // Tag type change handler (radio buttons)
+          const handleTagTypeChange = (e) => {
+            setSelectedTagType(e.target.value);
+            if (selectedText.length > 0) {
+              if (e.target.value === 'abbr') {
+                setShowTitleInput(true);
+              } else {
+                setShowTitleInput(false);
+              }
+              // Force re-selection to maintain selection range when radio button is clicked
+              const textarea = inputRef.current;
+              if (textarea) {
+                textarea.focus();
+                textarea.setSelectionRange(selectionStart, selectionEnd);
+              }
+            }
+            if (e.target.value !== 'abbr') {
+              setAbbrTitle('');
+            }
+          };
+
+          // Apply selected tag handler
+          const applyTag = () => {
+            if (!selectedText) {
+              console.log("텍스트를 선택해주세요.");
+              return;
+            }
+
+            let tagString = '';
+            if (selectedTagType === 'abbr') {
+              if (!abbrTitle) {
+                console.log("abbr 태그의 title을 입력해주세요.");
+                return;
+              }
+              tagString = `<abbr class="text-blue-800" title="${abbrTitle}">${selectedText}</abbr>`;
+            } else if (selectedTagType === 'mark') {
+              tagString = `<mark>${selectedText}</mark>`;
+            } else if (selectedTagType === 'blockquote') {
+              tagString = `<blockquote class="pl-4 border-l-4 border-gray-300"><i class="fas fa-quote-left mr-2"></i>${selectedText}</blockquote>`;
+            } else {
+              console.log("태그 유형을 선택해주세요.");
+              return;
+            }
+
+            const newTextWithTag = inputText.substring(0, selectionStart) + tagString + inputText.substring(selectionEnd);
+
+            setInputText(newTextWithTag);
+            setGeneratedHtml(newTextWithTag.replace(/\n/g, '<br>'));
+
+            // Set selection to the newly inserted tag
+            setSelectionStart(selectionStart);
+            setSelectionEnd(selectionStart + tagString.length);
+
+            setShowTitleInput(false);
+            setAbbrTitle('');
+            setSelectedText(''); // Clear selected text to prepare for next selection
+            setShowPreview(true);
+            setSaveStatus('저장'); // 내용 변경 시 저장 상태 초기화
+          };
+
+          // Function to copy icon to clipboard
+          const copyIconToClipboard = (icon) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = icon;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand('copy');
+              console.log(`'${icon}' icon copied to clipboard!`);
+            } catch (err) {
+              console.error('Failed to copy icon: ', err);
+              console.log('Failed to copy icon to clipboard.');
+            }
+            document.body.removeChild(textarea);
+          };
+
+
+          // HTML page file generation function
+          const generateHtmlFile = () => {
+            const withComments = (outputOption === 'with-comments');
+
+            if (!generatedHtml) {
+              console.log("No HTML code generated.");
+              return;
+            }
+
+            const fileName = `${subjectName} 학습지-${worksheetTitle}${withComments ? '-주석' : ''}.html`;
+            const fileTitle = `${subjectName} 학습지 - ${worksheetTitle}`;
+
+            let finalContentBodyHtml = generatedHtml;
+
+            if (withComments) {
+                console.log("--- Starting comment generation debugging ---");
+                console.log("generatedHtml content (target for abbr extraction):", generatedHtml);
+
+                const blockquoteSplitRegex = /(<blockquote[^>]*>.*?<\/blockquote>)/g;
+                let parts = [];
+                let lastIndex = 0;
+                let match;
+
+                while ((match = blockquoteSplitRegex.exec(generatedHtml)) !== null) {
+                    const contentBeforeBlockquote = generatedHtml.substring(lastIndex, match.index);
+                    const blockquoteTag = match[0];
+
+                    const abbrRegex = /<abbr\s+[^>]*title="([^"]*)"[^>]*>(.*?)<\/abbr>/g;
+                    let currentAbbrDetails = [];
+                    abbrRegex.lastIndex = 0;
+                    for (const abbrMatch of contentBeforeBlockquote.matchAll(abbrRegex)) {
+                        currentAbbrDetails.push({ text: abbrMatch[2], title: abbrMatch[1] });
+                    }
+
+                    let currentAbbrCommentBlock = '';
+                    if (currentAbbrDetails.length > 0) {
+                        const ulItems = currentAbbrDetails.map(detail => {
+                            const cleanedText = detail.text.replace(/<br\s*\/?>/g, ' ').trim();
+                            const cleanedTitle = detail.title.replace(/<br\s*\/?>/g, ' ').trim();
+                            return `<li><i class="fas fa-comment-dots mr-2" style="color: #60a5fa;"></i> <b style="color: #1e40af;">${cleanedText}</b>: ${cleanedTitle}</li>`;
+                        }).join('');
+                        
+                        currentAbbrCommentBlock = `
+                            <div style="padding: 10px; border: 1px solid #eee; border-radius: 8px; background-color: #fcfcfc;">
+                                <h3 style="font-size: 1.1em; margin-top: 0; margin-bottom: 10px; color: #333;"><i class="fas fa-lightbulb mr-2"></i> 구절 풀이</h3>
+                                <ul style="list-style-type: none; margin-left: 0; padding-left: 0;">
+                                    ${ulItems}
+                                </ul>
+                            </div>
+                        `;
+                    }
+
+                    // 원본 abbr 태그는 그대로 유지
+                    parts.push(contentBeforeBlockquote); // 1. 본문 (abbr 유지)
+                    parts.push(blockquoteTag); // 2. blockquote 내용 먼저
+                    if (currentAbbrCommentBlock) { // 해당 섹션에 abbr이 있었다면
+                        parts.push(`<hr style="border: 0; border-top: 3px solid #22c55e; margin: 20px 0;">`); // 3. HR tag (green)
+                        parts.push(currentAbbrCommentBlock); // 4. Abbr explanation list
+                    }
+
+                    lastIndex = match.index + blockquoteTag.length;
+                }
+
+                // Handle remaining content after the last blockquote
+                let remainingContent = generatedHtml.substring(lastIndex);
+                const abbrRegexForRemaining = /<abbr\s+[^>]*title="([^"]*)"[^>]*>(.*?)<\/abbr>/g;
+                let remainingAbbrDetails = [];
+                abbrRegexForRemaining.lastIndex = 0;
+                for (const abbrMatch of remainingContent.matchAll(abbrRegexForRemaining)) {
+                    remainingAbbrDetails.push({ text: abbrMatch[2], title: abbrMatch[1] });
+                }
+
+                let remainingAbbrCommentBlock = '';
+                if (remainingAbbrDetails.length > 0) {
+                    const ulItems = remainingAbbrDetails.map(detail => {
+                        const cleanedText = detail.text.replace(/<br\s*\/?>/g, ' ').trim();
+                        const cleanedTitle = detail.title.replace(/<br\s*\/?>/g, ' ').trim();
+                        return `<li><i class="fas fa-comment-dots mr-2" style="color: #60a5fa;"></i> <b style="color: #1e40af;">${cleanedText}</b>: ${cleanedTitle}</li>`;
+                    }).join('');
+                    remainingAbbrCommentBlock = `
+                        <hr style="border: 0; border-top: 3px solid #22c55e; margin: 20px 0;">
+                        <div style="padding: 10px; border: 1px solid #eee; border-radius: 8px; background-color: #fcfcfc;">
+                            <h3 style="font-size: 1.1em; margin-top: 0; margin-bottom: 10px; color: #333;"><i class="fas fa-lightbulb mr-2"></i> 구절 풀이</h3>
+                            <ul style="list-style-type: none; margin-left: 0; padding-left: 0;">
+                                ${ulItems}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                parts.push(remainingContent);
+                if (remainingAbbrCommentBlock) {
+                    parts.push(remainingAbbrCommentBlock);
+                }
+
+                finalContentBodyHtml = parts.join('');
+                console.log("--- Comment generation debugging ended ---");
+            } else {
+                finalContentBodyHtml = generatedHtml;
+            }
+
+            const escapedFinalContentBodyHtml = finalContentBodyHtml.replace(/`/g, '\\`');
+
+            const fullHtmlContent = "<!DOCTYPE html>\n" +
+                "<html lang=\"ko\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "    <title>" + fileTitle + "</title>\n" +
+                "    <!-- Font Awesome CDN -->\n" +
+                "    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css\">\n" +
+                "    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap\" rel=\"stylesheet\">\n" +
+                "    <style>\n" +
+                "        body {\n" +
+                "            margin: 0;\n" +
+                "            padding: 20px;\n" +
+                "            font-family: 'Inter', sans-serif;\n" +
+                "            line-height: 1.6;\n" +
+                "            background-color: #f3f4f6;\n" +
+                "            color: #374151;\n" +
+                "            font-size: 12pt;\n" +
+                "        }\n" +
+                "        .container {\n" +
+                "            max-width: 800px;\n" +
+                "            margin: 20px auto;\n" +
+                "            padding: 30px;\n" +
+                "            background-color: #ffffff;\n" +
+                "            border-radius: 12px;\n" +
+                "            border: 1px solid #e5e7eb;\n" +
+                "            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n" +
+                "        }\n" +
+                "        .header-section {\n" +
+                "            background-color: #f9fafb;\n" +
+                "            padding: 20px 30px;\n" +
+                "            margin: -30px -30px 20px -30px;\n" +
+                "            border-top-left-radius: 12px;\n" +
+                "            border-top-right-radius: 12px;\n" +
+                "            border-bottom: 1px solid #e5e7eb;\n" +
+                "            text-align: center;\n" +
+                "        }\n" +
+                "        h1 {\n" +
+                "            color: #1f2937;\n" +
+                "            font-size: 2.25rem;\n" +
+                "            font-weight: 700;\n" +
+                "            margin: 0;\n" +
+                "        }\n" +
+                "        .author-text {\n" +
+                "            text-align: right;\n" +
+                "            color: #6b7280;\n" +
+                "            font-size: 0.9em;\n" +
+                "            margin-top: 10px;\n" +
+                "        }\n" +
+                "        p {\n" +
+                "            margin-bottom: 1em;\n" +
+                "        }\n" +
+                "        abbr {\n" +
+                "            text-decoration: underline dotted;\n" +
+                "            cursor: help;\n" +
+                "            color: #1e40af;\n" +
+                "        }\n" +
+                "        blockquote {\n" +
+                "            margin: 1em 0;\n" +
+                "            padding-left: 1rem;\n" +
+                "            border-left-width: 4px;\n" +
+                "            border-color: #d1d5db;\n" +
+                "            font-style: italic;\n" +
+                "            color: #4b5563;\n" +
+                "            background-color: #fffacd; /* Light yellow background */\n" +
+                "            display: flex;\n" +
+                "            align-items: flex-start;\n" +
+                "        }\n" +
+                "        blockquote i {\n" +
+                "            margin-right: 0.5rem;\n" +
+                "            color: #6b7280;\n" +
+                "            font-size: 1.2em;\n" +
+                "        }\n" +
+                "        mark {\n" +
+                "            background-color: #fcd34d;\n" +
+                "            padding: 0.2em 0.4em;\n" +
+                "            border-radius: 4px;\n" +
+                "        }\n" +
+                "        .footer-text {\n" +
+                "            text-align: right;\n" +
+                "            color: #6b7280;\n" +
+                "            margin-top: 30px;\n" +
+                "            font-size: 0.9em;\n" +
+                "        }\n" +
+                "        .main-content-body {\n" +
+                "            margin-bottom: 1em;\n" +
+                "        }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class=\"container\">\n" +
+                "        <div class=\"header-section\">\n" +
+                "            <h1><i class=\"fas fa-language mr-2\"></i> " + fileTitle + "</h1>\n" +
+                (authorName ? "            <div class=\"author-text\">지은이: " + authorName + "</div>\n" : "") +
+                "        </div>\n" +
+                "        <div class=\"main-content-body\">\n" +
+                escapedFinalContentBodyHtml + "\n" +
+                "        </div>\n" +
+                "        <div class=\"footer-text\">juno</div>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>";
+
+            const blob = new Blob([fullHtmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            console.log('HTML 페이지 파일이 생성되었습니다!');
+          };
+
+          return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
+              <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-screen-xl"> {/* PC 화면을 위해 max-w-screen-xl로 확장 */}
+                <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+                  <span role="img" aria-label="HTML Tag">🏷️</span> HTML 태그 변환기
+                </h1>
+
+                {/* 설정 버튼 */}
+                <div className="absolute top-4 right-4"> {/* 우측 상단에 배치 */}
+                    <button
+                      onClick={() => setShowSettingsModal(true)}
+                      className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-md transition duration-300 ease-in-out shadow-sm hover:shadow-md focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-opacity-75 text-sm" /* 작고 세련되게 */
+                    >
+                      <span role="img" aria-label="Settings">⚙️</span> 설정
+                    </button>
+                </div>
+
+                {/* 메인 콘텐츠 영역: 왼쪽(입력)과 오른쪽(미리보기)으로 나눔 */}
+                <div className="flex flex-col md:flex-row gap-8 mt-6">
+                  {/* 왼쪽 열: 텍스트 입력 및 태그 선택 */}
+                  <div className="flex-1 flex flex-col"> {/* flex-1로 공간 분배, flex-col로 내부 요소 수직 정렬 */}
+                    {/* 텍스트 입력 섹션 */}
+                    <div className="mb-6">
+                      <label htmlFor="inputText" className="block text-gray-700 text-sm font-semibold">
+                        <span class="text-xl font-bold">텍스트 입력</span> <i class="fas fa-pencil-alt text-xl font-bold ml-2"></i>
+                      </label>
+                      <div className="text-gray-500 text-sm mb-2">여기에 텍스트를 입력하고 변환할 부분을 블록으로 씌우세요:</div>
+                    </div>
+
+                    {/* 아이콘 테이블을 텍스트 입력 섹션 아래로 이동 */}
+                    <div className="mb-6 p-0 border border-gray-200 rounded-lg bg-gray-50 overflow-x-auto whitespace-nowrap">
+                        <div className="inline-flex items-center gap-0.5 text-2xl">
+                            <button onClick={() => copyIconToClipboard('▶️')} className="p-2 rounded-md hover:bg-gray-200 transition-colors">▶️</button>
+                            <button onClick={() => copyIconToClipboard('✨')} className="p-2 rounded-md hover:bg-gray-200 transition-colors">✨</button>
+                            <button onClick={() => copyIconToClipboard('➡️')} className="p-2 rounded-md hover:bg-gray-200 transition-colors">➡️</button>
+                            <button onClick={() => copyIconToClipboard('⬅️')} className="p-2 rounded-md hover:bg-gray-200 transition-colors">⬅️</button>
+                            <button onClick={() => copyIconToClipboard('↔️')} className="p-2 rounded-md hover:bg-gray-200 transition-colors">↔️</button>
+                            <button onClick={() => copyIconToClipboard('<i class="fas fa-check"></i>')} className="p-2 rounded-md hover:bg-gray-200 transition-colors"><i class="fas fa-check"></i></button>
+                            <button onClick={() => copyIconToClipboard('<i class="fas fa-times"></i>')} className="p-2 rounded-md hover:bg-gray-200 transition-colors"><i class="fas fa-times"></i></button>
+                            <button onClick={() => copyIconToClipboard('<i class="fas fa-info-circle"></i>')} className="p-2 rounded-md hover:bg-gray-200 transition-colors"><i class="fas fa-info-circle"></i></button>
+                            <button onClick={() => copyIconToClipboard('<i class="fas fa-exclamation-triangle"></i>')} className="p-2 rounded-md hover:bg-gray-200 transition-colors"><i class="fas fa-exclamation-triangle"></i></button>
+                            <button onClick={() => copyIconToClipboard('<i class="fas fa-question-circle"></i>')} className="p-2 rounded-md hover:bg-gray-200 transition-colors"><i class="fas fa-question-circle"></i></button>
+                        </div>
+                    </div>
+
+
+                    {/* 텍스트 입력 textarea */}
+                    <textarea
+                        id="inputText"
+                        ref={inputRef}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 resize-y min-h-[400px]"
+                        value={inputText}
+                        onChange={handleInputChange}
+                        onMouseUp={handleTextSelect}
+                        onKeyUp={handleTextSelect}
+                        placeholder="예시: 생사 길은 예 이샤매 머뭇거리고..."
+                    ></textarea>
+
+
+                    {/* 태그 유형 선택 (라디오 버튼) */}
+                    <div className="mb-6">
+                      <label className="block text-gray-700 text-sm font-semibold mb-2">
+                        <i class="fas fa-tags text-xl font-bold mr-2"></i> <span class="text-xl font-bold">적용할 태그를 선택하세요:</span>
+                      </label>
+                      <div className="flex flex-wrap gap-4">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="radio"
+                            name="tagType"
+                            value="abbr"
+                            checked={selectedTagType === 'abbr'}
+                            onChange={handleTagTypeChange}
+                            className="form-radio h-5 w-5 text-blue-600"
+                          />
+                          <span className="ml-2 text-gray-700">축약어(Abbr)</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                          <input
+                            type="radio"
+                            name="tagType"
+                            value="mark"
+                            checked={selectedTagType === 'mark'}
+                            onChange={handleTagTypeChange}
+                            className="form-radio h-5 w-5 text-blue-600"
+                          />
+                          <span className="ml-2 text-gray-700">강조 표시(Mark)</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                          <input
+                            type="radio"
+                            name="blockquote"
+                            value="blockquote"
+                            checked={selectedTagType === 'blockquote'}
+                            onChange={handleTagTypeChange}
+                            className="form-radio h-5 w-5 text-blue-600"
+                          />
+                          <span className="ml-2 text-gray-700">인용 블럭(BlockQuote)</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* abbr title 입력 섹션 (조건부 렌더링) */}
+                    {showTitleInput && selectedTagType === 'abbr' && (
+                      <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <label htmlFor="abbrTitle" className="block text-blue-800 text-sm font-semibold mb-2">
+                          선택된 텍스트: <span class="font-bold text-blue-900">"{selectedText}"</span>
+                        </label>
+                        <label htmlFor="abbrTitle" className="block text-blue-800 text-sm font-semibold mb-2">
+                          '<span class="font-bold text-blue-900">{selectedText}</span>'에 대한 abbr 태그의 title 속성을 입력하세요:
+                        </label>
+                        <input
+                          type="text"
+                          id="abbrTitle"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                          value={abbrTitle}
+                          onChange={(e) => setAbbrTitle(e.target.value)}
+                          placeholder="예: 삶과 죽음의 갈림길"
+                        />
+                        <button
+                          onClick={applyTag}
+                          className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+                        >
+                          <span role="img" aria-label="Apply">✨</span> 태그 적용
+                        </button>
+                      </div>
+                    )}
+
+                    {/* 태그 적용 버튼 (blockquote, mark 또는 abbr title이 필요 없을 때) */}
+                    {selectedText && !(showTitleInput && selectedTagType === 'abbr') && (
+                      <div className="mb-6">
+                        <button
+                          onClick={applyTag}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+                        >
+                          <span role="img" aria-label="Apply">✨</span> 태그 적용
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 오른쪽 열: 미리보기 및 HTML 파일 생성 버튼 */}
+                  <div className="flex-1 flex flex-col"> {/* flex-1로 공간 분배, flex-col로 내부 요소 수직 정렬 */}
+                    {/* 미리보기 버튼 */}
+                    <button
+                      onClick={() => setShowPreview(!showPreview)}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 mb-4"
+                      disabled={!inputText}
+                    >
+                      <span role="img" aria-label="Preview">👁️</span> <span class="text-xl font-bold">미리보기</span>
+                    </button>
+
+                    {/* 미리보기 섹션 (조건부 렌더링) */}
+                    {showPreview && generatedHtml && (
+                      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-300">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-3">미리보기:</h2>
+                        <div
+                          className="p-3 border border-gray-200 rounded-lg bg-white text-gray-800 overflow-auto min-h-[400px] max-h-[500px]" /* 높이 조정: min-h 400px, max-h 500px */
+                          dangerouslySetInnerHTML={{ __html: generatedHtml }}
+                        ></div>
+                      </div>
+                    )}
+
+                    {/* HTML 페이지 파일 생성 옵션 및 버튼들 */}
+                    <div className="flex flex-col gap-4 mt-auto">
+                        <div className="flex items-center gap-4">
+                            <label htmlFor="outputOption" className="text-gray-700 text-sm font-semibold">출력 옵션:</label>
+                            <div className="flex-1 flex gap-2"> {/* 라디오 버튼 그룹 */}
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="outputType"
+                                        value="no-comments"
+                                        checked={outputOption === 'no-comments'}
+                                        onChange={(e) => setOutputOption(e.target.value)}
+                                        className="form-radio h-5 w-5 text-blue-600"
+                                    />
+                                    <span className="ml-2 text-gray-700">주석 없이 출력</span>
+                                </label>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="outputType"
+                                        value="with-comments"
+                                        checked={outputOption === 'with-comments'}
+                                        onChange={(e) => setOutputOption(e.target.value)}
+                                        className="form-radio h-5 w-5 text-blue-600"
+                                    />
+                                    <span className="ml-2 text-gray-700">주석 포함 출력</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div className="flex flex-row gap-4 justify-between">
+                            <button
+                              onClick={() => generateHtmlFile()} // 선택된 outputOption에 따라 동작
+                              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75"
+                              disabled={!generatedHtml}
+                            >
+                              <span role="img" aria-label="Download">📄</span> HTML 파일 생성
+                            </button>
+                            {/* 저장 버튼 추가 */}
+                            <button
+                              onClick={saveState}
+                              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75 cursor-pointer" /* cursor-pointer 추가 */
+                              disabled={!inputText || !isAuthReady} /* 텍스트가 있거나 인증 준비되었을 때만 활성화 */
+                            >
+                              <span role="img" aria-label="Save">💾</span> {saveStatus}
+                            </button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 설정 모달 (위치 고정) */}
+              {showSettingsModal && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50">
+                  <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                      <span role="img" aria-label="Settings">⚙️</span> 설정
+                    </h2>
+                    <div className="mb-4">
+                      <label htmlFor="subjectName" className="block text-gray-700 text-sm font-semibold mb-2">
+                        과목명:
+                      </label>
+                      <input
+                        type="text"
+                        id="subjectName"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        value={subjectName}
+                        onChange={(e) => setSubjectName(e.target.value)}
+                        onClick={(e) => e.target.select()} // 클릭 시 전체 선택
+                        placeholder="예: 국어"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label htmlFor="worksheetTitle" className="block text-gray-700 text-sm font-semibold mb-2">
+                        학습지 제목:
+                      </label>
+                      <input
+                        type="text"
+                        id="worksheetTitle"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        value={worksheetTitle}
+                        onChange={(e) => setWorksheetTitle(e.target.value)}
+                        onClick={(e) => e.target.select()} // 클릭 시 전체 선택
+                        placeholder="예: 속미인곡"
+                      />
+                    </div>
+                    <div className="mb-6">
+                      <label htmlFor="authorName" className="block text-gray-700 text-sm font-semibold mb-2">
+                        지은이:
+                      </label>
+                      <input
+                        type="text"
+                        id="authorName"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                        value={authorName}
+                        onChange={(e) => setAuthorName(e.target.value)}
+                        onClick={(e) => e.target.select()} // 클릭 시 전체 선택
+                        placeholder="예: 홍길동"
+                      />
+                    </div>
+                    <div className="text-right text-gray-500 text-xs mt-4">juno(v.1.0)</div> {/* 소유자/버전 표시 */}
+                    <button
+                      onClick={() => setShowSettingsModal(false)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 mt-4"
+                    >
+                      설정 닫기
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // React 앱을 HTML의 'root' 요소에 렌더링합니다.
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
