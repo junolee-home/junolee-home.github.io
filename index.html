@@ -25,57 +25,60 @@
             <p class="mt-4 text-xl text-gray-600">속담 퀴즈와 공통국어 작품 자료를 만나보세요.</p>
         </header>
 
-        <!-- 속담 퀴즈 링크 섹션 -->
-        <section class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-            <h2 class="text-3xl font-semibold text-gray-800 mb-6">속담 퀴즈</h2>
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                <!-- 퀴즈 A 링크 -->
-                <a href="속담퀴즈A/속담퀴즈A.html" 
-                   class="w-full sm:w-auto px-10 py-5 bg-indigo-600 text-white text-lg font-medium rounded-xl shadow-lg 
-                          hover:bg-indigo-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-center">
-                    속담 퀴즈 A
-                </a>
-                <!-- 퀴즈 B 링크 -->
-                <a href="속담퀴즈B/속담퀴즈B.html" 
-                   class="w-full sm:w-auto px-10 py-5 bg-indigo-600 text-white text-lg font-medium rounded-xl shadow-lg 
-                          hover:bg-indigo-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-center">
-                    속담 퀴즈 B
-                </a>
-            </div>
-        </section>
+        <!-- 퀴즈와 본문 자료를 담을 2단 레이아웃 컨테이너 -->
+        <div class="flex flex-col md:flex-row gap-8 w-full">
+            <!-- 속담 퀴즈 링크 섹션 (좌측 단) -->
+            <section class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 flex-1">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-6">속담 퀴즈</h2>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                    <!-- 퀴즈 A 링크 -->
+                    <a href="속담퀴즈A/속담퀴즈A.html" 
+                       class="w-full sm:w-auto px-10 py-5 bg-indigo-600 text-white text-lg font-medium rounded-xl shadow-lg 
+                              hover:bg-indigo-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-center">
+                        속담 퀴즈 A
+                    </a>
+                    <!-- 퀴즈 B 링크 -->
+                    <a href="속담퀴즈B/속담퀴즈B.html" 
+                       class="w-full sm:w-auto px-10 py-5 bg-indigo-600 text-white text-lg font-medium rounded-xl shadow-lg 
+                              hover:bg-indigo-700 transform hover:scale-105 transition-all duration-300 ease-in-out text-center">
+                        속담 퀴즈 B
+                    </a>
+                </div>
+            </section>
 
-        <!-- 공통국어 작품 목록 섹션 -->
-        <section class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-            <h2 class="text-3xl font-semibold text-gray-800 mb-6">공통국어2 본문 연구 자료</h2>
-            <!-- 2단 목록 형태로 변경 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- 제망매가 링크 -->
-                <a href="krdata/공통국어2 학습지-제망매가-주석.html" 
-                   class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
-                    • 제망매가(월명사)
-                </a>
-                <!-- 속미인곡 링크 -->
-                <a href="krdata/공통국어2 학습지-속미인곡-주석.html" 
-                   class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
-                    • 속미인곡(정철)
-                </a>
-                <!-- 오백 년 도읍지를 링크 -->
-                <a href="krdata/공통국어2 학습지-오백 년 도읍지를-주석.html" 
-                   class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
-                    • 오백 년 도읍지를(길재)
-                </a>
-                <!-- 춘향전 링크 -->
-                <a href="krdata/공통국어2 학습지-춘향전-주석.html" 
-                   class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
-                    • 춘향전(작자 미상)
-                </a>
-                <!-- 봄봄 링크 -->
-                <a href="krdata/공통국어2 학습지-봄봄-주석.html" 
-                   class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
-                    • 봄봄(김유정)
-                </a>
-            </div>
-        </section>
+            <!-- 공통국어 작품 목록 섹션 (우측 단) -->
+            <section class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 flex-1">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-6">공통국어2 본문 연구 자료</h2>
+                <!-- 2단 목록 형태로 변경 -->
+                <div class="flex flex-col gap-4">
+                    <!-- 제망매가 링크 -->
+                    <a href="krdata/공통국어2 학습지-제망매가-주석.html" 
+                       class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
+                        • 제망매가(월명사)
+                    </a>
+                    <!-- 속미인곡 링크 -->
+                    <a href="krdata/공통국어2 학습지-속미인곡-주석.html" 
+                       class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
+                        • 속미인곡(정철)
+                    </a>
+                    <!-- 오백 년 도읍지를 링크 -->
+                    <a href="krdata/공통국어2 학습지-오백 년 도읍지를-주석.html" 
+                       class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
+                        • 오백 년 도읍지를(길재)
+                    </a>
+                    <!-- 춘향전 링크 -->
+                    <a href="krdata/공통국어2 학습지-춘향전-주석.html" 
+                       class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
+                        • 춘향전(작자 미상)
+                    </a>
+                    <!-- 봄봄 링크 -->
+                    <a href="krdata/공통국어2 학습지-봄봄-주석.html" 
+                       class="p-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 ease-in-out">
+                        • 봄봄(김유정)
+                    </a>
+                </div>
+            </section>
+        </div>
     </div>
 </body>
 </html>
