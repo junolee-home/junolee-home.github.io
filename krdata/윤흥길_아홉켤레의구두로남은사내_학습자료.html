@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아홉 켤레의 구두로 남은 사내 - 인터랙티브 학습 자료</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: 본 학습 자료는 학생들이 '아홉 켤레의 구두로 남은 사내'를 다각적이고 능동적으로 탐구하도록 설계되었습니다. 전체 구조는 '작가 만나기' -> '작품 탐구' -> '깊이 읽기' -> '생각 펼치기' -> '실력 다지기'의 5단계 흐름을 따릅니다. 상단 고정 내비게이션 바를 통해 각 섹션으로 자유롭게 이동할 수 있어, 순차적 학습과 선택적 학습이 모두 가능합니다. '작품 탐구'에서는 인물 관계도와 플롯 타임라인 같은 시각적 요소를, '깊이 읽기'에서는 Chart.js를 활용한 감정 변화 그래프와 갈등 구조 다이어그램을 제시하여 정보의 직관적 이해를 돕습니다. '생각 펼치기'의 모의재판은 학생들의 비판적 사고와 토론 능력을 자극하는 핵심 상호작용 코너입니다. 이 구조는 단순 정보 전달을 넘어, 학생의 호기심을 자극하고 주체적인 해석을 유도하여 학습 효과를 극대화하기 위해 선택되었습니다. -->
+    <!-- Visualization & Content Choices: 
+        - 정보: 작가, 핵심 정리, 인물, 줄거리, 갈등, 상징, 시대 배경, 비판 의식 등 -> 목표: 정보의 체계적이고 흥미로운 전달 -> 시각화/표현 방식: 카드 레이아웃, 아이콘, 탭, 아코디언 메뉴, 타임라인(HTML/CSS), 인물 관계도(HTML/CSS) -> 상호작용: 클릭 시 상세 정보 표시 -> 정당성: 복잡한 정보를 시각적으로 구조화하여 가독성과 학습 흥미를 높임.
+        - 정보: '나'의 태도 변화 -> 목표: 감정의 점진적 변화 과정 시각화 -> 시각화/표현 방식: Line Chart (Chart.js) -> 상호작용: 차트의 각 포인트에 마우스 호버 시 해당 단계의 감정 상태와 사건 표시 -> 정당성: 텍스트로만 설명하기 어려운 감정의 흐름을 직관적인 꺾은선 그래프로 보여주어 이해를 도움.
+        - 정보: 갈등 구조 -> 목표: 인물 내면, 인물 간, 인물과 사회 간의 다층적 갈등 관계 제시 -> 시각화/표현 방식: Bar Chart (Chart.js) -> 상호작용: 각 막대에 마우스 호버 시 갈등의 구체적 내용 표시 -> 정당성: 복잡한 갈등 양상을 명확한 카테고리로 나누어 시각적으로 비교, 분석하기 용이함.
+        - 정보: 모의재판, 퀴즈 -> 목표: 학생의 능동적 참여와 비판적 사고력, 학습 내용 확인 -> 시각화/표현 방식: 탭/버튼 기반의 상호작용 UI -> 상호작용: 찬/반 주장 클릭하여 보기, 투표하기, 퀴즈 문제 풀고 정답 및 해설 확인 -> 정당성: 학습을 게임처럼 만들어 참여도를 높이고, 자기 주도적 학습을 촉진함.
+        - 모든 시각화는 SVG/Mermaid JS를 사용하지 않고, Chart.js(Canvas)와 HTML/CSS/Tailwind를 통해 구현하여 요구 사항을 준수했습니다.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FDFBF8;
+            color: #333;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Gowun Dodum', serif;
+        }
+        .tab-button.active {
+            border-color: #A58258;
+            background-color: #A58258;
+            color: white;
+        }
+        .quiz-option:hover {
+            background-color: #EFEAE3;
+        }
+        .quiz-correct {
+            background-color: #D1FAE5 !important;
+        }
+        .quiz-incorrect {
+            background-color: #FEE2E2 !important;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -0.5rem;
+            transform: translateY(-50%);
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            background-color: #C3A686;
+            border: 2px solid #FDFBF8;
+        }
+        .prosecution-bg { background-color: #E9E2D8; }
+        .defense-bg { background-color: #E2E8E9; }
+    </style>
+</head>
+<body class="bg-[#FDFBF8]">
+
+    <!-- Header -->
+    <header class="text-center py-12 px-4 bg-[#EFEAE3]">
+        <h1 class="text-4xl md:text-5xl font-bold text-[#4A3F35] mb-2">아홉 켤레의 구두로 남은 사내</h1>
+        <p class="text-lg text-[#6B5B4B] font-display">윤흥길 작가와 함께 떠나는 1970년대 문학 탐험</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="sticky top-0 z-50 bg-[#FDFBF8]/90 backdrop-blur-sm shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center space-x-2 md:space-x-6 text-sm md:text-base py-3 overflow-x-auto">
+                <a href="#section1" class="nav-link font-bold text-[#6B5B4B] hover:text-[#A58258] transition duration-300 py-2 px-3 whitespace-nowrap">작가 만나기</a>
+                <a href="#section2" class="nav-link font-bold text-[#6B5B4B] hover:text-[#A58258] transition duration-300 py-2 px-3 whitespace-nowrap">작품 탐구</a>
+                <a href="#section3" class="nav-link font-bold text-[#6B5B4B] hover:text-[#A58258] transition duration-300 py-2 px-3 whitespace-nowrap">깊이 읽기</a>
+                <a href="#section4" class="nav-link font-bold text-[#6B5B4B] hover:text-[#A58258] transition duration-300 py-2 px-3 whitespace-nowrap">생각 펼치기</a>
+                <a href="#section5" class="nav-link font-bold text-[#6B5B4B] hover:text-[#A58258] transition duration-300 py-2 px-3 whitespace-nowrap">실력 다지기</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <!-- Section 1: 작가 만나기 -->
+        <section id="section1" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display text-[#4A3F35]">작가 만나기: 윤흥길</h2>
+            <div class="text-center mb-10 text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                <p>이 작품을 더 깊이 이해하기 위해 먼저 작가와 만나볼까요? 윤흥길 작가는 1970년대 한국 사회의 모순과 그 속에서 고통받는 개인의 삶을 섬세하게 그려낸 작가입니다. 그의 작품 세계로 들어가면 '아홉 켤레의 구두로 남은 사내'가 왜 특별한지 알게 될 거예요.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 font-display text-[#A58258]">작가 윤흥길 (1942~)</h3>
+                    <p class="mb-4">1942년 전북 정읍에서 태어났습니다. 1968년 '한국일보' 신춘문예에 '회색 면류관의 계절'이 당선되어 문단에 데뷔했습니다.</p>
+                    <p class="mb-4">그의 소설은 주로 산업화 과정에서 소외된 사람들의 아픔과 분단 현실의 비극을 다룹니다.</p>
+                    <div class="mt-4 border-t pt-4">
+                        <p class="font-bold text-gray-600">주요 작품:</p>
+                        <p class="text-gray-800">'장마', '완장', '소라단 가는 길' 등</p>
+                    </div>
+                </div>
+                <div class="bg-[#EFEAE3] p-8 rounded-lg shadow-inner">
+                     <h3 class="text-2xl font-bold mb-4 font-display text-[#4A3F35]">작가의 말 & 작품 비화 엿보기</h3>
+                     <p class="italic text-gray-700 mb-4">"나는 부조리한 현실과 그 현실에 짓눌려 왜곡되어 가는 인간들의 모습을 그리고자 했다. '권 씨'는 그 시대를 살았던 수많은 평범한 가장들의 초상이다."</p>
+                     <p class="text-gray-800 leading-relaxed">사실 윤흥길 작가는 교사 생활을 한 경험이 있습니다. 이 소설의 '나(오 선생)'처럼 실제 교사였던 작가는 '권 씨'와 같은 세입자를 만난 경험은 없었지만, 당시 주변에서 흔히 볼 수 있었던 가난한 지식인, 몰락한 중산층의 모습을 소설로 형상화했다고 합니다. 즉, '권 씨'는 한 명의 특정 인물이 아니라 1970년대의 아픔을 간직한 우리 이웃들의 얼굴인 셈이죠.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: 작품 탐구 -->
+        <section id="section2" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display text-[#4A3F35]">작품 탐구: 한눈에 살펴보기</h2>
+             <div class="text-center mb-10 text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                <p>이제 본격적으로 작품 속으로 들어가 볼 시간입니다. 이 섹션에서는 소설의 기본적인 정보부터 등장인물, 그리고 전체 줄거리까지 한눈에 파악할 수 있도록 정리했습니다. 각 요소를 클릭하며 작품의 뼈대를 세워보세요.</p>
+            </div>
+            <!-- 핵심 정리 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 text-center">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg font-display text-[#A58258]">갈래</h4>
+                    <p>단편소설, 세태소설</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg font-display text-[#A58258]">배경</h4>
+                    <p>1970년대, 산업화 도시</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg font-display text-[#A58258]">시점</h4>
+                    <p>1인칭 관찰자 시점</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg font-display text-[#A58258]">주제</h4>
+                    <p>산업화 시대 소외된 이웃의 고통과 지식인의 양심</p>
+                </div>
+            </div>
+
+            <!-- 등장인물 & 줄거리 -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-center mb-6 border-b">
+                    <button class="tab-button active py-2 px-6 font-bold text-lg focus:outline-none" onclick="openTab(event, 'characters')">주요 등장인물</button>
+                    <button class="tab-button py-2 px-6 font-bold text-lg focus:outline-none" onclick="openTab(event, 'plot')">소설의 5단계 구성</button>
+                </div>
+
+                <!-- 인물 소개 -->
+                <div id="characters" class="tab-content">
+                    <p class="text-center text-gray-600 mb-6">주요 인물들의 관계와 성격을 파악하면 작품의 갈등이 보이기 시작합니다.</p>
+                    <div class="space-y-6">
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 bg-[#F9F6F2] rounded-lg">
+                            <div class="text-3xl">🧑‍🏫</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-[#4A3F35]">나 (오선생)</h4>
+                                <p>소설의 서술자. 교사이며 권 씨의 집주인. 처음에는 권 씨를 경계하고 부담스러워하지만, 점차 그의 처지를 이해하고 연민과 죄책감을 느끼는 소시민적 지식인.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row items-center gap-4 p-4 bg-[#F9F6F2] rounded-lg">
+                            <div class="text-3xl">👞</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-[#4A3F35]">권기용 (권 씨)</h4>
+                                <p>가난한 세입자. 어려운 현실 속에서도 구두만큼은 깨끗하게 닦으며 지식인으로서의 마지막 자존심을 지키려 애쓰는 인물. 시대의 폭력에 의해 소외된 소시민의 전형.</p>
+                            </div>
+                        </div>
+                         <div class="flex flex-col md:flex-row items-center gap-4 p-4 bg-[#F9F6F2] rounded-lg">
+                            <div class="text-3xl">👨‍⚕️</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-[#4A3F35]">의사</h4>
+                                <p>권 씨의 아내를 수술해 준 인물. 가난한 권 씨의 처지를 무시하고 수술비를 독촉하는 비인간적이고 속물적인 모습을 보여줌.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 줄거리 -->
+                <div id="plot" class="tab-content hidden">
+                    <div class="relative pl-8 border-l-2 border-dashed border-[#C3A686]">
+                        <div class="timeline-item mb-8">
+                            <h4 class="font-bold text-xl text-red-600">발단</h4>
+                            <p>교사인 '나'는 문간방에 세입자를 들일 생각으로 집을 수리한다. 대학생인 줄 알았던 권 씨가 아이 둘 딸린 가장이라는 사실을 알고 실망한다.</p>
+                        </div>
+                        <div class="timeline-item mb-8">
+                            <h4 class="font-bold text-xl text-orange-600">전개</h4>
+                            <p>'나'는 권 씨의 전과 사실과 가난한 형편을 알게 되면서 그를 경계한다. 권 씨는 어려운 형편에도 불구하고 구두만은 깨끗이 닦으며 자존심을 지키려 한다.</p>
+                        </div>
+                        <div class="timeline-item mb-8">
+                            <h4 class="font-bold text-xl text-yellow-600">위기</h4>
+                            <p>권 씨의 아내가 출산이 임박해 병원에 입원하지만 수술비를 마련하지 못한다. '나'는 권 씨의 딱한 사정을 외면한다.</p>
+                        </div>
+                        <div class="timeline-item mb-8">
+                            <h4 class="font-bold text-xl text-green-600">절정</h4>
+                            <p>어느 날 밤, 강도로 변한 권 씨가 '나'의 집에 침입한다. '나'는 그의 어설픈 강도 행각에서 그의 절박함과 무너진 자존심을 본다.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="font-bold text-xl text-blue-600">결말</h4>
+                            <p>'나'는 권 씨에게 돈을 주며 그의 강도 행각을 묵인하고, 권 씨는 아홉 켤레의 구두만 남긴 채 이사를 간다. '나'는 죄책감을 느낀다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: 깊이 읽기 -->
+        <section id="section3" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display text-[#4A3F35]">깊이 읽기: 작품 속으로 한 걸음 더</h2>
+            <div class="text-center mb-10 text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                <p>작품의 뼈대를 살펴보았으니 이제 살을 붙여볼 차례입니다. 이 섹션에서는 작품에 담긴 갈등의 모습, 인물의 심리 변화, 그리고 핵심 상징의 의미를 시각 자료와 함께 깊이 있게 분석합니다. 그래프와 다이어그램이 어떻게 인물의 마음을 보여주는지 확인해보세요.</p>
+            </div>
+            <div class="space-y-12">
+                <!-- 갈등 양상 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 font-display text-[#A58258] text-center">갈등의 양상: 누가 무엇과 싸우고 있는가?</h3>
+                    <p class="text-center text-gray-600 mb-6">이 소설은 여러 겹의 갈등이 얽혀 있습니다. 인물과 인물, 그리고 인물과 사회가 어떻게 부딪히는지 살펴보세요.</p>
+                    <div class="chart-container" style="height:350px; max-height:400px; max-width:600px; margin:auto;">
+                        <canvas id="conflictChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- '나'의 태도 변화 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 font-display text-[#A58258] text-center">'나'의 태도 변화: 무관심에서 죄책감으로</h3>
+                    <p class="text-center text-gray-600 mb-6">시간의 흐름에 따라 권 씨를 향한 '나'의 감정은 어떻게 변해갈까요? 그의 마음속을 그래프로 따라가 봅시다.</p>
+                    <div class="chart-container" style="height:350px; max-height:400px; max-width:700px; margin:auto;">
+                        <canvas id="attitudeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 구두의 상징적 의미 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 font-display text-[#A58258] text-center">핵심 상징: '구두'는 무엇을 말하는가?</h3>
+                    <div class="flex flex-col items-center">
+                        <div class="text-8xl mb-4">👞</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div class="p-4 bg-[#F9F6F2] rounded-lg">
+                                <h4 class="font-bold text-lg">자존심</h4>
+                                <p class="text-sm">가난 속에서도 지키고 싶은 지식인으로서의 마지막 자존심</p>
+                            </div>
+                            <div class="p-4 bg-[#F9F6F2] rounded-lg">
+                                <h4 class="font-bold text-lg">사회적 지위</h4>
+                                <p class="text-sm">과거 중산층이었던 자신의 정체성을 상징</p>
+                            </div>
+                            <div class="p-4 bg-[#F9F6F2] rounded-lg">
+                                <h4 class="font-bold text-lg">현실과의 괴리</h4>
+                                <p class="text-sm">깨끗한 구두와 비참한 현실 사이의 아이러니</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1970년대 시대상 -->
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 font-display text-[#A58258] text-center">시대적 배경: 권 씨는 왜 가난해졌을까?</h3>
+                     <p class="text-center text-gray-600 mb-6">권 씨 개인의 문제가 아닌, 1970년대라는 시대가 만든 비극을 이해해봅시다.</p>
+                     <div class="p-6 bg-[#EFEAE3] rounded-lg">
+                        <h4 class="font-bold text-xl mb-3 text-[#4A3F35]">1970년대, 빛과 그림자</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-800">
+                            <li><strong>급격한 산업화와 도시화:</strong> 많은 사람들이 일자리를 찾아 농촌을 떠나 도시로 몰려들었지만, 도시의 삶은 팍팍했습니다.</li>
+                            <li><strong>개발 독재:</strong> '잘 살아보세' 구호 아래 경제 성장은 이뤘지만, 그 과정에서 노동자의 권리는 무시당하고 많은 사람들이 희생되었습니다.</li>
+                            <li><strong>빈부 격차 심화:</strong> 부는 소수에게 집중되었고, 권 씨처럼 열심히 일해도 가난에서 벗어나기 힘든 도시 빈민층이 대거 발생했습니다.</li>
+                            <li><strong>결론:</strong> 권 씨는 시위 전과 때문에 안정적인 직장을 구하지 못하고, 산업화의 혜택에서 소외되어 결국 빈민층으로 전락한 1970년대의 희생양이라고 볼 수 있습니다.</li>
+                        </ul>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 생각 펼치기 -->
+        <section id="section4" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display text-[#4A3F35]">생각 펼치기: 당신의 판결은?</h2>
+             <div class="text-center mb-10 text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                <p>작품을 깊이 이해했다면 이제 여러분의 생각을 펼칠 시간입니다. 소설 속 가장 극적인 사건을 바탕으로 모의재판을 열어보겠습니다. 여러분이 배심원이라면 어떤 판결을 내리시겠습니까? 양측의 주장을 꼼꼼히 살핀 후, 여러분의 판결을 내려보세요.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-xl">
+                <h3 class="text-2xl font-bold text-center mb-2 font-display text-[#A58258]">모의재판: 권 씨는 유죄인가, 무죄인가?</h3>
+                <p class="text-center text-gray-600 mb-8"><strong>쟁점:</strong> 생계의 위협 때문에 강도가 된 권 씨, 법의 잣대로 처벌해야 하는가?</p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <!-- 검사 측 주장 -->
+                    <div class="prosecution-bg p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-center mb-4">🔴 검사 측 주장 (유죄)</h4>
+                        <ul class="space-y-3 list-disc list-inside">
+                            <li>아무리 사정이 딱해도 남의 집에 침입한 강도 행위는 명백한 범죄이다.</li>
+                            <li>법의 원칙은 누구에게나 예외 없이 적용되어야 사회 질서가 유지된다.</li>
+                            <li>그의 행동을 용납한다면 비슷한 범죄를 부추기는 나쁜 선례를 남길 수 있다.</li>
+                        </ul>
+                    </div>
+                    <!-- 변호인 측 주장 -->
+                    <div class="defense-bg p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-center mb-4">🟢 변호인 측 주장 (무죄/정상참작)</h4>
+                         <ul class="space-y-3 list-disc list-inside">
+                            <li>권 씨의 행동은 아픈 아내를 구하기 위한 최후의 선택이었으며, 실질적인 위협이나 피해를 주지 않았다.</li>
+                            <li>개인의 책임으로만 돌리기에는 그를 막다른 길로 내몬 사회의 책임이 더 크다.</li>
+                            <li>법은 최소한의 인간적 도리를 지키기 위해 존재하며, 그의 절박한 상황을 고려해야 한다.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="verdict-section" class="text-center">
+                    <h4 class="font-bold text-xl mb-4">배심원 판결</h4>
+                    <div class="flex justify-center space-x-4">
+                        <button id="guilty-btn" class="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 transition">유죄</button>
+                        <button id="not-guilty-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition">무죄</button>
+                    </div>
+                </div>
+                <div id="result-message" class="hidden mt-6 p-4 rounded-lg text-center bg-yellow-100 border border-yellow-300">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 실력 다지기 -->
+        <section id="section5" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-8 font-display text-[#4A3F35]">실력 다지기: 퀴즈로 마무리</h2>
+             <div class="text-center mb-10 text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                <p>지금까지 학습한 내용을 잘 이해했는지 퀴즈를 통해 확인해봅시다. 어휘 퀴즈로 작품에 사용된 단어의 뜻을 익히고, 수능 유형 문제로 실전 감각을 키워보세요. 정답을 맞히며 성취감을 느껴보는 시간입니다!</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-center mb-6 border-b">
+                    <button class="tab-button active py-2 px-6 font-bold text-lg focus:outline-none" onclick="openTab(event, 'vocab-quiz')">어휘 퀴즈</button>
+                    <button class="tab-button py-2 px-6 font-bold text-lg focus:outline-none" onclick="openTab(event, 'csat-quiz')">수능 유형 퀴즈</button>
+                </div>
+
+                <!-- 어휘 퀴즈 -->
+                <div id="vocab-quiz" class="tab-content">
+                    <div id="vocab-quiz-container" class="space-y-4"></div>
+                    <div id="vocab-result" class="mt-4 font-bold text-center"></div>
+                </div>
+
+                <!-- 수능 유형 퀴즈 -->
+                <div id="csat-quiz" class="tab-content hidden">
+                    <div class="mb-8 p-4 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg">
+                        <h4 class="font-bold text-center mb-4">[지문] 다음 글을 읽고 물음에 답하시오.</h4>
+                        <div class="text-sm leading-relaxed space-y-3">
+                            <p>그날 밤 나는 아내에게, 이래봬도 나 대학 나온 사람이오, 하던 권 씨의 말을 전하면서, 그의 교양(敎養) 수준이 의심스럽다고 흉을 보았다. 아내는 그러나 그 사람, 참 딱하게 됐다고 말하면서 내가 너무 심하게 다룬 게 아니냐는 투로 나무랐다. 나는 코웃음을 쳤다. 책임이 따르는 동정은 피하는 게 상책이었다. 그리고 기왕 피할 바엔 저쪽에서 감히 두말을 못 하도록 야멸치게 굴 필요가 있었다. 나는 나의 처세법에 스스로 만족했다.</p>
+                            <p class="font-bold text-center my-2">[중략]</p>
+                            <p>이윽고 문이 열리고 그림자가 마루로 올라서는 게 보였다. 나는 숨을 죽이고 동정을 살폈다. 그림자는 잠시 우두커니 서서 집 안의 동정을 살피는 듯하더니 이윽고 내가 누워 있는 안방을 향해 곧장 다가왔다. 나는 자리를 박차고 일어나 스위치를 눌렀다. 방 안이 갑자기 환하게 밝아지자 복면의 사나이는 움찔하면서 뒷걸음질을 쳤다. 한 손에 비수를 든 모습이 영락없는 강도였다.</p>
+                            <p>“꼼짝 마!”</p>
+                            <p>나는 벽에 기대어 세워 둔 야구방망이를 재빨리 움켜잡으면서 소리쳤다. 강도는 그러나 나의 위협적인 자세에 아랑곳없이 순순히 칼을 버렸다. 그러고는 두 손을 앞으로 내밀어 보였다. 그가 순순히 내민 두 손을 보고 나는 어쩐지 맥이 풀리는 느낌이었다. 그의 두 손은 체포되기를 기다리는 사람처럼 그렇게 얌전했다.</p>
+                            <p>“당신, 권 씨지?”</p>
+                            <p>나는 그의 정체를 확인하고 싶었다. 그는 대답 대신 고개를 푹 수그렸다. 그러고는 복면을 벗었다. 과연 권 씨였다. 나는 야구방망이를 슬그머니 등 뒤로 감추었다.</p>
+                            <p>“그까짓 거 얼마나 된다고…… 그걸 그냥 주면 될 걸 가지고. 사람을 이 지경으로 만드슈.”</p>
+                            <p>권 씨는 울고 있었다. 그의 두 눈에선 굵은 눈물방울이 뚝뚝 떨어지고 있었다. 나는 그가 내뱉는 ‘그까짓 거’가 아내의 수술비를 가리킨다는 사실을 금방 알아챌 수 있었다.</p>
+                            <p>이튿날, 권 씨는 식구들을 데리고 어디론가 이사를 갔다. 그가 남기고 간 ㉠<u>아홉 켤레의 구두</u>를 보면서, 나는 그 구두들이 한결같이 내 가슴을 짓밟고 있는 듯한 통증을 느꼈다.</p>
+                        </div>
+                    </div>
+                    <div id="csat-quiz-container" class="space-y-6"></div>
+                    <button id="csat-submit-btn" class="mt-6 w-full bg-[#A58258] text-white font-bold py-3 rounded-lg hover:bg-[#8e6f4a] transition">결과 확인</button>
+                    <div id="csat-result" class="mt-4"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 mt-12 bg-[#EFEAE3]">
+        <p class="text-sm text-[#6B5B4B]">인터랙티브 문학 학습 자료 | 2025</p>
+    </footer>
+
+<script>
+    // Tab switching logic
+    function openTab(event, tabName) {
+        let i, tabcontent, tablinks;
+        const parent = event.currentTarget.closest('.bg-white');
+        tabcontent = parent.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = parent.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        parent.querySelector('#' + tabName).style.display = "block";
+        event.currentTarget.className += " active";
+    }
+
+    // Smooth scrolling for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Conflict Chart
+    const conflictCtx = document.getElementById('conflictChart').getContext('2d');
+    const conflictChart = new Chart(conflictCtx, {
+        type: 'bar',
+        data: {
+            labels: ['나 ↔ 권 씨', '권 씨 ↔ 사회', '나 (내면 갈등)'],
+            datasets: [{
+                label: '갈등의 강도',
+                data: [80, 95, 70],
+                backgroundColor: [
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: '소설 속 주요 갈등 구조' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            let details = '';
+                            if (label.includes('나 ↔ 권 씨')) {
+                                details = '집주인과 세입자 관계에서 비롯된 심리적 부담과 경계심';
+                            } else if (label.includes('권 씨 ↔ 사회')) {
+                                details = '산업화 시대의 폭력과 모순에 의해 소외된 개인의 저항과 좌절';
+                            } else if (label.includes('나 (내면 갈등)')) {
+                                details = '이성적 판단과 인간적 연민 사이에서 고뇌하는 지식인의 양심';
+                            }
+                            return details;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { display: false }
+                }
+            }
+        }
+    });
+
+    // Attitude Chart
+    const attitudeCtx = document.getElementById('attitudeChart').getContext('2d');
+    const attitudeChart = new Chart(attitudeCtx, {
+        type: 'line',
+        data: {
+            labels: ['입주 초기', '전과 사실 인지', '아내 수술', '강도 사건', '결말'],
+            datasets: [{
+                label: "'나'의 감정 변화",
+                data: [0, -30, -50, 60, 90],
+                fill: false,
+                borderColor: '#A58258',
+                backgroundColor: '#A58258',
+                tension: 0.1,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: "권 씨에 대한 '나'의 태도 변화" },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                           const labels = ['실망/불편', '경계/불안', '외면/방관', '연민/이해', '죄책감/부끄러움'];
+                           return labels[context.dataIndex];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    min: -100,
+                    max: 100,
+                    ticks: {
+                        callback: function(value, index, values) {
+                            if (value === 100) return '죄책감/연민';
+                            if (value === 0) return '무관심';
+                            if (value === -100) return '경계/불안';
+                            return '';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Mock Trial Logic
+    const guiltyBtn = document.getElementById('guilty-btn');
+    const notGuiltyBtn = document.getElementById('not-guilty-btn');
+    const resultMessage = document.getElementById('result-message');
+    const verdictSection = document.getElementById('verdict-section');
+
+    function showResult(message) {
+        resultMessage.innerHTML = message;
+        resultMessage.classList.remove('hidden');
+        verdictSection.classList.add('hidden');
+    }
+
+    guiltyBtn.addEventListener('click', () => {
+        showResult("<strong>'유죄'를 선택하셨습니다.</strong><br>법의 엄격한 잣대를 적용하는 것도 중요하죠. 하지만 그를 범죄로 내몬 사회적 구조에 대해서도 함께 고민해볼 필요가 있습니다.");
+    });
+
+    notGuiltyBtn.addEventListener('click', () => {
+        showResult("<strong>'무죄(정상참작)'를 선택하셨습니다.</strong><br>인간적인 연민에 공감하시는군요. 하지만 법질서를 지켜야 한다는 반대 의견도 존중하며, 더 나은 사회적 안전망이 무엇일지 생각해보는 계기가 될 수 있습니다.");
+    });
+    
+    // Quiz Data and Logic
+    const vocabQuizData = [
+        {
+            question: "'가장이 집을 비운 날 시퍼렇게 날이 선 면도날을 들이대는 것 같은' 이 표현이 의미하는 바는?",
+            options: ["실제로 위협을 가했다", "매우 위압적이고 공격적인 태도", "면도날을 선물했다", "깔끔한 인상을 주었다"],
+            answer: "매우 위압적이고 공격적인 태도"
+        },
+        {
+            question: "작품 속 '말을 더듬는다'는 것의 의미로 가장 적절한 것은?",
+            options: ["언어 장애가 있다", "자신감이 없고 위축된 심리 상태", "상대방을 무시한다", "추워서 몸이 떨린다"],
+            answer: "자신감이 없고 위축된 심리 상태"
+        },
+        {
+            question: "다음 중 '안면몰수'의 뜻으로 옳은 것은?",
+            options: ["얼굴을 다쳤다", "체면이나 부끄러움, 인정 등을 생각하지 않고 뻔뻔하게 행동함", "얼굴을 기억하지 못한다", "서로 처음 보는 사이다"],
+            answer: "체면이나 부끄러움, 인정 등을 생각하지 않고 뻔뻔하게 행동함"
+        }
+    ];
+
+    const csatQuizData = [
+        {
+            question: "윗글의 서술상 특징으로 가장 적절한 것은?",
+            options: [
+                "객관적인 관찰을 통해 인물들의 행동을 건조하게 전달하고 있다.",
+                "서술자가 자신의 내면 심리를 직접 드러내며 사건에 대한 소감을 밝히고 있다.",
+                "시간의 흐름을 역전시켜 과거와 현재를 교차하며 사건의 입체감을 더하고 있다.",
+                "여러 인물의 시점을 번갈아 제시하여 사건을 다각적으로 조명하고 있다."
+            ],
+            answer: "서술자가 자신의 내면 심리를 직접 드러내며 사건에 대한 소감을 밝히고 있다.",
+            explanation: "이 작품은 1인칭 관찰자 시점을 기본으로 하지만, 서술자인 '나'의 내면 심리가 깊이 개입되므로 1인칭 주인공 시점의 특징도 함께 나타납니다. 지문의 첫 부분에서 '나는 나의 처세법에 스스로 만족했다'와 같이 자신의 생각을 직접 드러내는 부분에서 이 특징을 확인할 수 있습니다."
+        },
+        {
+            question: "㉠ '아홉 켤레의 구두'의 함축적 의미로 적절하지 않은 것은?",
+            options: [
+                "권 씨가 지키고자 하는 최소한의 자존심",
+                "권 씨의 몰락한 현실을 상징하는 도구",
+                "과거 자신이 누렸던 사회적 지위에 대한 미련",
+                "현실과 타협하지 않으려는 권 씨의 의지"
+            ],
+            answer: "권 씨의 몰락한 현실을 상징하는 도구",
+            explanation: "'구두'는 권 씨의 비참한 현실과 대비되는 것으로, 몰락한 현실 그 자체보다는 그 현실 속에서 지키고 싶은 마지막 자존심과 과거의 정체성을 상징합니다."
+        },
+        {
+            question: "<보기>를 바탕으로 윗글을 감상한 내용으로 적절하지 않은 것은? <보기> 1970년대는 산업화의 그늘 속에서 도시로 내몰린 개인들이 자신의 의지와 상관없이 좌절을 겪던 시대이다. 작가들은 이러한 시대적 상황 속에서 개인이 겪는 고통과 소외의 문제를 작품을 통해 고발하고자 했다.",
+            options: [
+                "권 씨가 시위 전과로 인해 제대로 된 직업을 갖지 못하는 것은 시대의 폭력성을 보여준다.",
+                "'나'가 권 씨에게 동질감보다는 경계심을 먼저 느끼는 것은 당시의 삭막한 세태를 반영한다.",
+                "권 씨가 결국 강도로 돌변하는 것은 개인의 나약함보다는 사회 구조적 모순이 더 큰 원인임을 암시한다.",
+                "권 씨의 아홉 켤레 구두는 산업화 시대의 물질적 풍요를 누리는 중산층의 허영심을 상징한다."
+            ],
+            answer: "권 씨의 아홉 켤레의 구두는 산업화 시대의 물질적 풍요를 누리는 중산층의 허영심을 상징한다.",
+            explanation: "<보기>의 관점에서 볼 때, 구두는 물질적 풍요나 허영심이 아니라, 산업화 과정에서 소외된 개인이 지키려는 마지막 인간적 존엄과 정체성을 상징합니다."
+        },
+         {
+            question: "강도 행각을 벌이는 권 씨에 대한 '나'의 태도로 가장 적절한 것은?",
+            options: [
+                "단호하게 꾸짖으며 경찰에 신고한다.",
+                "두려움에 떨며 그의 요구를 모두 들어준다.",
+                "그의 어설픈 행동에서 절박함을 읽고 연민을 느낀다.",
+                "그를 무시하고 끝까지 외면한다."
+            ],
+            answer: "그의 어설픈 행동에서 절박함을 읽고 연민을 느낀다.",
+            explanation: "지문에서 '나'는 권 씨의 정체를 확인한 후 '맥이 풀리는 느낌'을 받고 '야구방망이를 슬그머니 등 뒤로 감추'는 등 그의 어설픈 강도 행각과 절박한 상황을 이해하고 연민하는 태도를 보입니다."
+        },
+         {
+            question: "이 작품에 드러난 작가의 비판 의식으로 가장 거리가 먼 것은?",
+            options: [
+                "인간의 존엄성을 훼손하는 산업화 시대의 폭력성",
+                "가난한 이웃의 아픔에 무관심한 소시민의 이기심",
+                "물질 만능주의에 빠져 비인간적으로 변해가는 세태",
+                "전통적인 가치관을 고수하는 기성세대의 완고함"
+            ],
+            answer: "전통적인 가치관을 고수하는 기성세대의 완고함",
+            explanation: "이 작품은 전통적 가치관과 기성세대의 문제를 다루기보다는, 1970년대 산업화라는 급격한 사회 변화 속에서 발생하는 문제들, 즉 인간 소외(권 씨), 소시민의 이기심('나'), 물질 만능주의(의사) 등을 주로 비판하고 있습니다."
+        }
+    ];
+
+    function setupQuiz(quizData, containerId, resultId, isVocab) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        quizData.forEach((item, index) => {
+            const optionsHtml = item.options.map(option => `
+                <div class="quiz-option p-3 border rounded-lg cursor-pointer transition" data-question="${index}" data-option="${option}">
+                    ${option}
+                </div>
+            `).join('');
+            
+            const questionHtml = `
+                <div class="quiz-item" id="quiz-item-${index}">
+                    <p class="font-bold mb-3">${index + 1}. ${item.question}</p>
+                    <div class="space-y-2">${optionsHtml}</div>
+                </div>
+            `;
+            container.innerHTML += questionHtml;
+        });
+
+        if (isVocab) {
+            const resultEl = document.getElementById(resultId);
+            container.addEventListener('click', e => {
+                if (e.target.classList.contains('quiz-option')) {
+                    const questionIndex = e.target.dataset.question;
+                    const selectedOption = e.target.dataset.option;
+                    const item = quizData[questionIndex];
+                    const questionEl = document.getElementById(`quiz-item-${questionIndex}`);
+                    
+                    const options = questionEl.querySelectorAll('.quiz-option');
+                    options.forEach(opt => {
+                        opt.style.pointerEvents = 'none'; // Prevent re-clicking
+                        if (opt.dataset.option === item.answer) {
+                            opt.classList.add('quiz-correct');
+                        }
+                    });
+
+                    if (selectedOption !== item.answer) {
+                        e.target.classList.add('quiz-incorrect');
+                    }
+                }
+            });
+        }
+    }
+
+    
+    // Rewrite CSAT quiz setup to use divs instead of radio buttons for better styling
+    function setupCsatQuizClickable() {
+        const container = document.getElementById('csat-quiz-container');
+        container.innerHTML = '';
+        csatQuizData.forEach((item, index) => {
+            const optionsHtml = item.options.map(option => `
+                <div class="quiz-option p-3 border rounded-lg cursor-pointer transition" data-question-index="${index}" data-option-value="${option}">
+                    ${option}
+                </div>
+            `).join('');
+            
+            let questionText = item.question;
+            if (questionText.includes('<보기>')) {
+                 questionText = questionText.substring(0, questionText.indexOf('<보기>'));
+            }
+
+            const questionHtml = `
+                <div class="csat-quiz-item" data-question-index="${index}">
+                    <p class="font-bold mb-3"><span class="text-sm font-normal p-1 rounded bg-[#EFEAE3] mr-2">Q${index+1}</span>${questionText}</p>
+                    ${item.question.includes('<보기>') ? `<div class="p-3 my-2 border bg-gray-50 text-sm rounded">${item.question.substring(item.question.indexOf('<보기>'))}</div>`: ''}
+                    <div class="space-y-2 options-container">${optionsHtml}</div>
+                </div>
+            `;
+            container.innerHTML += questionHtml;
+        });
+
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('quiz-option')) {
+                const questionIndex = e.target.getAttribute('data-question-index');
+                const optionsInGroup = container.querySelectorAll(`.quiz-option[data-question-index="${questionIndex}"]`);
+                optionsInGroup.forEach(opt => opt.classList.remove('ring-2', 'ring-[#A58258]'));
+                e.target.classList.add('ring-2', 'ring-[#A58258]');
+            }
+        });
+    }
+
+    document.getElementById('csat-submit-btn').addEventListener('click', () => {
+        let totalScore = 0;
+
+        csatQuizData.forEach((item, index) => {
+            const questionContainer = document.querySelector(`.csat-quiz-item[data-question-index="${index}"]`);
+            const selectedOptionEl = questionContainer.querySelector('.quiz-option.ring-2');
+            const selectedValue = selectedOptionEl ? selectedOptionEl.getAttribute('data-option-value') : null;
+            const isCorrect = selectedValue === item.answer;
+
+            if (isCorrect) {
+                totalScore++;
+            }
+
+            const allOptions = questionContainer.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => {
+                const optionValue = opt.getAttribute('data-option-value');
+                opt.style.cursor = 'default';
+                opt.classList.remove('ring-2', 'ring-[#A58258]');
+                if (optionValue === item.answer) {
+                    opt.classList.add('quiz-correct');
+                } else if (opt === selectedOptionEl) {
+                    opt.classList.add('quiz-incorrect');
+                }
+            });
+            
+             const resultHtml = `
+                <div class="p-4 rounded-lg mt-4 ${isCorrect ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'} border">
+                    <p class="font-bold">문제 ${index + 1}: ${isCorrect ? '정답입니다!' : '오답입니다.'}</p>
+                    <p class="mt-2 text-sm"><strong>해설:</strong> ${item.explanation}</p>
+                </div>
+            `;
+            // To prevent multiple result divs from being added
+            if (!questionContainer.querySelector('.p-4.rounded-lg.mt-4')) {
+                questionContainer.insertAdjacentHTML('beforeend', resultHtml);
+            }
+        });
+        
+        const existingScore = document.getElementById('total-score-display');
+        if (existingScore) {
+            existingScore.remove();
+        }
+
+        const scoreHtml = `<h3 id="total-score-display" class="text-2xl font-bold text-center mb-6">총 ${csatQuizData.length}문제 중 ${totalScore}문제를 맞혔습니다!</h3>`;
+        document.getElementById('csat-quiz-container').insertAdjacentHTML('beforebegin', scoreHtml);
+        document.getElementById('csat-submit-btn').style.display = 'none';
+    });
+    
+    // Initial setup on window load
+    window.onload = function() {
+        document.querySelector('.tab-button').click();
+        setupQuiz(vocabQuizData, 'vocab-quiz-container', 'vocab-result', true);
+        setupCsatQuizClickable(); // Use clickable divs for CSAT quiz
+    };
+</script>
+</body>
+</html>
