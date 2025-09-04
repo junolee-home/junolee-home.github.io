@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>속미인곡 수능형 문제</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FDFBF8;
+            color: #4B4B4B;
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        .passage, .choices-box {
+            background-color: #F7F5F2;
+            border-left: 3px solid #D1C7B8;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .nav-link.active {
+            color: #A0522D;
+            font-weight: 700;
+            transform: scale(1.05);
+        }
+
+        .option {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .option.correct {
+            background-color: #E6F4EA !important;
+            border-color: #5CB85C !important;
+            color: #3C763D;
+            font-weight: 500;
+        }
+
+        .option.incorrect {
+            background-color: #F9EBEB !important;
+            border-color: #D9534F !important;
+            color: #A94442;
+            font-weight: 500;
+        }
+
+        .explanation {
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .sticky-nav {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(253, 251, 248, 0.8);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header id="main-header" class="text-center py-12 transition-all duration-500">
+        <h1 class="text-5xl font-bold text-gray-800">속미인곡</h1>
+        <p class="mt-4 text-lg text-gray-600">정철</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav id="quiz-nav" class="sticky top-0 z-10 border-b border-gray-200/80 transition-shadow duration-300">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex justify-center items-center h-16 space-x-6 sm:space-x-10 text-sm sm:text-base font-medium text-gray-500">
+                <a href="#q1-2" class="nav-link transition-all duration-200 hover:text-amber-800">1~2번</a>
+                <a href="#q3" class="nav-link transition-all duration-200 hover:text-amber-800">3번</a>
+                <a href="#q4" class="nav-link transition-all duration-200 hover:text-amber-800">4번</a>
+                <a href="#q5" class="nav-link transition-all duration-200 hover:text-amber-800">5번</a>
+                <a href="#q6" class="nav-link transition-all duration-200 hover:text-amber-800">6번</a>
+                <a href="#q7-8" class="nav-link transition-all duration-200 hover:text-amber-800">7~8번</a>
+                <a href="#q9" class="nav-link transition-all duration-200 hover:text-amber-800">9번</a>
+                <a href="#q10" class="nav-link transition-all duration-200 hover:text-amber-800">10번</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-4 sm:p-8">
+
+        <!-- Question Group 1-2 -->
+        <section id="q1-2" class="py-16 scroll-mt-16">
+            <h3 class="text-xl font-semibold mb-4 font-serif">[1~2] 다음 글을 읽고 물음에 답하시오.</h3>
+            <div class="passage">
+                <p class="font-serif leading-relaxed">
+                    (여인1) 뎨 가는 뎌 각시 본 듯도 한뎌이고. / 天上(천상) 白玉京(백옥경)을 엇디하야 離別(이별)하고, / 해 다 뎌뎌 저믄 날의 눌을 보라 가시는고.<br>
+                    (여인2) 어와 네여이고 내 사셜 드러 보오. / 내 얼굴 이 거동이 님 괴얌 즉한가마는 / 엇딘디 날 보시고 네로다 녀기실새 / 나도 님을 미더 군뜻이 전혀 업서 / 이래야 교태야 어즈러이 하돗던디 / 반기시는 낮비치 녜와 엇디 다르신고. / 누어 생각하고 니러 안자 헤어하니 / 내 몸의 지은 죄 뫼같이 쌓혀시니 / 하늘히라 원망하며 사람이라 허믈하랴. / 셜워 플텨 헤니 造物(조물)의 타시로다.<br>
+                    (여인1) 글란 생각 마오.<br>
+                    (여인2) 매친 일이 이셔이다. / 님을 모셔 이셔 님의 일을 내 알거니 / 물같은 얼굴이 편하실 적 몇 날일고. / 春寒(춘한)고열(고열)은 엇디하야 디내시며 / 秋日冬川(추일동천)은 뉘라셔 모셨는고. / 粥早飯(죽조반) 朝夕(조석) 뫼 녜와 같이 셰시는가. / 기나긴 밤의 잠은 엇디 자시는고.
+                </p>
+            </div>
+            
+            <div class="question-container mb-12">
+                <h3 class="text-xl font-semibold mb-4 font-serif">1. [하] 윗글의 (여인1)와 (여인2)에 대한 설명으로 가장 적절한 것은?</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① (여인1)는 (여인2)의 신분을 의심하며 경계하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② (여인2)는 (여인1)에게 자신의 과오를 숨기며 변명하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">③ (여인1)는 (여인2)의 하소연을 유도하고 위로하는 역할을 한다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ (여인2)는 (여인1)와의 갈등으로 인해 임과 이별하게 되었다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ (여인1)와 (여인2)는 동일한 인물로, 내적 갈등을 드러낸다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ③<br>해설: (여인1)는 (여인2)에게 말을 걸어 사연을 묻고("눌을 보라 가시는고"), (여인2)의 자책을 만류하며("글란 생각 마오") 위로하는 역할을 한다. 이를 통해 (여인2)의 사연, 즉 작품의 중심 내용이 전개되도록 돕는 보조적 인물이다. ⑤의 경우, (여인1)와 (여인2)는 작가 정철의 분신으로 볼 수 있지만, 작품 내에서는 뚜렷이 구분되는 두 인물이 대화하는 형식으로 되어 있다. 따라서 '동일한 인물'이라는 설명은 적절하지 않다.</p>
+                </div>
+            </div>
+
+            <div class="question-container mb-12">
+                <h3 class="text-xl font-semibold mb-4 font-serif">2. [하] (여인2)가 임과 이별하게 된 원인으로 생각하는 것을 찾아 쓰시오. (두 가지)</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① 하늘의 원망, 사람의 허물</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">② 자신의 죄, 조물의 탓</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">③ 아양과 교태, 춘한고열</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ 자신의 얼굴과 거동, 기나긴 밤</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 군소리, 반기시는 낯빛</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ②<br>해설: (여인2)는 처음에는 자신의 아양과 교태 때문에 임의 마음이 변했다고 생각하며 "내 몸의 지은 죄 뫼같이 쌓혀시니"라고 자책한다. 그러나 이내 "셜워 플텨 헤니 造物(조물)의 타시로다"라고 말하며, 자신의 의지와는 상관없는 운명, 즉 조물주의 탓으로 돌리고 있다. 이는 이별의 슬픔과 억울함을 운명론적 태도로 받아들이려는 심정을 보여준다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 3 -->
+        <section id="q3" class="py-16 scroll-mt-16">
+            <div class="question-container mb-12">
+                <h3 class="text-xl font-semibold mb-4 font-serif">3. [중] &lt;보기&gt;에서 ㉠~㉤에 대한 설명으로 적절하지 <u>않은</u> 것은?</h3>
+                <div class="choices-box text-sm">
+                    <p class="font-bold mb-2">보기</p>
+                    (여인2) ... 님 다히 소식을 아므려나 아쟈 하니, / 오늘도 거의로다 래일이나 사람 올가. / 내 마음 둘 데 업다 어드러로 가쟛 말고. / 잡거니 밀거니 ㉠<u>높은 뫼</u>에 올라가니 / ㉡<u>구름</u>은커니와 ㉢<u>안개</u>는 무슨 일고. / 山川(산천)이 어둡거니 日月(일월)을 엇디 보며 / 지척(지척)을 모르거든 千里(천리)를 바라보랴. / 찰하리 ㉣<u>물가</u>의 가 뱃길히나 보랴 하니 / ㉤<u>바람</u>이야 <u>물결</u>이야 어둥졍 된뎌이고. / 사공은 어데 가고 븬 배만 걸렸나니. / 江天(강천)에 혼자 셔셔 디는 해를 구버보니 / 님다히 소식이 더옥 아득한뎌이고.
+                </div>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① ㉠: 임의 소식을 듣기 위해 화자가 찾아가는 적극적인 공간이다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">② ㉡, ㉢: 화자의 슬픔을 고조시키는 객관적 상관물이다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">③ ㉣: '높은 뫼'와 마찬가지로 임과의 거리감을 확인하게 되는 공간이다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ '사공'은 부재하는 대상으로, 화자의 외로움을 심화시키는 역할을 한다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ ㉡, ㉢, '바람', '물결'은 모두 임에게 가고자 하는 화자를 가로막는 장애물이다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ②<br>해설: '구름'과 '안개'는 임(日月, 즉 임금)을 보지 못하게 가로막는 장애물이다. 당시의 정치적 상황을 고려할 때, 임금의 총명을 가리는 간신들을 상징하는 것으로 해석된다. 화자의 슬픔을 고조시키는 객관적 상관물이라기보다는, 임과의 소통을 방해하는 직접적인 장애물로 보는 것이 더 정확하다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Question 4 -->
+        <section id="q4" class="py-16 scroll-mt-16">
+            <div class="question-container">
+                 <h3 class="text-xl font-semibold mb-4 font-serif">4. [중] &lt;보기&gt;를 바탕으로 윗글을 감상한 내용으로 적절하지 <u>않은</u> 것은?</h3>
+                 <div class="passage">
+                    茅簷(모첨) 찬 자리의 밤듕만 도라오니 / 半壁靑燈(반벽청등)은 눌 위하야 밝았는고. / 오르며 나리며 헤뜨며 바자니니 / 져근덧 력진하야 픗잠을 잠간 드니 / 情誠(정성)이 지극하야 꿈의 님을 보니 / 玉(옥) 같은 얼굴이 半(반)이나마 늘거셰라. / 마음의 머근 말씀 슬카장 사뢰려 하니 / 눈물이 바라 나니 말인들 어이하며 / 情(정)을 못다하야 목이조차 몌여하니 / 어데셔 방정맞은 鷄聲(계성)이 잠은 엇디 깨돗던고.
+                </div>
+                <div class="choices-box">
+                    <p class="font-bold mb-2">보기</p>
+                    <p>꿈은 현실에서 충족되지 못한 소망을 일시적으로 해소하는 문학적 장치이다. 화자는 꿈속에서나마 임을 만남으로써 그리움을 잠시 해소하지만, 꿈에서 깨어남으로써 현실의 슬픔과 절망을 더욱 깊이 깨닫게 된다. 이처럼 꿈은 현실과의 괴리감을 부각하여 화자의 비극적 상황을 심화시키는 역할을 한다.</p>
+                </div>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① '픗잠'과 '꿈'은 화자가 현실의 한계를 벗어나 임을 만나는 계기가 된다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② '玉(옥) 가튼 얼굴이 半(반)이나마 늘거셰라'는 꿈속에서나마 임의 안위를 걱정하는 화자의 마음을 보여준다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">③ '눈물'과 '목이조차 몌여하니'는 임을 만난 반가움과 그동안의 설움이 뒤섞인 복합적인 감정을 드러낸다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">④ '鷄聲(계성)'은 화자가 꿈에서 깨어나 현실의 문제를 해결하려는 의지를 갖게 하는 계기가 된다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-ray-100" data-correct="false">⑤ 꿈에서 깬 후 화자는 임과의 재회가 불가능하다는 절망감을 더욱 크게 느꼈을 것이다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ④<br>해설: '계성(닭 울음소리)'은 화자를 꿈에서 강제로 깨어나게 하는 대상으로, 임과의 짧은 만남마저 방해하는 야속한 존재이다. 이로 인해 화자는 현실의 슬픔과 절망을 더욱 깊이 느끼게 되므로, 문제 해결 의지를 갖게 하는 계기가 된다는 설명은 적절하지 않다. 오히려 그리움과 안타까움을 심화시키는 역할을 한다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 5 -->
+        <section id="q5" class="py-16 scroll-mt-16">
+            <div class="question-container">
+                <h3 class="text-xl font-semibold mb-4 font-serif">5. [상] ㉠과 ㉡에 나타난 화자의 태도 변화를 가장 잘 설명한 것은?</h3>
+                <div class="passage">
+                    (가) 어와, 허사(虛事)로다. 이 님이 어데 간고. / 결의 니러 안자 창(窓)을 열고 바라보니 / 어엿븐 그림재 날 조츨 뿐이로다. / 찰하리 싀여디여 ㉠<u>낙월(落月)</u>이나 되야이셔 / 님 겨신 창(窓) 안에 번드시 비최리라. <br>
+                    (나) (여인1) 각시님 달은커니와 ㉡<u>궂은 비</u>나 되쇼셔.
+                </div>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① 소극적이고 체념적인 태도에서 현실을 긍정하는 적극적인 태도로 변화하였다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② 임에 대한 원망과 그리움이 교차하는 태도에서 임을 완전히 잊으려는 태도로 변화하였다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">③ 죽어서라도 임의 곁에 머물고 싶은 소극적인 사랑에서 자신의 존재를 뚜렷이 드러내고 싶은 적극적인 사랑으로 심화되었다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ 자연물을 통해 자신의 감정을 우회적으로 표현하던 태도에서 임에게 직접적으로 감정을 호소하는 태도로 변화하였다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 임과의 재회를 확신하던 긍정적 태도에서 재회가 불가능함을 깨닫는 절망적 태도로 변화하였다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ③<br>해설: (가)에서 화자(여인2)는 죽어서 '낙월(지는 달)'이 되어 멀리서 임을 비추고 싶다고 말한다. 이는 임에게 직접 다가가지 못하고 멀리서 바라만 보는 소극적인 사랑의 태도를 보여준다. 반면, (나)에서 여인1는 '궂은 비'가 되라고 말한다. '궂은 비'는 창가에 떨어지며 소리를 내고 옷을 적실 수 있는 존재로, 임이 직접적으로 인지할 수 있다. 이는 자신의 존재를 뚜렷이 드러내고 임에게 더 가까이 다가가고픈 적극적인 사랑의 태도를 의미한다. 따라서 화자의 태도는 소극적 사랑에서 적극적 사랑으로 심화되었다고 볼 수 있다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 6 -->
+        <section id="q6" class="py-16 scroll-mt-16">
+            <div class="question-container">
+                 <h3 class="text-xl font-semibold mb-4 font-serif">6. [하] 이 작품에 대한 설명으로 적절하지 <u>않은</u> 것은?</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① 두 여인의 대화 형식으로 시상을 전개하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② 3(4)·4조, 4음보 연속체의 율격을 지닌 가사 문학이다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">③ 자연 친화적인 삶에 대한 소망을 우의적으로 표현하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ 임을 향한 그리움과 변함없는 사랑을 노래하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 우리말의 아름다움을 잘 살린 표현이 돋보인다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ③<br>해설: 이 작품은 임과 이별한 여인의 목소리를 빌려 임금에 대한 변함없는 충성과 그리움을 노래한 '충신연군지사(忠臣戀君之詞)'이다. 자연물은 화자의 정서를 드러내거나 장애물로 등장할 뿐, 자연에 귀의하여 살아가는 삶을 노래하는 작품은 아니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 7-8 -->
+        <section id="q7-8" class="py-16 scroll-mt-16">
+            <h3 class="text-xl font-semibold mb-4 font-serif">[7~8] 다음 글을 읽고 물음에 답하시오.</h3>
+            <div class="passage">
+                (여인2) ... 매친 일이 이셔이다. / 님을 모셔 이셔 님의 일을 내 알거니 / 물같은 얼굴이 편하실 적 몇 날일고. / ㉮<u>春寒(춘한)고열(고열)은 엇디하야 디내시며 / 秋日冬川(추일동천)은 뉘라셔 모셨는고.</u> / 粥早飯(죽조반) 朝夕(조석) 뫼 녜와 같이 셰시는가. / 기나긴 밤의 잠은 엇디 자시는고. <br><br>
+                (여인2) 찰하리 싀여디여 낙월(落月)이나 되야이셔 / 님 겨신 창(窓) 안에 번드시 비최리라. <br>
+                (여인1) ㉯<u>각시님 달은커니와 궂은 비나 되쇼셔.</u>
+            </div>
+
+            <div class="question-container mb-12">
+                <h3 class="text-xl font-semibold mb-4 font-serif">7. [중] ㉮에 드러난 화자의 주된 정서로 가장 적절한 것은?</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① 체념과 달관</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② 원망과 분노</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">③ 염려와 안타까움</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ 자책과 후회</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 기대와 설렘</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ③<br>해설: ㉮ 부분에서 화자(여인2)는 임이 추위와 더위는 잘 지내시는지, 식사는 예전처럼 잘 하시는지, 잠은 잘 주무시는지 등을 세세하게 걱정하고 있다. 이는 임의 곁을 떠나 직접 보살펴 드릴 수 없는 상황에 대한 안타까움과 임의 안위에 대한 깊은 염려를 드러내는 것이다.</p>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <h3 class="text-xl font-semibold mb-4 font-serif">8. [상] ㉯에 대한 해석으로 가장 적절한 것은?</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① '여인2'의 비극적 운명을 암시하며 연민을 드러내고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">② '여인2'의 소극적 사랑을 더 적극적인 방식으로 전환시켜 주고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">③ '여인2'의 헛된 희망을 지적하며 현실을 직시하라고 충고하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ '여인2'의 슬픔에 공감하면서도 임에 대한 원망을 부추기고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ '여인2'의 마음을 돌리기 위해 자연의 섭리를 들어 설득하고 있다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ②<br>해설: '낙월(달)'은 멀리서 잠시 비출 뿐이지만, '궂은 비'는 임의 옷을 적시며 자신의 존재를 직접적으로 알릴 수 있다. '여인1'는 '낙월'이 되겠다는 '여인2'의 소망에 대해, 그보다는 더 적극적으로 임에게 다가갈 수 있는 '궂은 비'가 되라고 제안한다. 이는 작품의 마지막에서 '여인2'의 슬픔과 그리움을 보다 적극적인 사랑의 다짐으로 승화시키는 역할을 한다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 9 -->
+        <section id="q9" class="py-16 scroll-mt-16">
+            <div class="question-container">
+                <h3 class="text-xl font-semibold mb-4 font-serif">9. [중] 이 작품의 시상 전개 방식이 지닌 효과로 가장 적절한 것은?</h3>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① 여러 인물의 시각을 제시하여 사건의 진실을 객관적으로 파악하게 한다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② 시간의 흐름에 따른 인물의 외적 변화를 구체적으로 묘사하여 생동감을 준다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">③ 한 인물의 정서를 다른 인물이 보충, 심화시켜 주제를 효과적으로 드러낸다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">④ 배경 묘사와 인물 심리 서술을 교차하여 낭만적인 분위기를 조성한다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 과거와 현재를 빈번하게 교차하여 서사의 입체감을 높이고 긴장감을 유발한다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ③<br>해설: 이 작품은 중심 화자인 '여인2'가 자신의 사연과 정서를 토로하면, 보조 화자인 '여인1'가 이를 듣고 질문하거나 위로하고, 마지막에는 '여인2'의 소망을 더 높은 차원으로 이끌어주는 대화체로 구성되어 있다. '여인2'의 하소연을 통해 그리움의 정서가 드러나고, '여인1'의 마지막 제안('궂은 비')을 통해 임을 향한 사랑이 심화되면서 '연군지정'이라는 주제가 효과적으로 형상화된다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question 10 -->
+        <section id="q10" class="py-16 scroll-mt-16">
+            <div class="question-container">
+                <h3 class="text-xl font-semibold mb-4 font-serif">10. [상] &lt;보기&gt;와 <속미인곡>을 비교하여 감상한 내용으로 적절하지 <u>않은</u> 것은?</h3>
+                <div class="choices-box">
+                    <p class="font-bold mb-2">보기</p>
+                    <p>이 몸 삼기실 제 님을 조차 삼기시니, / 한생 연분이며 하날 모랄 일이런가. / 나 하나 졈어 잇고 님 하나 날 괴시니, / 이 마음 이 사랑 견졸 대 노여 업다. / 평생애 원하요대 한대 녜자 하얏더니, / 늙거야 므슨 일로 외오 두고 글이난고. / 엊그제 님을 뫼셔 광한뎐의 올랏더니, / 그 더대 엇디하야 하계예 나려오니, / 올 적의 비슨 머리 헛틀언 디 삼 년일쇠. <br> - 정철, <사미인곡></p>
+                </div>
+                <ul class="space-y-3 options-list">
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">① <보기>와 <속미인곡> 모두 여성 화자를 설정하여 임에 대한 그리움을 절실하게 표현하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">② <보기>는 독백체로, <속미인곡>은 대화체로 화자의 정서를 드러내고 있다는 점에서 차이가 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">③ <보기>의 화자는 <속미인곡>의 화자('여인2')와 달리 이별의 원인을 외부에서 찾지 않고 자신의 탓으로 돌리고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="true">④ <보기>에 비해 <속미인곡>은 한자어나 관념적인 표현을 사용하여 화자의 지적인 면모를 부각하고 있다.</li>
+                    <li class="option border rounded-lg p-3 hover:bg-gray-100" data-correct="false">⑤ 두 작품 모두 신하가 임금을 그리워하는 마음을 남녀 간의 사랑에 빗대어 노래한 충신연군지사이다.</li>
+                </ul>
+                <div class="explanation hidden mt-4 p-4 bg-stone-100 rounded-lg">
+                    <h4 class="font-bold text-lg text-amber-900">정답 및 해설</h4>
+                    <p class="mt-2">정답: ④<br>해설: <사미인곡>은 '광한뎐', '하계' 등과 같은 한자어와 관념적 표현, 중국 고사 등을 많이 사용하여 사대부 여성의 목소리를 형상화했다. 반면 <속미인곡>은 일상적인 우리말 표현을 주로 사용하여 상대적으로 소박하고 진솔한 감정을 효과적으로 드러냈다는 평가를 받는다. 따라서 <속미인곡>이 한자어나 관념적 표현을 더 많이 사용했다는 설명은 적절하지 않다. 오히려 그 반대이다.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const optionsLists = document.querySelectorAll('.options-list');
+            const mainHeader = document.getElementById('main-header');
+            const quizNav = document.getElementById('quiz-nav');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            // Header visibility on scroll
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.style.opacity = '0';
+                    mainHeader.style.transform = 'translateY(-20px)';
+                    quizNav.classList.add('shadow-md');
+                } else {
+                    mainHeader.style.opacity = '1';
+                    mainHeader.style.transform = 'translateY(0)';
+                    quizNav.classList.remove('shadow-md');
+                }
+            });
+            
+            // Intersection Observer for active nav link
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+
+            // Quiz interaction logic
+            optionsLists.forEach(list => {
+                const options = list.querySelectorAll('.option');
+                const questionContainer = list.closest('.question-container');
+                const explanation = questionContainer.querySelector('.explanation');
+                
+                list.addEventListener('click', (e) => {
+                    const selectedOption = e.target.closest('.option');
+                    if (!selectedOption || list.classList.contains('answered')) return;
+
+                    list.classList.add('answered'); // Mark as answered
+
+                    const isCorrect = selectedOption.getAttribute('data-correct') === 'true';
+
+                    if (isCorrect) {
+                        selectedOption.classList.add('correct');
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                        const correctOption = list.querySelector('[data-correct="true"]');
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+
+                    if (explanation) {
+                        explanation.classList.remove('hidden');
+                        explanation.style.opacity = 0;
+                        setTimeout(()=> {
+                            explanation.style.opacity = 1;
+                        }, 10);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
