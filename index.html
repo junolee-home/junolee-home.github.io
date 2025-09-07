@@ -174,12 +174,15 @@
             
             // 페이지 로드 시 첫 번째 섹션만 열기
             if (toggleHeaders.length > 0) {
-                toggleHeaders[0].click();
-            }
-        });
+                toggleHeaders.forEach(header => {
+                header.click();
+                });
+            });
+    </script>
     </script>
 </body>
 </html>
+
 
 
 
