@@ -23,6 +23,21 @@
             max-height: 1000px; /* 충분히 큰 값으로 설정 */
             opacity: 1;
         }
+        /* 본문 영역의 a 태그 스타일 */
+        main a {
+            transition: color 0.2s ease-in-out;
+        }
+        main a:hover {
+            color: #4f46e5; /* Tailwind indigo-600 */
+            text-decoration: underline;
+        }
+        /* 문제 링크 등 부가적인 a 태그 스타일 */
+        main .sub-link {
+            color: #6b7280; /* Tailwind gray-500 */
+        }
+         main .sub-link:hover {
+            color: #4f46e5; /* Tailwind indigo-600 */
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -35,7 +50,7 @@
             <p class="text-gray-500 mt-2">차분하게, 꾸준하게 학습 자료를 쌓아갑니다.</p>
         </header>
 
-        <!-- 네비게이션 메뉴 -->
+        <!-- 네비게이션 메뉴 (내부 링크이므로 target=_blank 제외) -->
         <nav class="sticky top-0 bg-gray-50/80 backdrop-blur-sm z-10 py-4 mb-10 border-b border-gray-200">
             <div class="flex justify-between items-center">
                 <div class="flex flex-wrap gap-x-4 gap-y-2">
@@ -46,9 +61,9 @@
                     <a href="#other-writings" class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-full transition-colors">그밖의 글</a>
                 </div>
                 <div class="hidden sm:flex items-center gap-3 text-sm">
-                    <a href="#" target="_blank" class="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">속담A</a>
+                    <a href="속담퀴즈A/속담퀴즈A.html" target="_blank" class="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">속담A</a>
                     <span class="text-gray-300">|</span>
-                    <a href="#" target="_blank" class="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">속담B</a>
+                    <a href="속담퀴즈B/속담퀴즈B.html" target="_blank" class="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">속담B</a>
                 </div>
             </div>
         </nav>
@@ -66,9 +81,9 @@
                 </div>
                 <div class="content-container">
                     <ul class="p-6 space-y-3 border-t border-gray-200">
-                        <li><a href="krdata/공통국어2 학습지-제망매가-주석.html" target="_blank" class="hover:text-indigo-600 hover:underline">제망매가</a></li>
-                        <li><a href="krdata/공통국2 학습지-속미인곡-주석.html" class="hover:text-indigo-600 hover:underline">속미인곡</a> | <a href="#" class="text-sm text-gray-500 hover:text-indigo-600">속미인곡(문제) 📒</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">오백 년 도읍지를</a></li>
+                        <li><a href="krdata/공통국어2 학습지-제망매가-주석.html" target="_blank">제망매가</a></li>
+                        <li><a href="krdata/공통국어2 학습지-속미인곡-주석.html" target="_blank">속미인곡</a> | <a href="krdata/문제002_정철_속미인곡_01.html" target="_blank" class="sub-link text-sm">속미인곡(문제) 📒</a></li>
+                        <li><a href="krdata/공통국어2 학습지-오백 년 도읍지를-주석.html" target="_blank">오백 년 도읍지를</a></li>
                     </ul>
                 </div>
             </section>
@@ -83,8 +98,8 @@
                 </div>
                 <div class="content-container">
                     <ul class="p-6 space-y-3 border-t border-gray-200">
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">춘향전</a> | <a href="#" class="text-sm text-gray-500 hover:text-indigo-600">춘향전(문제) 📒</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">춘향전(2)</a></li>
+                        <li><a href="krdata/공통국어2 학습지-춘향전-주석.html" target="_blank">춘향전</a> | <a href="krdata/춘향전_기출_001.html" target="_blank" class="sub-link text-sm">춘향전(문제) 📒</a></li>
+                        <li><a href="krdata/공통국어2%20학습지-춘향전.html" target="_blank">춘향전(2)</a></li>
                     </ul>
                 </div>
             </section>
@@ -112,9 +127,9 @@
                 </div>
                 <div class="content-container">
                     <ul class="p-6 space-y-3 border-t border-gray-200">
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">봄봄</a> | <a href="#" class="text-sm text-gray-500 hover:text-indigo-600">봄봄(문제) 📒</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">봄봄(k)</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 hover:underline">아홉 켤레의 구두로 남은 사내</a></li>
+                        <li><a href="krdata/공통국어2 학습지-봄봄-주석.html" target="_blank">봄봄</a> | <a href="krdata/문제001_김유정_봄봄_01.html" target="_blank" class="sub-link text-sm">봄봄(문제) 📒</a></li>
+                        <li><a href="krdata/공통국어2 학습지-봄봄.html" target="_blank">봄봄(k)</a></li>
+                        <li><a href="krdata/공통국어2 학습지-아홉 켤레의 구두로 남은 사내.html" target="_blank">아홉 켤레의 구두로 남은 사내</a></li>
                     </ul>
                 </div>
             </section>
@@ -129,8 +144,8 @@
                 </div>
                 <div class="content-container">
                     <ul class="p-6 space-y-3 border-t border-gray-200">
-                        <li><a href="#" class="text-gray-500 hover:text-indigo-600 hover:underline">샘플 자료 1 (추가 예정)</a></li>
-                        <li><a href="#" class="text-gray-500 hover:text-indigo-600 hover:underline">샘플 자료 2 (추가 예정)</a></li>
+                        <li><a href="#" target="_blank">샘플 자료 1 (추가 예정)</a></li>
+                        <li><a href="#" target="_blank">샘플 자료 2 (추가 예정)</a></li>
                     </ul>
                 </div>
             </section>
@@ -151,14 +166,6 @@
                     const content = this.nextElementSibling;
                     const icon = this.querySelector('svg');
 
-                    // 다른 열려있는 섹션들을 닫기 (선택사항)
-                    // toggleHeaders.forEach(otherHeader => {
-                    //     if (otherHeader !== this) {
-                    //         otherHeader.nextElementSibling.classList.remove('open');
-                    //         otherHeader.querySelector('svg').classList.remove('rotate-180');
-                    //     }
-                    // });
-
                     // 현재 클릭된 섹션 토글
                     content.classList.toggle('open');
                     icon.classList.toggle('rotate-180');
@@ -173,5 +180,4 @@
     </script>
 </body>
 </html>
-
 
