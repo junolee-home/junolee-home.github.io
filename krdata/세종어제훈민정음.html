@@ -1,549 +1,172 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>용비어천가</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { margin: 0; padding: 20px; font-family: 'Inter', sans-serif; line-height: 2.0; background-color: #f3f4f6; color: #374151; font-size: 12pt; }
-        .container { max-width: 800px; margin: 20px auto; padding: 30px; background-color: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
-        .header-section { background-color: #f9fafb; padding: 20px 30px; margin: -30px -30px 20px -30px; border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; }
-        .header-section h1 { font-size: 1.875rem; font-weight: 700; color: #1f2937; }
-        .header-section .author-text { font-size: 1.125rem; color: #4b5563; }
-        blockquote { margin: 1em 0; padding: 1rem; border-left-width: 4px; border-color: #93c5fd; font-style: normal; color: #4b5563; background-color: #eef2ff; border-radius: 8px; white-space: pre-wrap; }
-        p { margin-bottom: 1em; }
-        p:last-child { margin-bottom: 0; }
-        mark { padding: 0.2em 0.4em; border-radius: 4px; }
-        .footer-text { text-align: right; color: #6b7280; margin-top: 30px; font-size: 0.9em; }
-        .interactive-abbr { text-decoration: underline dotted; cursor: pointer; color: #1e40af; font-weight: 600; transition: color 0.2s; }
-        .interactive-abbr:hover { color: #F97316; }
-        .problem-wrapper{margin:16px 0;padding:20px;border:2px solid;border-radius:12px}.problem-header{font-size:1.1em;font-weight:700;color:#1e3a8a;margin:-20px -20px 16px;padding:12px 20px;background-color:#fff;border-bottom:2px solid;border-top-left-radius:10px;border-top-right-radius:10px}.problem-example-box{margin:12px 0;padding:12px;border:1px solid #e5e7eb;border-radius:6px;background-color:#fff;font-size:.95em;color:#4b5563}.problem-choices .choice-item{display:flex;align-items:center;margin:1px 0;padding:5px 8px;border-radius:4px;cursor:pointer;transition:background-color .2s,transform .2s}.problem-choices .choice-item:hover{background-color:#eef2ff;transform:translateX(2px)}.problem-choices .choice-item.correct{background-color:#dcfce7!important;color:#166534;font-weight:700}.problem-choices .choice-item.incorrect{background-color:#fee2e2;color:#991b1b}.problem-choices .choice-item .choice-text{text-decoration:none}.problem-choices .choice-item.incorrect .choice-text{text-decoration:line-through}.problem-answer-section{margin-top:16px;padding-top:12px;border-top:1px dashed #d1d5db;font-size:.95em;color:#4b5563}.feedback-message-box{margin-top:12px;padding:10px;border-radius:6px;font-weight:700;text-align:center}.essay-answer-input{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;min-height:80px;margin-top:8px;font-family:inherit;font-size:inherit;color:inherit;line-height:inherit}.check-problem-btn{background-color:#60a5fa;color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;transition:background-color .2s;white-space:nowrap}.check-problem-btn:hover{background-color:#3b82f6}.check-problem-btn:disabled{background-color:#a5b4fc;cursor:not-allowed}.blank-input{border:1px solid #9ca3af;border-radius:4px;padding:2px 4px;text-align:center;width:100px;margin:0 4px}.blank-input.correct{background-color:#dcfce7;border-color:#16a34a}.blank-input.incorrect{background-color:#fee2e2;border-color:#dc2626}.toggle-wrapper{margin:16px 0;border:2px solid;border-radius:12px;transition:background-color .2s;overflow:hidden}.toggle-title{cursor:pointer;padding:12px 20px;font-weight:600;color:#374151;display:flex;justify-content:space-between;align-items:center;list-style:none;background-color:#fff}.toggle-wrapper[open]>.toggle-title{border-bottom:2px solid}.toggle-title::-webkit-details-marker{display:none}.toggle-title::after{content:"▶";font-size:.8em;transition:transform .2s}.toggle-wrapper[open]>.toggle-title::after{transform:rotate(90deg)}.toggle-content{padding:20px;color:#4b5563}.custom-table{width:100%;border-collapse:collapse}.custom-table th,.custom-table td{border:1px solid #93c5fd;padding:8px 12px;text-align:left;vertical-align:top}.custom-table th{background-color:#dbeafe;font-weight:700}.ox-choice.correct{background-color:#dcfce7!important;border-color:#16a34a!important;color:#166534!important}.ox-choice.incorrect{background-color:#fee2e2!important;border-color:#dc2626!important;color:#991b1b!important}.problem-wrapper[data-type=ox-quiz] ol,.problem-wrapper[data-type=fill-blank] ol{list-style:none;padding-left:0}.ox-quiz-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e5e7eb}.ox-quiz-item:last-child{border-bottom:none}.ox-quiz-item .flex-grow{flex-grow:1}.ox-choices{display:flex;align-items:center;gap:8px;margin-left:16px;flex-shrink:0}.ox-choice{width:48px;height:48px;font-size:1.5rem;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;background-color:#e5e7eb;color:#4b5563;cursor:pointer;transition:background-color .2s,transform .2s;border:none}.ox-choice:hover{transform:scale(1.05)}.problem-header.flex-header{display:flex;justify-content:space-between;align-items:center}.retry-btn{font-size:1.2rem;background-color:#e5e7eb;color:#374151;border-radius:9999px;padding:8px;line-height:1;border:none;cursor:pointer}.retry-btn:hover{background-color:#d1d5db}.media-wrapper{width:80%;margin:24px auto}.youtube-container{position:relative;overflow:hidden;width:100%;padding-top:56.25%}.youtube-container iframe{position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;border:none;border-radius:12px}.line-drawing-container{position:relative;display:flex;justify-content:space-between;align-items:flex-start;padding:20px 0;touch-action:none}.line-drawing-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}.line-drawing-list{display:flex;flex-direction:column;gap:16px;z-index:1;width:45%}.line-drawing-item{display:flex;align-items:center;padding:12px 0;border:none;background-color:transparent;font-size:1em}.line-drawing-list.left .line-drawing-item{flex-direction:row;justify-content:space-between}.line-drawing-list.right .line-drawing-item{flex-direction:row;justify-content:flex-start;gap:12px}.line-drawing-item-text{flex-grow:1}.line-drawing-list.left .line-drawing-item-text{text-align:right;margin-right:12px}.line-drawing-list.right .line-drawing-item-text{text-align:left}.connection-point{width:14px;height:14px;background-color:#cbd5e1;border-radius:50%;cursor:pointer;transition:background-color .2s;flex-shrink:0}.connection-point:hover,.connection-point.selected{background-color:#3b82f6}.line-drawing-controls{text-align:right;margin-top:16px}
-	.custom-link {
-   		display: inline-block;
- 		padding: 2px 8px;
-		border: 1px solid #dbeafe;
-     	   border-radius: 8px;
-      	  background-color: #eff6ff;
-     	   color: #3b82f6;
-    	    text-decoration: none;
-    	    font-weight: 500;
-   	     transition: all 0.2s;
-        }
-        .custom-link:hover {
-  	      background-color: #dbeafe;
-	        border-color: #93c5fd;
- 	       transform: translateY(-1px);
-        }
 
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header-section"><h1><i class="fas fa-language mr-2"></i> 용비어천가</h1></div>
-        <div class="main-content-body"><span style="font-size:13pt;font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">조선의 건국을 노래한 장엄한 서사시, 악장(樂章)</span> <br><br>💡 악장은 쉽게 말해 <mark style="background-color: #fef08a;">조선이라는 새로운 나라의 건국을 축하하고, 그 정당성을 널리 알리기 위해</mark> 만들어진 '<mark style="background-color: #fef08a;">국가 공식 찬가</mark>'입니다. 주로 국가의 중요한 제사나 큰 연회에서 음악에 맞추어 불렸습니다.<br>💡 꼭 알아야 할 대표 작품: 용비어천가, 월인천강지곡<br><a href="https://www.youtube.com/watch?v=88-55PsjMMQ" target="_blank" class="custom-link">📒 KBS News | 궁중 예술로 다시 태어난 ‘용비어천가’</a><br><br><br><br><div style="text-align: center;">●●●</div><br><br><!-- [더보기] 용비어천가 교과서 지문 --><details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 용비어천가 교과서 지문</span></summary><div class="toggle-content"><b>용비어천가(龍飛御天歌)</b><br><br>海東(해동) 六龍(육룡)•이 ᄂᆞᄅᆞ•샤 ：일：마다 天福(천복) •이시•니 古聖(고성)•이 同符(동부)•ᄒᆞ시•니   [제1장]<br><br><br>불•휘  기•픈  남•ᄀᆞᆫ  ᄇᆞᄅᆞ•매 아•니  ：뮐•ᄊᆡ  곶  ：됴•코  여•름 •하ᄂᆞ•니<br>：ᄉᆡ•미 기•픈 •므•른 •ᄀᆞᄆᆞ•래 아•니 그•츨•ᄊᆡ  ：내•히 이•러 바•ᄅᆞ•래 •가ᄂᆞ•니     [제2장]<br><br><br><b>현대어 풀이</b><br><br><mark style="background-color: #fef08a;">[제1장]<br></mark>해동의 여섯 용이 나시어, 일마다 하늘의 복이시니 옛날의 성인과 서로 꼭 들어맞으시니.       <br><br><mark style="background-color: #fef08a;">[제2장]<br></mark>뿌리가 깊은 나무는 바람에 아니 움직이므로, 꽃 좋고 열매 많으니.<br>샘이 깊은 물은 가뭄에 아니 그치므로, 내가 이루어져 바다에 가느니. </div></details><br><!-- [더보기] 용비어천가에 대하여 --><details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 용비어천가에 대하여</span></summary><div class="toggle-content">*️⃣ <b>제재 해설</b><br>왕명에 따라 <mark style="background-color: #e5e7eb;">정인지, 권제, 안지 등</mark>이 지은 것으로 세종 27년(1445년)에 편찬되어 세종 29년(1447)에 간행된 <mark style="background-color: #e5e7eb;">악장</mark> 문학 작품이다. 조선을 세우기까지의 <mark style="background-color: #fef08a;">선조들의 공덕</mark>을 기라고 <mark style="background-color: #fef08a;">조선 개국의 정당성</mark>을 밝히고 있다.<br><br>*️⃣ <b>창작 동기</b><br>  ▪️ 새 왕조의 정당성 부각<br>  ▪️훈민정음의 실용성 시험<br>  ▪️후대 왕에 대한 권계<br><br><!-- [유튜브] --><br><div class="media-wrapper"><div class="youtube-container"><iframe src="https://www.youtube.com/embed/aeFu6-a8H3w" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div></div></div></details><br><br><br><div style="text-align: center;">●●●<br></div><br><br><!-- 제목 용비어천가 --><br><span class="interactive-abbr" data-title="💬 용이 날아올라 하늘을 다스림을 노래한다는 뜻.  💡용비어천가의 '용'?  조선을 건국한 태조 이성계를 비롯한 여섯 선조를 상징. 목조-익조-도조-환조-태조 이성계-태종 이방원" data-original-text="용비어천가(龍飛御天歌)"><b style="color: black; font-size: 1.3em;">용비어천가(龍飛御天歌)</b></span><br><br><br>1️⃣ <span class="interactive-abbr" data-title="발해의 동쪽이라는 뜻으로, 예전에 우리나라를 이르던 말" data-original-text="海東(해동)">海東(해동)</span>   <span class="interactive-abbr" data-title="💬 당시 임금인 세종의 여섯 조상을 가리켜 한 말.   💡 목조>익조>도조>환조>(태조 이성계)>태종(이방원)" data-original-text="六龍(육룡)">六龍(육룡)</span>•이   <span class="interactive-abbr" data-title="ᄂᆞᆯ-+-ᄋᆞ-+-샤" data-original-text="ᄂᆞᄅᆞ•샤">ᄂᆞᄅᆞ•샤</span>   ：일：마다    <span class="interactive-abbr" data-title="💬 하늘의 복  💡조선 왕조의 창업이 하늘의 뜻에 의한 역사적 순리라는 점을 주장하여 사대부들의 충성심을 자극하고 민심의 이반을 막고자 함. ➡️ 새 왕조의 정당성 부각" data-original-text="天福(천복)">天福(천복)</span>   •이시•니   <span class="interactive-abbr" data-title="💬 중국의 옛 성인(제왕)  💡육조의 위대함을 중국 제왕들의 사적과 일치시켜 조선 건국의 정당성을 강조함. ➡️ 중국 고사 활용" data-original-text="古聖(고성)">古聖(고성)</span> <span class="interactive-abbr" data-title="비교 부사격 조사(와/과)" data-original-text="•이">•이</span>    <span class="interactive-abbr" data-title="💬부신(符信)이 꼭 들어맞듯 사물이나 현상이 서로 꼭 들어맞다.  💡중국의 고성(古聖)의 사적 = 육조(六祖)의 사적" data-original-text="同符(동부)">同符(동부)</span>•ᄒᆞ시•니   [제1장]<br><br><br><span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">현대어 풀이</span><br>해동의 여섯 용이 나시어, 일마다 하늘의 복이시니 옛날의 성인과 서로 꼭 들어맞으시니.<br><br><details class="toggle-wrapper" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">🗣️ 구절풀이</span></summary><div class="toggle-content"><ul style="list-style-type: none; margin-left: 0; padding-left: 0; margin-top: 10px;"><li><b>용비어천가(龍飛御天歌)</b>: 💬 용이 날아올라 하늘을 다스림을 노래한다는 뜻.  💡용비어천가의 '용'?  조선을 건국한 태조 이성계를 비롯한 여섯 선조를 상징. 목조-익조-도조-환조-태조 이성계-태종 이방원</li><li><b>海東(해동)</b>: 발해의 동쪽이라는 뜻으로, 예전에 우리나라를 이르던 말</li><li><b>六龍(육룡)</b>: 💬 당시 임금인 세종의 여섯 조상을 가리켜 한 말.   💡 목조&gt;익조&gt;도조&gt;환조&gt;(태조 이성계)&gt;태종(이방원)</li><li><b>ᄂᆞᄅᆞ•샤</b>: ᄂᆞᆯ-+-ᄋᆞ-+-샤</li><li><b>天福(천복)</b>: 💬 하늘의 복  💡조선 왕조의 창업이 하늘의 뜻에 의한 역사적 순리라는 점을 주장하여 사대부들의 충성심을 자극하고 민심의 이반을 막고자 함. ➡️ 새 왕조의 정당성 부각</li><li><b>古聖(고성)</b>: 💬 중국의 옛 성인(제왕)  💡육조의 위대함을 중국 제왕들의 사적과 일치시켜 조선 건국의 정당성을 강조함. ➡️ 중국 고사 활용</li><li><b>•이</b>: 비교 부사격 조사(와/과)</li><li><b>同符(동부)</b>: 💬부신(符信)이 꼭 들어맞듯 사물이나 현상이 서로 꼭 들어맞다.  💡중국의 고성(古聖)의 사적 = 육조(六祖)의 사적</li></ul></div></details><blockquote style="background-color: #eef2ff; border-left: 4px solid #93c5fd; padding: 1rem; border-radius: 8px;">📒 <b>[정리 (1장)]</b>: <mark style="background-color: #fecaca;">조선 건국의 정당성</mark><br><p style="margin-left: 30px;">💡 세종의 여섯 조상(육조)이 모두 하늘의 명을 따랐던 중국의 제왕들과 비슷함을 강조하여 여섯 선조도 이와 같이 하늘의 명을 받은 것임을 주장함.</p><br><br>📍<b>1장의 특징</b><br>   ▪️ 중국 고사 활용: <br>        - 육조의 위대함 = 중국 제왕들의 사적. ➡️ 건국의 정당성 강조.<br>   ▪️은유: 육룡 = 조선 창업의 주역인 육조(六祖)<br>   ▪️비교 부사격 조사 '이' : 현대어의 '과/와'<br>   ▪️방점 사용됨.<br>   ▪️주체 높임 선어말 어미 사용: '-샤-', '-시-'<br><!-- [더보기] 부신(符信) --><br><details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 부신(符信)</span></summary><div class="toggle-content">*️⃣ 조선시대 병조 등에서 발행한 여러 가지 신표(信標).<br><br>대개 나뭇조각이나 두꺼운 종잇조각에 글자를 쓰고 증인(證印)을 찍은 뒤에 이것을 두 조각으로 쪼개어 한 조각은 상대자에게 주고 다른 조각은 발행한 쪽에서 보관하였다가 뒷날 사용할 때 서로 맞추어 증거로 삼았다.<br><br><!-- [이미지] --><br><div style="text-align: center; margin: 16px 0;"><img src="https://junolee-home.github.io/images/부신_Gemini_Generated_Image.png" style="max-width: 100%; height: auto; border-radius: 12px; display: inline-block;" alt="삽입된 이미지" /></div> ▪️이미지 설명: 부신(Gemini로 생성한 이미지임)<br></div></details><br></blockquote><br><br><br><div style="text-align: center;">●●●</div><br><br><br>2️⃣ <br><span class="interactive-abbr" data-title="💬 뿌리가   ✨ 불휘+∅(주격조사)" data-original-text="불•휘">불•휘</span>   기•픈   <span class="interactive-abbr" data-title="💬 나무는   💡남ㄱ(나모)+ᄋᆞᆫ" data-original-text="남•ᄀᆞᆫ">남•ᄀᆞᆫ</span>    ᄇᆞᄅᆞ•매   아•니    <span class="interactive-abbr" data-title="💬 움직이므로   💡뮈다: 움직이다   💡뮈-+-ㄹᄊᆡ(이유)" data-original-text="：뮐•ᄊᆡ">：뮐•ᄊᆡ</span>    <span class="interactive-abbr" data-title="꽃" data-original-text="곶">곶</span>   <span class="interactive-abbr" data-title="💬 좋고   💡 (중세 국어에서) ① 둏다: 좋다(好), ② 좋다: 깨끗하다(淨)" data-original-text="：됴•코">：됴•코</span>     <span class="interactive-abbr" data-title="열매" data-original-text="여•름">여•름</span>     <span class="interactive-abbr" data-title="💬 많으니.   💡(중세 국어에서) 하다: 많다(多), ᄒᆞ다: ~을 하다(爲)" data-original-text="•하ᄂᆞ•니">•하ᄂᆞ•니</span><br><span class="interactive-abbr" data-title="💬 ᄉᆡᆷ+이(주격 조사)" data-original-text="：ᄉᆡ•미">：ᄉᆡ•미</span>   기•픈   <span class="interactive-abbr" data-title="💬믈+은  💡믈 > 물 (원순모음화)" data-original-text="•므•른">•므•른</span>   <span class="interactive-abbr" data-title="ᄀᆞᄆᆞᆯ+애(부사격 조사)" data-original-text="•ᄀᆞᄆᆞ•래">•ᄀᆞᄆᆞ•래</span>   아•니   그•츨•ᄊᆡ   <span class="interactive-abbr" data-title="💬 내가   💡내ㅎ+이(주격 조사) " data-original-text="：내•히">：내•히</span>    <span class="interactive-abbr" data-title="이루어져" data-original-text="이•러">이•러</span>    <span class="interactive-abbr" data-title="💬 바다에   💡바ᄅᆞᆯ+애(부사격 조사)" data-original-text="바•ᄅᆞ•래">바•ᄅᆞ•래</span>    •가ᄂᆞ•니      [제2장]<br><br><span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">현대어 풀이</span><br>뿌리가 깊은 나무는 바람에 아니 움직이므로, 꽃 좋고 열매 많으니.<br>샘이 깊은 물은 가뭄에 아니 그치므로, 내가 이루어져 바다에 가느니.<br><br><details class="toggle-wrapper" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">🗣️ 구절풀이</span></summary><div class="toggle-content"><ul style="list-style-type: none; margin-left: 0; padding-left: 0; margin-top: 10px;"><li><b>불•휘</b>: 💬 뿌리가   ✨ 불휘+∅(주격조사)</li><li><b>남•ᄀᆞᆫ</b>: 💬 나무는   💡남ㄱ(나모)+ᄋᆞᆫ</li><li><b>：뮐•ᄊᆡ</b>: 💬 움직이므로   💡뮈다: 움직이다   💡뮈-+-ㄹᄊᆡ(이유)</li><li><b>곶</b>: 꽃</li><li><b>：됴•코</b>: 💬 좋고   💡 (중세 국어에서) ① 둏다: 좋다(好), ② 좋다: 깨끗하다(淨)</li><li><b>여•름</b>: 열매</li><li><b>•하ᄂᆞ•니</b>: 💬 많으니.   💡(중세 국어에서) 하다: 많다(多), ᄒᆞ다: ~을 하다(爲)</li><li><b>：ᄉᆡ•미</b>: 💬 ᄉᆡᆷ+이(주격 조사)</li><li><b>•므•른</b>: 💬믈+은  💡믈 &gt; 물 (원순모음화)</li><li><b>•ᄀᆞᄆᆞ•래</b>: ᄀᆞᄆᆞᆯ+애(부사격 조사)</li><li><b>：내•히</b>: 💬 내가   💡내ㅎ+이(주격 조사) </li><li><b>이•러</b>: 이루어져</li><li><b>바•ᄅᆞ•래</b>: 💬 바다에   💡바ᄅᆞᆯ+애(부사격 조사)</li></ul></div></details><blockquote style="background-color: #eef2ff; border-left: 4px solid #93c5fd; padding: 1rem; border-radius: 8px;">📒 <b>[정리 (2장)]</b>: <mark style="background-color: #fecaca;">조선의 영원을 기원함.</mark><br><p style="margin-left: 30px;">💡 자연물에 상징성을 부여하여 조선의 무궁한 발전을 전망하고 있음.</p><br><!-- [테이블 삽입] 2장에 표현된 구절의 은유적, 상징적 의미 --><br><div class="problem-wrapper" data-type="table-fill-blank" data-answers='["뿌리","바람","열매","샘","바다"]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 2장에 표현된 구절의 은유적, 상징적 의미</span><button class="retry-btn" title="다시 풀기">🔄</button></div><table class="custom-table" style="margin-top: 0.5rem;"><thead><tr><th style="width: 25%;">구절</th><th>의미</th></tr></thead><tbody><tr><td><b><input type="text" class="blank-input" data-blank-index="0" />가 깊은 나무</b></td><td>기초가 튼튼한 나라(조선)</td></tr><tr><td><b><input type="text" class="blank-input" data-blank-index="1" />에 아니 움직이므로</b></td><td>시련에 흔들리지 않고 안정적으로 유지됨</td></tr><tr><td><b>꽃 좋고 <input type="text" class="blank-input" data-blank-index="2" />가 많으니</b></td><td>문화가 발전하고 자손이 번성함</td></tr><tr><td><b><input type="text" class="blank-input" data-blank-index="3" />이 깊은 물</b></td><td>유서가 깊은 나라(조선)</td></tr><tr><td><b>가뭄</b></td><td>시련, 국가의 존립이 위협받는 일</td></tr><tr><td><b>내가 이루어져 <input type="text" class="blank-input" data-blank-index="4" />에 가느니</b></td><td>나라가 영원히 이어짐</td></tr></tbody><tfoot><tr><td colspan="2" style="border: none; padding-top: 1rem; text-align: right;"><div style="display: inline-flex; align-items: center; gap: 10px;" class="problem-controls-wrapper"><div class="table-problem-feedback-area" style="color: #991b1b; font-weight: bold;"></div><button class="check-problem-btn">정답 확인</button></div></td></tr></tfoot></table></div><!-- end-problem-wrapper --><br></blockquote></div>
-        <div class="footer-text">juno v2.52</div>
-    </div>
-    <script>
-        (
-                (function() {
-                    function setupAll() {
-                        function setupInteractiveAbbr() {
-                            const abbrElements = document.querySelectorAll('.interactive-abbr');
-                            let currentPopup = null;
-                            function closePopup() {
-                                if (currentPopup) { currentPopup.remove(); currentPopup = null; }
-                            }
-                            document.body.addEventListener('click', function(event) {
-                                const span = event.target.closest('.interactive-abbr');
-                                if (span) {
-                                    event.stopPropagation();
-                                    closePopup();
-                                    const title = span.dataset.title;
-                                    const originalText = span.dataset.originalText;
-                                    const popupDiv = document.createElement('div');
-                                    popupDiv.style.cssText = "position: absolute; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); padding: 16px; width: 300px; z-index: 1000; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5; color: #334155; word-wrap: break-word;";
-                                    popupDiv.innerHTML = '<div style="font-weight: bold; margin-bottom: 8px; color: #1e40af;">' + originalText + '</div><div>' + title + '</div><button class="close-popup-btn" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 18px; cursor: pointer; color: #64748b;">&times;</button>';
-                                    const rect = span.getBoundingClientRect();
-                                    let top = rect.bottom + window.scrollY + 5;
-                                    let left = rect.left + window.scrollX;
-                                    document.body.appendChild(popupDiv);
-                                    currentPopup = popupDiv;
-                                    if (left + popupDiv.offsetWidth > window.innerWidth) { left = window.innerWidth - popupDiv.offsetWidth - 20; }
-                                    if (top + popupDiv.offsetHeight > window.innerHeight + window.scrollY) { top = rect.top + window.scrollY - popupDiv.offsetHeight - 5; }
-                                    popupDiv.style.top = top + 'px';
-                                    popupDiv.style.left = left + 'px';
-                                    popupDiv.querySelector('.close-popup-btn').addEventListener('click', closePopup);
-                                } else if (currentPopup && !currentPopup.contains(event.target)) {
-                                    closePopup();
-                                }
-                            });
-                            document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closePopup(); } });
-                        }
-                        
-                        function setupInteractiveProblems() {
-                            document.body.addEventListener('click', function(event) {
-                                const target = event.target;
-                                const showFeedback = (message, color, bgColor, context) => {
-                                    // This function is for fill-blank problems and multiple choice.
-                                    let feedbackBox;
+<div style="text-align: center; font-family:HY목각파임B;"><b style="color: #000000; font-size: 1.5em;">世·셰ᇰ宗조ᇰ御·엉製·졩訓·훈民민正·져ᇰ音ᅙᅳᆷ(언해본)</b></div>
 
-                                    // For fill-blank, context is the .fill-blank-item
-                                    const controlContainerInFillBlank = context.querySelector('.problem-controls');
-                                    // For mc, context is the .mc-feedback-container
-                                    const isMcContext = context.classList.contains('mc-feedback-container');
+📒 <b> 훈민정음 언해본</b>
+<p style="padding-left:20px;">   『훈민정음』은 세종 25년(1443)에 창제되고, 세종 28년(1446)에 해례가 완성되어 반포되었는데, 이 해례본을 세종 사후인 세조 5년(1459)에 언해하여 『세종어제훈민정음』이라고 한다. 『훈민정음』에서 한글을 만든 이유와 사용법을 설명한 '예의'편을 우리말로 풀어 놓은 것으로, 『월인석보』에 실려 전해 온다.
+   서문의 '어지'(교과서 수록 부분)에서는 훈민정음의 창제 동기와 목적을 드러내고, '예의'에서는 훈민정음의 자음과 모음 28자의 음가와 운용법을 설명하고 있다.
+   『훈민정음』은 '백성을 가르치는 바른 소리'라는 뜻으로 세종이 창체 당시에 붙인 정식 이름이다.
+  <span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">훈민정음 창제(세종 25년, 1443)</span> 
+       ➡️ 용비어천가 편찬(세종 27년, 1445) 
+  <span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">훈민정음 반포(세종 28년, 1446)</span> 
+       ➡️ 용비어천가 간행(세종 29년, 1447) 
+       ➡️ 세종어제훈민정음(언해본)(세조 5년, 1459)</p>
 
-                                    if (controlContainerInFillBlank) {
-                                        const checkBtn = controlContainerInFillBlank.querySelector('.check-problem-btn');
-                                        feedbackBox = controlContainerInFillBlank.querySelector('.feedback-message-box');
-                                        if (!feedbackBox) {
-                                            feedbackBox = document.createElement('div');
-                                            feedbackBox.className = 'feedback-message-box';
-                                            controlContainerInFillBlank.appendChild(feedbackBox);
-                                        }
-                                        feedbackBox.style.marginTop = '8px';
-                                        feedbackBox.style.marginBottom = '0';
-                                        feedbackBox.style.padding = '8px';
-                                        feedbackBox.style.textAlign = 'center';
-                                        feedbackBox.style.borderRadius = '6px';
-                                        feedbackBox.style.fontSize = '0.9em';
-                                        feedbackBox.style.lineHeight = '1.4';
-                                        if (checkBtn) {
-                                            feedbackBox.style.width = checkBtn.offsetWidth + 'px';
-                                        }
-                                    } else if (isMcContext) {
-                                        feedbackBox = context.querySelector('.feedback-message-box');
-                                        if (!feedbackBox) {
-                                            feedbackBox = document.createElement('div');
-                                            feedbackBox.className = 'feedback-message-box';
-                                            context.innerHTML = ''; // Clear previous message
-                                            context.appendChild(feedbackBox);
-                                        }
-                                    } else { // Fallback for table feedback
-                                        const feedbackArea = context.querySelector('.table-problem-feedback-area');
-                                        if(feedbackArea) {
-                                            feedbackArea.textContent = message;
-                                            feedbackArea.style.color = color;
-                                        }
-                                        return; // Table has its own way of showing feedback text
-                                    }
+<!-- [더보기] 세종어제훈민정음(언해본)과 현대어 풀이 -->
+<details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 세종어제훈민정음(언해본)과 현대어 풀이</span></summary><div class="toggle-content"><b>世·셰ᇰ宗조ᇰ御·엉製·졩訓·훈民민正·져ᇰ音ᅙᅳᆷ</b><br><br>나·랏:말ᄊᆞ·미中듀ᇰ國·귁·에달·아 文문字·ᄍᆞᆼ ·와·로서르ᄉᆞᄆᆞᆺ·디아·니ᄒᆞᆯ·ᄊᆡ·이런젼·ᄎᆞ·로어 ·린 百·ᄇᆡᆨ姓·셔ᇰ·이니르·고·져·호ᇙ·배이·셔·도ᄆᆞ·ᄎᆞᆷ:내제·ᄠᅳ·들 시 ·러펴·디:몯ᄒᆞᇙ·노·미하·니· 라 ·내·이·ᄅᆞᆯ 爲·윙·ᄒᆞ·야 :어 엿·비 너·겨·새·로·스·믈 여·듧 字· ᄍᆞᆼ·ᄅᆞᆯᄆᆡᆼ·ᄀᆞ노·니:사ᄅᆞᆷ:마·다 :ᄒᆡ·ᅇᅧ:수·ᄫᅵ니·겨·날·로·ᄡᅮ·메便뼌安ᅙᅡᆫ·킈ᄒᆞ·고·져ᄒᆞᇙᄯᆞᄅᆞ·미니·라.<br><p style="text-align:right;">-『월인석보』 권 제1, 세조 5년(1459)</p><br><br><b>현대어 풀이</b><br><br>우리나라 말이 중국과 달라 한자와는 서로 통하지 아니하여서, 이런 까닭으로 어리석은 백성이 말하고자 하는 바가 있어도 마침내 제 뜻을 능히 펴지 못하는 사람이 많다. 내가 이것을 위하여 가엾게 여기어 새로 스물여덟 글자를 만드니, 사람들로 하여금 쉽게 익혀서 날마다 쓰는 데 편하게 하고자 할 따름이다.</div></details>
 
-                                    if (feedbackBox) {
-                                        feedbackBox.textContent = message;
-                                        feedbackBox.style.color = color;
-                                        feedbackBox.style.backgroundColor = bgColor;
-                                    }
-                                };
+<!-- [더보기] 핵심 정리 -->
+<details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 핵심 정리</span></summary><div class="toggle-content">*️⃣ 주제: 훈민정음 창제의 동기와 목적<br>*️⃣ 특징<br>   ① 『훈민정음 해례본』의 예의 부분을 한글로 풀이함.<br>   ② 한글 창제 당시 국어의 모습을 생생하게 보여 줌.<br>   ③ 훈민정음 창제 정신을 논리 정연하게 서술하였음.</div></details>
+<a href="https://namu.wiki/w/%ED%9B%88%EB%AF%BC%EC%A0%95%EC%9D%8C%20%ED%95%B4%EB%A1%80%EB%B3%B8" target="_blank" class="custom-link">📒 나무위키 | 훈민정음 해례본</a>
 
 
-                                // Check and Retry Buttons
-                                const checkBtn = target.closest('.check-problem-btn');
-                                const retryBtn = target.closest('.retry-btn');
-                                
-                                if (checkBtn) {
-                                    const wrapper = checkBtn.closest('.problem-wrapper');
-                                    if (!wrapper) return;
-                                    const type = wrapper.dataset.type;
 
-                                    if (type === 'essay') {
-                                        const answerSection = wrapper.querySelector('.problem-answer-section');
-                                        const textarea = wrapper.querySelector('.essay-answer-input');
-                                        answerSection.style.display = 'block';
-                                        checkBtn.style.display = 'none';
-                                        textarea.disabled = true;
-                                    } else if (type === 'fill-blank') {
-                                        const item = checkBtn.closest('.fill-blank-item');
-                                        let attempts = parseInt(item.dataset.attempts || '3', 10);
-                                        if (attempts <= 0) return;
-                                        let allCorrect = true;
-                                        const inputs = item.querySelectorAll('.blank-input');
-                                        const answers = JSON.parse(item.dataset.answers.replace(/&#39;/g, "'") || '[]');
-                                        inputs.forEach((input, index) => {
-                                            const isCorrect = input.value.trim() === answers[index];
-                                            input.classList.toggle('correct', isCorrect);
-                                            input.classList.toggle('incorrect', !isCorrect);
-                                            if (!isCorrect) allCorrect = false;
-                                        });
-                                        if (allCorrect) {
-                                            showFeedback('정답입니다! 🎉', '#166534', '#dcfce7', item);
-                                            inputs.forEach(input => { input.disabled = true; });
-                                            checkBtn.style.display = 'none';
-                                        } else {
-                                            attempts--;
-                                            item.dataset.attempts = attempts;
-                                            if (attempts > 0) {
-                                                showFeedback('오답이 있습니다. (' + attempts + '번 남음)', '#991b1b', '#fee2e2', item);
-                                            } else {
-                                                showFeedback('아쉬워요. 정답을 확인해보세요! 💪', '#991b1b', '#fee2e2', item);
-                                                inputs.forEach((input, i) => {
-                                                    if (!input.classList.contains('correct')) {
-                                                        input.value = answers[i] || '';
-                                                    }
-                                                    input.disabled = true;
-                                                });
-                                                checkBtn.style.display = 'none';
-                                            }
-                                        }
-                                    } else if (type === 'table-fill-blank') {
-                                        let attempts = parseInt(wrapper.dataset.attempts || '3', 10);
-                                        if (attempts <= 0) return;
-                                        let allCorrect = true;
-                                        const inputs = wrapper.querySelectorAll('.blank-input');
-                                        const answers = JSON.parse(wrapper.dataset.answers.replace(/&#39;/g, "'") || '[]');
-                                        inputs.forEach((input, index) => {
-                                            const isCorrect = input.value.trim() === answers[index];
-                                            input.classList.toggle('correct', isCorrect);
-                                            input.classList.toggle('incorrect', !isCorrect);
-                                            if (!isCorrect) allCorrect = false;
-                                        });
-                                        const context = wrapper.querySelector('.problem-controls-wrapper') || wrapper;
-                                        if (allCorrect) {
-                                            showFeedback('정답입니다! 🎉', '#166534', '#dcfce7', context);
-                                            inputs.forEach(input => { input.disabled = true; });
-                                            checkBtn.style.display = 'none';
-                                        } else {
-                                            attempts--;
-                                            wrapper.dataset.attempts = attempts;
-                                            if (attempts > 0) {
-                                                showFeedback('오답이 있습니다. (' + attempts + '번 남음)', '#991b1b', '#fee2e2', context);
-                                            } else {
-                                                showFeedback('아쉬워요. 정답을 확인해보세요! 💪', '#991b1b', '#fee2e2', context);
-                                                inputs.forEach((input, i) => {
-                                                    if (!input.classList.contains('correct')) {
-                                                        input.value = answers[i] || '';
-                                                    }
-                                                    input.disabled = true;
-                                                });
-                                                checkBtn.style.display = 'none';
-                                            }
-                                        }
-                                    }
-                                }
+<div style="text-align: center;">●<br>●<br>●</div>
 
-                                if (retryBtn) {
-                                    const wrapper = retryBtn.closest('.problem-wrapper');
-                                    if (!wrapper) return;
-                                    const type = wrapper.dataset.type;
+<!-- [더보기] 〈世·셰ᇰ宗조ᇰ御·엉製·졩訓·훈民민正·져ᇰ音ᅙᅳᆷ〉의 뜻 -->
+<details class="toggle-wrapper" data-type="toggle-content" style="background-color: #eff6ff; border-color: #93c5fd;"><summary class="toggle-title" style="border-color: #93c5fd;"><span style="margin-right: auto;">📖 〈世·셰ᇰ宗조ᇰ御·엉製·졩訓·훈民민正·져ᇰ音ᅙᅳᆷ〉의 뜻</span></summary><div class="toggle-content">*️⃣ 제목 뜻: 세종 대왕께서 만드신, 백성을 가르치는 바른 소리.<br>*️⃣ 글자 풀이<br>   ▪️<b>世·셰ᇰ宗조ᇰ</b>: <span style="text-decoration: underline; text-decoration-color: red; text-decoration-thickness: 2px;">세종은 묘호(廟號)</span>로 '종묘에 신위를 모실 때 붙이는 이름'. 그러므로 이 글은 세종 사후에 씌어진 것임을 알 수 있다.<br>   ▪️<b>御·엉製·졩</b>: 임금이 직접 지은 글.<br>   ▪️<b>訓·훈民민正·져ᇰ音ᅙᅳᆷ</b><br>       ① 글자 이름<br>       ② 책 이름<br></div></details>
 
-                                    if (type === 'essay') {
-                                        wrapper.querySelector('.essay-answer-input').value = '';
-                                        wrapper.querySelector('.essay-answer-input').disabled = false;
-                                        wrapper.querySelector('.problem-answer-section').style.display = 'none';
-                                        wrapper.querySelector('.check-problem-btn').style.display = 'inline-block';
-                                    } else if (type === 'fill-blank') {
-                                        wrapper.querySelectorAll('.fill-blank-item').forEach(item => {
-                                            item.dataset.attempts = '3';
-                                            item.querySelectorAll('.blank-input').forEach(input => {
-                                                input.value = '';
-                                                input.classList.remove('correct', 'incorrect');
-                                                input.disabled = false;
-                                            });
-                                            const btn = item.querySelector('.check-problem-btn');
-                                            if (btn) btn.style.display = 'inline-block';
-                                            const feedbackBox = item.querySelector('.feedback-message-box');
-                                            if(feedbackBox) feedbackBox.remove();
-                                        });
-                                    } else if (type === 'table-fill-blank') {
-                                        wrapper.dataset.attempts = '3';
-                                        wrapper.querySelectorAll('.blank-input').forEach(input => {
-                                            input.value = '';
-                                            input.classList.remove('correct', 'incorrect');
-                                            input.disabled = false;
-                                        });
-                                        const btn = wrapper.querySelector('.check-problem-btn');
-                                        if(btn) btn.style.display = 'inline-block';
-                                        const feedbackArea = wrapper.querySelector('.table-problem-feedback-area');
-                                        if (feedbackArea) feedbackArea.textContent = '';
-                                    } else if (type === 'ox-quiz') {
-                                        wrapper.querySelectorAll('.ox-quiz-item').forEach(item => {
-                                            item.querySelectorAll('.ox-choice').forEach(choice => {
-                                                choice.classList.remove('correct', 'incorrect');
-                                                choice.disabled = false;
-                                                choice.innerHTML = choice.classList.contains('o-btn') ? 'O' : 'X';
-                                            });
-                                        });
-                                    } else if (type === 'multiple-choice') {
-                                        wrapper.dataset.attempts = '2';
-                                        wrapper.dataset.solved = 'false';
-                                        wrapper.querySelectorAll('.choice-item').forEach(c => {
-                                            c.classList.remove('correct', 'incorrect');
-                                            c.style.pointerEvents = 'auto';
-                                        });
-                                        wrapper.querySelector('.problem-answer-section').style.display = 'none';
-                                        wrapper.querySelector('.mc-feedback-container').innerHTML = '';
-                                    }
-                                }
+<b>世·셰ᇰ宗조ᇰ御·엉製·졩訓·훈民민正·져ᇰ音ᅙᅳᆷ</b>
 
-                                // OX Quiz Choices
-                                const oxChoice = target.closest('.ox-choice');
-                                if (oxChoice) {
-                                    const item = oxChoice.closest('.ox-quiz-item');
-                                    if (item.querySelector('.ox-choice[disabled]')) return;
-                                    
-                                    const correctAnswer = item.dataset.correctAnswer;
-                                    const selectedAnswer = oxChoice.classList.contains('o-btn') ? 'O' : 'X';
-                                    const isCorrect = selectedAnswer === correctAnswer;
-                                    
-                                    item.querySelectorAll('.ox-choice').forEach(btn => {
-                                        btn.disabled = true;
-                                        if ((btn.classList.contains('o-btn') && correctAnswer === 'O') || (btn.classList.contains('x-btn') && correctAnswer === 'X')) {
-                                            btn.classList.add('correct');
-                                            btn.innerHTML = '✅';
-                                        }
-                                    });
+1️⃣ <span class="interactive-abbr" data-title="나라+ㅅ+말ᄊᆞᆷ+이(주격조사)" data-original-text="나·랏:말ᄊᆞ·미">나·랏:말ᄊᆞ·미</span>   中<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">듀ᇰ</span>國·<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">귁</span>·<span class="interactive-abbr" data-title="~과(와). 비교 부사격 조사" data-original-text="에">에</span>   <span class="interactive-abbr" data-title="다ᄅᆞ+아>달아" data-original-text="달·아">달·아</span>   <span class="interactive-abbr" data-title="여기서의 '문자'는 '한자'를 의미함. 당시에 조선은 말은 있었으나 문자가 없던 시절이었음." data-original-text="文문字·ᄍᆞᆼ">文문字<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">·ᄍᆞᆼ</span></span> ·와·로 서르  <span class="interactive-abbr" data-title="💬 ᄉᆞᄆᆞᆾ다(종성 ‘ㅊ’이 ‘ㅅ’으로 표기됨.)  📌8종성법이 사용됨(‘ㄱ,ㄴ,ㄷ,ㄹ,ㅁ,ㅂ,ㅅ,ㆁ’의 8개의 자음만 받침으로 표기하는 방식)" data-original-text="ᄉᆞᄆᆞᆺ·디">ᄉᆞᄆᆞᆺ·디</span>   <span class="interactive-abbr" data-title="💬 ~하므로. ~하여서.  📌 ᄒᆞ-+-ㄹᄊᆡ(이유를 나타내는 종속적 연결 어미)" data-original-text="아·니ᄒᆞᆯ·ᄊᆡ">아·니ᄒᆞᆯ·ᄊᆡ</span>
 
-                                    if (!isCorrect) {
-                                        oxChoice.classList.add('incorrect');
-                                        oxChoice.innerHTML = '❌';
-                                    }
-                                }
 
-                                // Multiple Choice
-                                const mcChoice = target.closest('.choice-item');
-                                if (mcChoice) {
-                                    const wrapper = mcChoice.closest('.problem-wrapper');
-                                    let solved = wrapper.dataset.solved === 'true';
-                                    if (solved || mcChoice.classList.contains('incorrect')) return;
+2️⃣ ·이런  <span class="interactive-abbr" data-title="(고유어) 까닭, 이유" data-original-text="젼·ᄎᆞ">젼·ᄎᆞ</span>·로   <span class="interactive-abbr" data-title="💬 의미 이동.  📌 어리석다 → (나이가) 어리다" data-original-text="어·린"><span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">어·린</span></span> 百·ᄇᆡᆨ姓·셔ᇰ·이   <span class="interactive-abbr" data-title="💬 이르고자, 말고고자.   📌 두음법칙이 적용되지 않음(니르다>이르다)" data-original-text="니르·고·져">니르·고·져</span>  ·호ᇙ  ·<span class="interactive-abbr" data-title="💬바가.    📌 바+ㅣ(주격조사)  💬 '바+ㅣ'처럼 현대 국어의 주격 조사 '가'가 쓰일 자리에 'ㅣ'가 쓰임.  💬 주격 조사 '가'는 근대 이후에 등장함." data-original-text="배">배</span>   <span class="interactive-abbr" data-title="💬있어도.   📌 이시다(有) > 이ㅅ다 > 있다" data-original-text="이·셔·도">이·셔·도</span>
+     ᄆᆞ·ᄎᆞᆷ:내 제 ·ᄠᅳ·들  <span class="interactive-abbr" data-title="💬 능히" data-original-text="시·러">시·러</span>   <span class="interactive-abbr" data-title="📌 구개음화가 적용되지 않음" data-original-text="펴·디">펴·디</span>  :몯ᄒᆞᇙ  ·<span class="interactive-abbr" data-title="💬 사람이.   📌 놈+이(주격조사)   ✨ 의미 축소(사람이나 인간, 특히 남성 → 특정 대상을 낮잡아 부르는 부정적인 의미)" data-original-text="노·미"><span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">노·미</span></span>  <span class="interactive-abbr" data-title="💬 많으니라.   📌 하다: 많다(多),  📌 ᄒᆞ다: ~을 하다(爲)" data-original-text="💬 하·니· 라">하·니· 라</span>
+     <span class="interactive-abbr" data-title="💬 세종.   📌 나+ㅣ(주격조사)" data-original-text="·내">·내</span>  ·이·<span class="interactive-abbr" data-title="목적격 조사" data-original-text="ᄅᆞᆯ">ᄅᆞᆯ</span>  爲·<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">윙</span>·ᄒᆞ·야   <span class="interactive-abbr" data-title="💬 가엾게, 불쌍하게.    📌의미의 이동(가엾다, 불쌍하다 → 예쁘다)" data-original-text=":어 엿·비">:<span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">어 엿·비</span></span>   <span class="interactive-abbr" data-title="💬 여기어.   📌 두음법칙이 적용되지 않음." data-original-text="너·겨">너·겨</span>
 
-                                    let attempts = parseInt(wrapper.dataset.attempts || '2', 10);
-                                    const isCorrect = mcChoice.dataset.correct === 'true';
-                                    const answerSection = wrapper.querySelector('.problem-answer-section');
-                                    const feedbackContainer = wrapper.querySelector('.mc-feedback-container');
 
-                                    if (isCorrect) {
-                                        showFeedback('정답입니다! 🎉', '#166534', '#dcfce7', feedbackContainer);
-                                        mcChoice.classList.add('correct');
-                                        wrapper.dataset.solved = 'true';
-                                        wrapper.querySelectorAll('.choice-item').forEach(c => c.style.pointerEvents = 'none');
-                                        if(answerSection) answerSection.style.display = 'block';
-                                    } else {
-                                        attempts--;
-                                        wrapper.dataset.attempts = attempts;
-                                        mcChoice.classList.add('incorrect');
-                                        mcChoice.style.pointerEvents = 'none';
+3️⃣ ·새·로  ·스·믈 여·듧 字· <span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">ᄍᆞᆼ</span>·ᄅᆞᆯ   <span class="interactive-abbr" data-title="💬 만드니   📌 ᄆᆡᇰᄀᆞᆯ+ᄂᆞ+오+니 [💬 참고: 어간 + 선어말어미(시상 표지) + 선어말어미(상대 높임·연결 표지) + 종결어미(설명형) ] " data-original-text="ᄆᆡᆼ·ᄀᆞ노·니">ᄆᆡᆼ·ᄀᆞ노·니</span>
 
-                                        if (attempts > 0) {
-                                            showFeedback('아쉽네요. 1번의 기회가 남았어요.', '#991b1b', '#fee2e2', feedbackContainer);
-                                        } else {
-                                            showFeedback('오답입니다. 정답을 확인해보세요.', '#991b1b', '#fee2e2', feedbackContainer);
-                                            const correctChoice = wrapper.querySelector('.choice-item[data-correct="true"]');
-                                            if(correctChoice) correctChoice.classList.add('correct');
-                                            wrapper.dataset.solved = 'true';
-                                            wrapper.querySelectorAll('.choice-item').forEach(c => c.style.pointerEvents = 'none');
-                                            if(answerSection) answerSection.style.display = 'block';
-                                        }
-                                    }
-                                }
-                            });
-                        }
 
-                        function setupLineDrawingQuizzes() {
-                            document.querySelectorAll('.problem-wrapper[data-type="line-drawing-quiz"]').forEach(wrapper => {
-                                const container = wrapper.querySelector('.line-drawing-container');
-                                const canvas = wrapper.querySelector('.line-drawing-canvas');
-                                const ctx = canvas.getContext('2d');
-                                const rightList = wrapper.querySelector('.line-drawing-list.right');
-                                const checkBtn = wrapper.querySelector('.check-problem-btn');
-                                const retryBtn = wrapper.querySelector('.retry-btn');
-                                
-                                let isDrawing = false;
-                                let lineStartPoint = null;
-                                let drawnLines = [];
-                                let isSolved = false;
+4️⃣ :사ᄅᆞᆷ:마·다   <span class="interactive-abbr" data-title="하여금" data-original-text=":ᄒᆡ·ᅇᅧ">:ᄒᆡ·ᅇᅧ</span>  :<span class="interactive-abbr" data-title="💬 쉬이, 쉽게. 'ㅸ(순경음 ㅂ, 입술가벼운 소리 ㅂ)이 사용됨.  📌 15c에는 '쉽다'에 해당하는 단어로 '숩다'와 '쉽다'가 모두 있었음.  📌 숩-(어간) + 이(부사형 접미사) > 수·ᄫᅵ > 쉬이" data-original-text="수·ᄫᅵ">수·ᄫᅵ</span>  <span class="interactive-abbr" data-title="익혀서" data-original-text="니·겨">니·겨</span>  ·날·로  <span class="interactive-abbr" data-title="💬 씀에(사용함에)   📌 ᄡᅳ- + -움(명사형 전성어미) + 에(부사격 조사)" data-original-text="·ᄡᅮ·메">·ᄡᅮ·메</span>  便<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">뼌</span>安<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">ᅙᅡᆫ</span>·킈  ᄒᆞ·고·져  ᄒᆞᇙ  <span class="interactive-abbr" data-title="💬 따름이다   📌 ᄯᅡᄅᆞᆷ+이(서술격 조사) + 니라(다)(종결 어미)" data-original-text="ᄯᆞᄅᆞ·미니·라">ᄯᆞᄅᆞ·미니·라</span>
+<div style="text-align: right;">- 『월인석보』 권 제1, <span class="interactive-abbr" data-title="15c 국어의 모습을 알 수 있다." data-original-text="세조 5년(1459)">세조 5년(1459)</span></div>
 
-                                const alignHeights = () => {
-                                    const leftItems = Array.from(wrapper.querySelectorAll('.line-drawing-list.left .line-drawing-item'));
-                                    const rightItems = Array.from(wrapper.querySelectorAll('.line-drawing-list.right .line-drawing-item'));
+<span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">        </span> 동국정운식 표기             <span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">        </span> 의미가 변한 어휘
 
-                                    leftItems.forEach(item => item.style.minHeight = '');
-                                    rightItems.forEach(item => item.style.minHeight = '');
 
-                                    requestAnimationFrame(() => {
-                                        const rightItemsById = new Map();
-                                        rightItems.forEach(item => rightItemsById.set(item.dataset.id, item));
 
-                                        leftItems.forEach(leftItem => {
-                                            const rightItem = rightItemsById.get(leftItem.dataset.id);
-                                            if (rightItem) {
-                                                const leftHeight = leftItem.offsetHeight;
-                                                const rightHeight = rightItem.offsetHeight;
-                                                const maxHeight = Math.max(leftHeight, rightHeight);
-                                                leftItem.style.minHeight = `${maxHeight}px`;
-                                                rightItem.style.minHeight = `${maxHeight}px`;
-                                            }
-                                        });
-                                    });
-                                };
-                                
-                                const getPointCoords = (pointEl) => {
-                                    const rect = pointEl.getBoundingClientRect();
-                                    const containerRect = container.getBoundingClientRect();
-                                    return {
-                                        x: rect.left - containerRect.left + rect.width / 2,
-                                        y: rect.top - containerRect.top + rect.height / 2,
-                                    };
-                                };
+<b style="color: #000000; font-size: 1.125em;">현대어 풀이</b>
+<mark style="background-color: #fecaca;"><span class="interactive-abbr" data-title="음운•어휘•문법 체계가 다름" data-original-text="우리나라 말이 중국과 달라">우리나라 말이 중국과 달라</span> 한자와는 서로 통하지 아니하여서 <span class="interactive-abbr" data-title="자주 정신" data-original-text="1️⃣">1️⃣</span></mark>,   이런 까닭으로 어리석은 백성이 말하고자 하는 바가 있어도 마침내 제 뜻을 능히 펴지 못하는 사람이 많다.    <mark style="background-color: #fef08a;">내가 이것을 위하여 가엾게 여기어 <span class="interactive-abbr" data-title="애민 정신" data-original-text="2️⃣">2️⃣</span></mark>     <mark style="background-color: #bfdbfe;">새로 스물여덟 글자를 만드니, <span class="interactive-abbr" data-title="창조 정신" data-original-text="3️⃣">3️⃣</span></mark>    <mark style="background-color: #bbf7d0;">사람들로 하여금 쉽게 익혀서 날마다 쓰는 데 편하게 하고자 할 따름이다. <span class="interactive-abbr" data-title="실용 정신" data-original-text="4️⃣">4️⃣</span></mark>
 
-                                const drawLine = (startCoords, endCoords, color = '#60a5fa', width = 4) => {
-                                    ctx.beginPath();
-                                    ctx.moveTo(startCoords.x, startCoords.y);
-                                    ctx.lineTo(endCoords.x, endCoords.y);
-                                    ctx.strokeStyle = color;
-                                    ctx.lineWidth = width;
-                                    ctx.lineCap = 'round';
-                                    ctx.stroke();
-                                };
+<blockquote style="background-color: #eef2ff; border-left: 4px solid #93c5fd; padding: 1rem; border-radius: 8px;">📒<b>내용 정리</b>
 
-                                const redrawAllLines = (showResult = false) => {
-                                    if(!canvas.width || !canvas.height) return;
-                                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                                    drawnLines.forEach(line => {
-                                        const startEl = container.querySelector(`.connection-point[data-side="left"][data-id="${line.leftId}"]`);
-                                        const endEl = container.querySelector(`.connection-point[data-side="right"][data-id="${line.rightId}"]`);
-                                        if (startEl && endEl) {
-                                            const startCoords = getPointCoords(startEl);
-                                            const endCoords = getPointCoords(endEl);
-                                            let color = '#60a5fa';
-                                            if (showResult) {
-                                                color = line.leftId === line.rightId ? '#22c55e' : '#ef4444';
-                                            }
-                                            drawLine(startCoords, endCoords, color, showResult ? 6 : 4);
-                                        }
-                                    });
-                                };
+📍 <b>훈민정음 창제 정신</b>
+   ▪️창제 동기
+       1️⃣ 자주 정신: 우리말  중국말의 다름을 인식함. 그러므로 문자도 달라야 함.
+       2️⃣ 애민 정신: 문자 생활을 하지 못하는 백성들을 가엾게 여김
+       3️⃣ 새로 28자를 만듦.
+    ▪️창제 목적
+       4️⃣ 실용 정신: 모든 사람들이 쉽게 배우고 편하게 쓰도록 함.
 
-                                const resizeCanvas = () => {
-                                    if(container.clientWidth > 0 && container.clientHeight > 0) {
-                                      canvas.width = container.clientWidth;
-                                      canvas.height = container.clientHeight;
-                                      alignHeights();
-                                      redrawAllLines(isSolved);
-                                    }
-                                };
+📍 <b>동국정운식 표기</b>   <span style="font-weight: bold; border: 2px solid #FBBF24; padding: 1px 4px; border-radius: 4px; background-color:#FEF08A;">       </span>
+    ▪️한자음을 중국 원음에 가깝게 표기함.
+    ▪️받침이 없는 글자는 형식적인 종성을 사용함.
+     <mark style="background-color: #e5e7eb;">💬 개념: 우리날 최초의 음운서인 『동국정운』의 내용에 따라 우리의 현실 한자음을 중국 원음에 가깝도록 훈민정음의 초성, 중성, 종성을 모두 갖추어서 표기하는 방법. (예) 한자 '字'는 실제로는 '자'로 발음되지만 종성(받침 자리)에 형식적인 종성 'ㅇ'을 갖추어 'ᄍᆞᆼ'으로 표기함.</mark>
 
-                                const getEventCoords = (e) => {
-                                    const rect = container.getBoundingClientRect();
-                                    const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-                                    const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-                                    return { x: clientX - rect.left, y: clientY - rect.top };
-                                }
-                                
-                                const getEndEventCoords = (e) => {
-                                    const rect = container.getBoundingClientRect();
-                                    const clientX = e.clientX || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
-                                    const clientY = e.clientY || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
-                                    return { clientX, clientY, x: clientX - rect.left, y: clientY - rect.top };
-                                }
+📍 <b>현대 국어에서 의미가 변한 어휘</b>     <span style="font-weight: bold; border: 2px solid #34D399; padding: 1px 4px; border-radius: 4px; background-color:#A7F3D0;">        </span>
+    ▪️ 어·린 : 어리석은 → (나이가) 적은  (의미의 이동)
+    ▪️ 놈 : (보통) 사람 → '사람'(특히 남성을)을 낮춰 부르는 말. 부정적 의미  
+              (의미의 축소)
+    ▪️ 어엿비 : 가엾게, 불쌍하게 → 예쁘게, 어여쁘게   (의미의 이동)
 
-                                const handleMove = (e) => {
-                                    if (!isDrawing || !lineStartPoint) return;
-                                    e.preventDefault();
-                                    const coords = getEventCoords(e);
-                                    redrawAllLines();
-                                    const startCoords = getPointCoords(lineStartPoint);
-                                    drawLine(startCoords, coords);
-                                };
+📍 <b>8종성법</b> 
+  중세 국어에서 종성에 발음될 수 있는 자음은 <mark style="background-color: #e5e7eb;">8개(ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㆁ)</mark>이고 <mark style="background-color: #e5e7eb;">표기에서도 8개만을 표시</mark>한다.
+  (예) ᄉᆞᄆᆞᆺ디 (‘ᄉᆞᄆᆞᆾ디' > 'ᄉᆞᄆᆞᆺ디'다’.  종성 ‘ㅊ’이 발음 나는 대로 ‘ㅅ’으로 표기됨)     
+   *참고: 현대 국어에서 종성에 발음될 수 있는 자음은 7개(ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅇ)
+  (참고) '용비어천가'의 '곶[花]': 원래 형태인 ‘곶’을 밝혀 적음.
+           ➡️ 「용비어천가」에서는 8종성법이 정착되기 이전 모습이 보임. 
 
-                                const handleEnd = (e) => {
-                                    if (!isDrawing || !lineStartPoint) return;
-                                    e.preventDefault();
-                                    
-                                    const endCoords = getEndEventCoords(e);
-                                    const endPointEl = document.elementFromPoint(endCoords.clientX, endCoords.clientY);
-                                    const endPoint = endPointEl ? endPointEl.closest('.connection-point') : null;
+📍 <b>성조(聲調)</b> - 소리의 높낮이
+   ▪️글자의 왼쪽에 방점을 찍어 소리의 높낮이를 표시한 것.
+   ▪️16세기 말엽에 소멸됨.
+   ▪️ 중세 국어에서 상성이었던 음절은 대부분 현대 국어의 장음으로 남아 있음.
+    (1) 평성: 방점 없음, 낮은 소리     (예) 나,  ᄊᆞ
+    (2) 거성: 방점 1개,  높은 소리     (예) ·랏 , ·미 
+    (3) 상성: 방점 2개, 낮다가 높아지는 소리    (예) :말
 
-                                    if (endPoint && endPoint !== lineStartPoint && endPoint.dataset.side !== lineStartPoint.dataset.side) {
-                                        const leftId = lineStartPoint.dataset.side === 'left' ? lineStartPoint.dataset.id : endPoint.dataset.id;
-                                        const rightId = lineStartPoint.dataset.side === 'right' ? lineStartPoint.dataset.id : endPoint.dataset.id;
-                                        
-                                        drawnLines = drawnLines.filter(line => line.leftId !== leftId && line.rightId !== rightId);
+📍 <b>이어적기, 끊어적기</b> 
+     15세기에는 이어적기가 널리 사용되었으나, 16세기에는 끊어적기가 확대되어 
+     이어적기와 끊어적기가 함께 나타났다.
+    ▪️이어적기(연철): 소리나는 대로 적는 것.  (예) 말ᄊᆞ·미 , 기・픈,  ・ᄀᆞᄆᆞ・래
+    ▪️끊어적기(분철): 형태소의 모습을 밝혀 적는 것   (예) 몸이며, 들온
 
-                                        drawnLines.push({ leftId, rightId });
-                                    }
-                                    
-                                    lineStartPoint.classList.remove('selected');
-                                    lineStartPoint = null;
-                                    isDrawing = false;
-                                    
-                                    window.removeEventListener('mousemove', handleMove);
-                                    window.removeEventListener('mouseup', handleEnd);
-                                    window.removeEventListener('touchmove', handleMove);
-                                    window.removeEventListener('touchend', handleEnd);
+📍어두 자음군과 합용 병서
+   중세 국어의 어두 자음군은 <b style="color: #ef4444; font-size: 1.125em;">소리의 개념</b>으로 'ㅳ'처럼 초성에서 <b style="color: #ef4444; font-size: 1.125em;">두 개 이상의 자음이 소리 나는 것</b>을 말한다. 이러한 어두 자음군을 표기하는 방식을 <b style="color: #ef4444; font-size: 1.125em;">합용 병서</b>라고 한다. 한편, 'ㅆ'처럼 같은 자음을 나란히 쓰는 것을 <b style="color: #ef4444; font-size: 1.125em;">각자 병서</b>라고 한다.</mark>
+     [표기 방식 - 병서]  
+       ▪️합용 병서 : ㅂ계(ㅳ, ㅄ, ㅶ, ㅷ),  ㅄ계(ㅴ, ㅵ),  ㅅ계(ㅺ,ㅼ,ㅽ)
+       ▪️각자 병서 : ㄲ, ㄸ, ㅃ, ㅆ, ㅉ, ㆅ
 
-                                    redrawAllLines();
-                                };
+📍 <b>모음 조화</b> 
+    ▪️양성 모음( ·, ㅏ, ㅗ, ㅑ, ㅛ)은 양성 모음끼리, 
+        음성 모음(ㅓ, ㅜ, ㅡ, ㅕ, ㅠ)은 음성 모음끼리 어울리려는 현상이다. 
+    ▪️중세 국어에서는 현대 국어보다 엄격히 지켜졌으나 
+        16세기 말 ‘·’가 소실되면서 문란해지기 시작했다.
+    ▪️(예)  ᄡᅮ메(ᄡᅳ- + -움 + 에) : 음성 모음인 ‘ㅜ’와 ‘ㅔ’가 결합함.
+              ᄇᆞᄅᆞ매(ᄇᆞᄅᆞᆷ + 애) : 양성 모음인 ‘·’와 ‘ㅐ’가 결합함. 
 
-                                const handleStart = (e) => {
-                                    if (isSolved) return;
-                                    const point = e.target.closest('.connection-point');
-                                    if (!point) return;
-                                    e.preventDefault();
-                                    
-                                    isDrawing = true;
-                                    lineStartPoint = point;
-                                    point.classList.add('selected');
+📍 <b>중세 국어의 관형격 조사</b>
+    ▪️ᄋᆡ : 양성 모음을 가진 평칭 유정 체언 뒤에 쓰임.  (예) 사ᄉᆞᄆᆡ(사ᄉᆞᆷ + ᄋᆡ)
+    ▪️의 : 음성 모음을 가진 평칭 유정 체언 뒤에 쓰임.  (예) 거부븨(거붑 + 의)
+    ▪️ㅅ : 존칭 유정 체언 뒤에 쓰임 (예) 부텻(부텨+ㅅ)
+             무정 체언 뒤에 쓰임        (예) 나랏(나라+ㅅ)
 
-                                    drawnLines = drawnLines.filter(line => {
-                                        if (point.dataset.side === 'left') return line.leftId !== point.dataset.id;
-                                        return line.rightId !== point.dataset.id;
-                                    });
-                                    redrawAllLines();
-                                    
-                                    window.addEventListener('mousemove', handleMove);
-                                    window.addEventListener('mouseup', handleEnd);
-                                    window.addEventListener('touchmove', handleMove, { passive: false });
-                                    window.addEventListener('touchend', handleEnd, { passive: false });
-                                };
-                                
-                                const initQuiz = () => {
-                                    const rightItems = Array.from(rightList.children);
-                                    // Shuffle only if not already solved (i.e., on first load or retry)
-                                    if (!isSolved) {
-                                        for (let i = rightItems.length - 1; i > 0; i--) {
-                                            const j = Math.floor(Math.random() * (i + 1));
-                                            [rightItems[i], rightItems[j]] = [rightItems[j], rightItems[i]];
-                                        }
-                                        rightItems.forEach(item => rightList.appendChild(item));
-                                    }
-                                    
-                                    isSolved = false;
-                                    drawnLines = [];
-                                    checkBtn.disabled = false;
-                                    container.querySelectorAll('.connection-point').forEach(p => p.classList.remove('selected'));
-                                    
-                                    setTimeout(resizeCanvas, 50); // Give a short timeout for rendering
-                                };
-                                
-                                checkBtn.addEventListener('click', () => {
-                                    if (isSolved) return;
-                                    isSolved = true;
-                                    redrawAllLines(true);
-                                    checkBtn.disabled = true;
-                                });
+📍 <b>중세 국어의 부사격 조사</b>
+    ▪️애 : 양성 모음을 가진 체인 뒤에 쓰임.        (예) ᄇᆞᄅᆞ매(ᄇᆞᄅᆞᆷ+애)
+    ▪️에 :   (예) 음성 모음을 가진 체언 뒤에 쓰임.       (예) ᄭᅮ메(ᄭᅮᆷ+에)
+    ▪️예 : 모음이나 반모음 ㅣ로 끝나는 체언 뒤에 쓰임.   (예) 萬里(만리)예
 
-                                retryBtn.addEventListener('click', initQuiz);
+📍 <b>'애', '에', '예'가 쓰일 위치에 'ᄋᆡ/의'를 쓰는 경우</b>
+    ▪️일부 특수한 체언(봄, 나조ㅎ[저녁], 우ㅎ[위], 밑 등')과 결합할 때 나타남.
+        (예) 보<u>ᄆᆡ</u> 왯ᄂᆞᆫ 萬里(만리)옛 나그내ᄂᆞᆫ
+            ( 봄에 와 있는 만 리 밖의 나그네는)   - 두시언해
 
-                                // Init
-                                initQuiz();
-				setTimeout(initQuiz, 100);
-                                window.addEventListener('resize', resizeCanvas);
-                                container.addEventListener('mousedown', handleStart);
-                                container.addEventListener('touchstart', handleStart, { passive: false });
-                            });
-                        }
+📍 <b>비교 부사격 조사(과/와) : '에', '이' </b>
+    ▪️나랏 말ᄊᆞ미 中國(중국)<u>에</u> 달아 –월인석보
+    ▪️古聖(고성)<u>이</u> 同符(동부)ᄒᆞ시니  -용비어천가
 
-                        setupInteractiveAbbr(); 
-                        setupInteractiveProblems(); 
-                        setupLineDrawingQuizzes();
-                    }
+📍 <b>ㅎ종성 체언 </b>
+    ▪️체언이 조사와 결합할 때 'ㅎ'이 덧붙는 어휘 (예) 바다ㅎ, 나라ㅎ, 하늘ㅎ, ᄉᆞᆯㅎ, 내ㅎ 등
 
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', setupAll);
-                    } else {
-                        setupAll();
-                    }
-                })()
-            )()
-    </script>
-</body></html>
+📍 <b>중세 국어의 명사형 어미와 명사 파생 접미사 </b>
+    ▪️현대 국어에서는 명사형 어미와 명사 파생 접미사가 모두 '-음'으로 그 형태가 같으나, 중세 국어에서는 형태상 구별되었다.
+    (1) 명사형 어미 '-옴/-움'
+        (예) 목숨 사로ᄆᆞᆯ(살-+-옴+ᄋᆞᆯ) (목숨 살림을)
+        (예) 날로 ᄡᅮ메(ᄡᅳ-+-움+에)  (날마다 씀에)
+    (2) 명사 파생 접미사 '-ᄋᆞᆷ/음'
+        (예) 모ᄃᆞᆫ 사ᄅᆞᆷ과(사ᇐ-+-ᄋᆞᆷ+과) (모든 사람과)
+        (예) 여름(열-+-음) 하나니 (열매 많으니)
+
+📍 <b>중세 국어의 주체 높임 선어말 어미 </b>
+    ▪️海東(해동) 六龍(육룡)이 ᄂᆞᄅᆞ샤(ᄂᆞᆯ-+-ᄋᆞ-+-샤-+-아)  
+                              <mark style="background-color: #e5e7eb;">* '-샤-' : 뒤 음절이 모음으로 시작</mark>
+    ▪️일마다 天福(천복)이시니(이-+-시-+-니)
+                              <mark style="background-color: #e5e7eb;">* '-시-' : 뒤 음절이 자음으로 시작
+</mark>
+<!-- [테이블 삽입] 중세 국어의 주격 조사 -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='[]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 중세 국어의 주격 조사</span><button class="retry-btn" title="다시 풀기">🔄</button></div><table class="custom-table" style="margin-top: 0.5rem;"><thead><tr><th style="width: 25%;">종류</th><th>음운 환경</th></tr></thead><tbody><tr><td><b>이</b></td><td>앞말이 자음으로 끝날 때.<br>(예) 놈+이 > 노미</td></tr><tr><td><b>ㅣ</b></td><td>앞말이 'ㅣ'모음 이외의 모음으로 끝날 때<br>(예) 바+ㅣ > 배</td></tr><tr><td><b>∅<br>(영형태, 제로주격)</b></td><td>앞말이 'ㅣ'모음이나 반모음 'ㅣ'로 끝날 때<br>(예) 불휘+∅ > 불휘</td></tr></tbody></table></div><!-- end-problem-wrapper -->
+</blockquote>
+
+
+<!-- [테이블 삽입] 성조와 방점 -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='[]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 성조와 방점</span><button class="retry-btn" title="다시 풀기">🔄</button></div><p style="margin-bottom: 1rem; color: #4b5563;">개념: 중세 국어 시기에는 글자의 <b>왼쪽</b>에 방점을 찍어 <b>소리의 높낮이, 즉 성조</b>를 표시했다.</p><table class="custom-table" style="margin-top: 0;"><thead><tr><th style="width: 25%;">종류</th><th>특징</th></tr></thead><tbody><tr><td><b>평성</b></td><td>- 방점이 없음.  - 낮은 소리.<br>(예) <u>나</u>·랏:말<u>ᄊᆞ</u>·미</td></tr><tr><td><b>상성</b></td><td>- 방점이 2개.  - 낮았다가 높아지는 소리<br>(예) 나·랏<u>:말</u>ᄊᆞ·미</td></tr><tr><td><b>거성</b></td><td>- 방점이 1개  - 높은 소리<br>(예) 나<u>·랏</u>:말ᄊᆞ<u>·미</u></td></tr></tbody></table></div><!-- end-problem-wrapper -->
+
+<!-- [테이블 삽입] '어미'의 종류 -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='[]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 '어미'의 종류</span><button class="retry-btn" title="다시 풀기">🔄</button></div><table class="custom-table" style="margin-top: 0.5rem;"><thead><tr><th style="width: 25%;">종류</th><th>세부 종류</th></tr></thead><tbody><tr><td><b>종결 어미</b></td><td>📍평서형: -다 <br>📍의문형: -니, -냐<br>📍명령형: -아라/-어라<br>📍청유형: -자<br>📍감탄형: -구나</td></tr><tr><td><b>연결 어미</b></td><td>📍대등적 연결 어미: -고, -며<br>   (예: 밥을 먹고 잠을 잤다.)<br>📍종속적 연결 어미: -아서/-어서, -면<br>   (예: 배가 고파서 밥을 먹었다.)<br>📍보조적 연결 어미: -아/-어, -게<br>(예: 밥을 먹고 싶다.)</td></tr><tr><td><b>전성 어미</b></td><td>📍명사형 전성 어미: -음, -기<br>   (예: 잠을 잠이 많다.)<br>📍관형사형 전성 어미: -(으)ㄴ, -는, -(으)ㄹ, -던 <br>   (예: 예쁜 꽃, 가는 사람)<br>📍부사형 전성 어미: -이, -게, -도록<br>   (예: 예쁘게 말하다.)</td></tr></tbody></table></div><!-- end-problem-wrapper -->
+
+
+
+<!-- [테이블 삽입] 어휘의 의미 변화 -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='[]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 어휘의 의미 변화</span><button class="retry-btn" title="다시 풀기">🔄</button></div><p style="margin-bottom: 1rem; color: #4b5563;">어휘의 의미 변화는 주로 사회, 문화, 기술의 변화에 따라 자연스럽게 발생함.</p><table class="custom-table" style="margin-top: 0;"><thead><tr><th style="width: 25%;">종류</th><th>뜻</th><th>예시</th></tr></thead><tbody><tr><td><b>의미 확장</b></td><td>단어가 원래 가지고 있던 의미보다 더 넓은 범위나 여러 대상을 포함하게 되는 경우.<br></td><td>(예) '영감(令監)' :   '정2품 종2품 문관의 경칭'으로 특정 직책을 가진 사람에게만 쓰였음 → 지금은 나이 많은 남자를 친근하거나 낮잡아 부르는 말로 사용됨.</td></tr><tr><td><b>의미 축소</b></td><td>단어가 원래 가지고 있던 넓은 의미에서 특정 대상이나 좁은 의미로 한정되는 경우.<br></td><td>(예) 짐승: '사람을 제외한 모든 살아있는 것' → 지금은 '포유류 동물'을 주로 뜻하며, '인간이 아닌 미물'을 비하하는 의미로도 사용.<br>(예) 얼굴:   '얼'은 '넋', '영혼'을 뜻하고, '굴'은 '모습'을 뜻해서 '얼굴'은 원래 '사람의 형상, 전체적인 모습'을 의미 → 머리의 앞부분. 낯, 안면.</td></tr><tr><td><b>의미 이동</b></td><td>단어의 원래 의미와 완전히 다른 의미로 바뀌는 것.<br>기존 의미의 흔적을 찾기 어려운 경우가 많아 의미 변화 중 가장 큰 변화에 속함.</td><td>(예) 어리다 : '어리석다' →  현대에 와서는 '나이가 적다'는 의미<br>(예) 미쁘다 : '믿음직하다'는 좋은 의미 → 지금은 '밉다'라는 부정적인 의미로 변했음.</td></tr></tbody></table></div><!-- end-problem-wrapper -->
+
+<!-- [테이블 삽입] 15세기에 ‘아래아(ㆍ), 여린 히읗(ㆆ), 순경음 비읍(ㅸ)’은 어떻게 발음했을까? -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='[]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 15세기에 ‘아래아(ㆍ), 여린 히읗(ㆆ), 순경음 비읍(ㅸ)’은 어떻게 발음했을까?</span><button class="retry-btn" title="다시 풀기">🔄</button></div><table class="custom-table" style="margin-top: 0.5rem;"><thead><tr><th style="width: 25%;">글자명</th><th>발음</th></tr></thead><tbody><tr><td><b>아래아(ㆍ)</b></td><td>'ㅓ'와 'ㅏ'의 중간 정도의 발음으로 추정</td></tr><tr><td><b>여린 히읗(ㆆ)</b></td><td>'ㆆ'은 동국정운 한자음을 표기할 때나 '몯ᄒᆞᇙ'에서와 같이 관형사형 어미로 사용되었으므로 음가가 없었을 것으로 추정</td></tr><tr><td><b>순경음 비읍(ㅸ)</b></td><td>[v]로서 유성 마찰음으로 발음되었을 것으로 추정</td></tr></tbody></table></div><!-- end-problem-wrapper -->
+<span style="font-weight: bold; border: 2px solid #F472B6; padding: 1px 4px; border-radius: 4px; background-color:#FBCFE8;"> 퀴즈1 </span>
+<!-- [선긋기] 다음은 중세 국어에서 현대 국어로의 변화 모습이다. 이와 관련된 음운의 변화를 찾아 연결해 보자. --><div class="problem-wrapper" data-type="line-drawing-quiz" data-pairs='[{"left":"니르고져 > 이르고자(말하고자)","right":"모음 &#39;ㅣ&#39; 앞에서 &#39;ㄴ&#39;이 탈락하였다. → 두음 법칙"},{"left":"펴디 > 펴지","right":"&#39;ㅣ&#39;모음에 선행하는 &#39;ㄷ,ㅌ&#39;이 &#39;ㅈ,ㅊ&#39;으로 바뀌었다. → 구개 음화"},{"left":"스믈 > 스물","right":"입술소리 &#39;ㅁ,ㅂ,ㅍ&#39; 뒤에서 &#39;-&#39;가 &#39;ㅜ&#39;로 바뀌었다. → 원순 모음화"}]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>〰️ 다음은 중세 국어에서 현대 국어로의 변화 모습이다. 이와 관련된 음운의 변화를 찾아 연결해 보자.</span><button class="retry-btn" title="다시 풀기">🔄</button></div><div class="line-drawing-container"><canvas class="line-drawing-canvas"></canvas><div class="line-drawing-list left"><div class="line-drawing-item" data-id="0"><span class="line-drawing-item-text">니르고져 > 이르고자(말하고자)</span><div class="connection-point" data-id="0" data-side="left"></div></div><div class="line-drawing-item" data-id="1"><span class="line-drawing-item-text">펴디 > 펴지</span><div class="connection-point" data-id="1" data-side="left"></div></div><div class="line-drawing-item" data-id="2"><span class="line-drawing-item-text">스믈 > 스물</span><div class="connection-point" data-id="2" data-side="left"></div></div></div><div class="line-drawing-list right"><div class="line-drawing-item" data-id="0"><div class="connection-point" data-id="0" data-side="right"></div><span class="line-drawing-item-text">모음 'ㅣ' 앞에서 'ㄴ'이 탈락하였다. → 두음 법칙</span></div><div class="line-drawing-item" data-id="1"><div class="connection-point" data-id="1" data-side="right"></div><span class="line-drawing-item-text">'ㅣ'모음에 선행하는 'ㄷ,ㅌ'이 'ㅈ,ㅊ'으로 바뀌었다. → 구개 음화</span></div><div class="line-drawing-item" data-id="2"><div class="connection-point" data-id="2" data-side="right"></div><span class="line-drawing-item-text">입술소리 'ㅁ,ㅂ,ㅍ' 뒤에서 '-'가 'ㅜ'로 바뀌었다. → 원순 모음화</span></div></div></div><div class="line-drawing-controls"><button class="check-problem-btn">정답 확인</button></div></div><!-- end-problem-wrapper -->
+
+<span style="font-weight: bold; border: 2px solid #F472B6; padding: 1px 4px; border-radius: 4px; background-color:#FBCFE8;"> 퀴즈2 </span>
+<!-- [테이블 삽입] 다음 중세 국어 어휘의 의믈 써 보고, 현대 국어에서 의미가 어떻게 달라졌는지 알아보자. -->
+<div class="problem-wrapper" data-type="table-fill-blank" data-answers='["어리석은","이동","축소","불쌍히"]' style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>田 다음 중세 국어 어휘의 의믈 써 보고, 현대 국어에서 의미가 어떻게 달라졌는지 알아보자.</span><button class="retry-btn" title="다시 풀기">🔄</button></div><table class="custom-table" style="margin-top: 0.5rem;"><thead><tr><th style="width: 25%;">어휘</th><th>중세 국어의 의미</th><th>현대 국어의 의미</th><th>의미의 변화</th></tr></thead><tbody><tr><td><b>어린</b></td><td><input type="text" class="blank-input" data-blank-index="0" /></td><td>나이가 적은</td><td>의미의 <input type="text" class="blank-input" data-blank-index="1" /></td></tr><tr><td><b>노미</b></td><td>(보통) 사람이</td><td>'사람'을 낮춰 부르는 말</td><td>의미의 <input type="text" class="blank-input" data-blank-index="2" /></td></tr><tr><td><b>어엿비</b></td><td><input type="text" class="blank-input" data-blank-index="3" />, 가엾게</td><td>예쁘게, 어여쁘게</td><td>의미의 이동</td></tr></tbody><tfoot><tr><td colspan="4" style="text-align: right; border: none; padding-top: 1rem;" class="problem-controls"><button class="check-problem-btn">정답 확인</button></td></tr></tfoot></table></div><!-- end-problem-wrapper -->
+
+<span style="font-weight: bold; border: 2px solid #F472B6; padding: 1px 4px; border-radius: 4px; background-color:#FBCFE8;"> 퀴즈3 </span>
+<!-- [빈칸넣기] 중세 국어의 특징 -->
+<div class="problem-wrapper" data-type="fill-blank" style="background-color: #eff6ff; border-color: #93c5fd;"><div class="problem-header flex-header" style="border-color: #93c5fd;"><span>🔲 [빈칸넣기] 중세 국어의 특징</span><button class="retry-btn" title="다시 풀기">🔄</button></div><div class="space-y-2 px-5"><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='[]'><span class="font-semibold pt-1">1.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;">현재는 쓰이지 않는 'ㆁ, ㆆ ,ㅿ, ㅸ, ㆍ' 등이 존재하였다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='["방점"]'><span class="font-semibold pt-1">2.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;">글자 왼쪽에 점을 찍어 성조를 표시하였는데 이를 <input type="text" class="blank-input" data-blank-index="0" />이라고 하였다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='["어두 자음군"]'><span class="font-semibold pt-1">3.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;">음절 첫머리에 둘 이상의 자음이 오는 <input type="text" class="blank-input" data-blank-index="0" />이 존재하였다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='["주격"]'><span class="font-semibold pt-1">4.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;"><input type="text" class="blank-input" data-blank-index="0" /> 조사로 '이/ㅣ/∅'가 쓰였고, 비교를 나타내는 조사로 '애/에/예'가 있었다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='["이어 적기"]'><span class="font-semibold pt-1">5.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;"><input type="text" class="blank-input" data-blank-index="0" />가 일반적으로 쓰이다가 후에 끊어 적기와 혼용되기도 하였다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div><div class="fill-blank-item flex items-start gap-4 py-2" data-answers='["모음"]'><span class="font-semibold pt-1">6.</span><span class="fill-blank-content flex-grow" style="padding-top: 6px; text-align: left;">체언과 조사가 결합하거나 어간과 어미가 결합할 때 <input type="text" class="blank-input" data-blank-index="0" /> 조화가 잘 지켜졌다.</span><div class="problem-controls" style="display: flex; flex-direction: column; align-items: flex-end; min-width: 120px; flex-shrink: 0;"><button class="check-problem-btn">정답 확인</button></div></div></div></div><!-- end-problem-wrapper -->
