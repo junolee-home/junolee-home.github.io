@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>수라-백석</title>
+                    <style>
+:root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
+body { font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background-color: rgb(244, 247, 249); margin: 0px; padding: 20px; line-height: 1.7; }
+body.resizing { cursor: ns-resize; user-select: none; }
+.container { display: flex; gap: 20px; }
+.left-panel { width: 220px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; align-self: flex-start; height: calc(-40px + 100vh); overflow-y: auto; padding-bottom: 20px; box-sizing: border-box; padding-right: 2px; }
+.editor-column { flex: 1 1 0%; display: flex; flex-direction: column; gap: 10px; }
+.preview-column { flex: 1 1 0%; display: flex; flex-direction: column; background-color: white; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+#editor-title-input { font-size: 2em; font-weight: bold; padding: 10px 5px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 2px solid var(--border-color); outline: none; background: transparent; font-family: inherit; }
+#editor-title-input:focus { border-color: var(--primary-color); }
+.preview-top-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 15px 25px 8px; background-color: var(--background-light); border-radius: 8px 8px 0px 0px; }
+#preview-tab-bar { width: 100%; text-align: right; position: sticky; top: 0px; z-index: 10; background-color: var(--background-light); padding-bottom: 8px; padding-right: 25px; box-sizing: border-box; border-bottom: 1px solid var(--border-color); }
+#preview-main-title { font-size: 1.8em; font-weight: 600; margin: 0px; font-family: "Noto Sans KR"; }
+.tab-bar { background: white; padding: 10px; border-radius: 8px 8px 0px 0px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; border-bottom: 2px solid var(--primary-color); }
+.tab-bar.preview-tabs { padding: 0px; margin: 0px; box-shadow: none; border-bottom: none; background-color: transparent; }
+.tab-btn { padding: 8px 15px; border: 1px solid var(--border-color); background: rgb(255, 255, 255); border-radius: 5px; cursor: pointer; margin-right: 5px; font-size: 0.9em; }
+.preview-tabs .tab-btn { border-top: none; border-right: none; border-left: none; border-image: initial; background: transparent; border-radius: 0px; padding: 0px 12px; margin: 0px; font-size: 0.95em; color: rgb(85, 85, 85); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; line-height: 2.5; }
+.preview-tabs .tab-btn:hover { color: var(--hover-color); }
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: bold; }
+.preview-tabs .tab-btn.active { background: transparent; color: var(--hover-color); border-bottom: 2px solid var(--hover-color); font-weight: bold; }
+#add-tab-btn { background: var(--correct-color); color: white; border: none; }
+#editor { border-radius: 0px 0px 8px 8px; background-color: white; padding: 20px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; min-height: 80vh; margin-top: -8px; }
+#preview { padding: 20px; }
+#toolbar, #block-adder, #file-manager { background: white; padding: 15px; border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px; }
+#version-info { font-size: 0.8em; color: rgb(136, 136, 136); text-align: center; margin-top: 10px; }
+#toolbar h4, #block-adder h4, #file-manager h4 { margin: 0px 0px 10px; font-size: 1em; }
+.toolbar-group { margin-bottom: 15px; }
+.toolbar-group button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1.1em; vertical-align: middle; min-width: 32px; }
+.toolbar-group button:hover { background-color: rgb(226, 230, 234); }
+.toolbar-group button svg, .toolbar-group button img { pointer-events: none; }
+.color-swatch { width: 24px; height: 24px; }
+#emoji-palette { display: flex; flex-wrap: wrap; gap: 5px; }
+#emoji-palette span { cursor: pointer; font-size: 1.1em; padding: 2px; }
+#block-adder { }
+.icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.icon-grid button { border: 1px solid var(--border-color); background-color: var(--background-light); cursor: pointer; padding: 8px 4px; font-size: 1rem; aspect-ratio: 1 / 1; border-radius: 8px; min-width: 0px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+.icon-grid button:hover { background-color: rgb(226, 230, 234); }
+.icon-grid button img { width: 60%; height: auto; }
+#block-adder.disabled .icon-grid { opacity: 0.5; cursor: not-allowed; }
+#editor .block, #preview .block { line-height: 1.7; transition: box-shadow 0.2s; }
+#editor .block { position: relative; cursor: grab; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; border-radius: 8px; background-color: var(--background-light); transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+#editor .block:hover { border-color: var(--primary-color); box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px; }
+#editor .block.dragging { opacity: 0.5; border-style: solid; }
+#editor .editable { cursor: text; background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); line-height: 1.8; padding: 5px 8px; }
+#editor .block[data-type="spacer"] { position: relative; min-height: 30px; padding: 5px 15px 10px; text-align: center; }
+.resize-handle { position: absolute; bottom: 0px; left: 0px; width: 100%; height: 10px; cursor: ns-resize; border-bottom: 3px solid rgba(0, 0, 0, 0.2); }
+.resize-handle:hover { border-bottom-color: var(--primary-color); }
+.block-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 4px; z-index: 5; }
+.toggle-default-btn, .copy-block-btn, .delete-block-btn { background: transparent; border: none; font-size: 1.2em; cursor: pointer; opacity: 0.5; padding: 2px; }
+.toggle-default-btn:hover { opacity: 1; color: rgb(255, 122, 0); }
+.copy-block-btn:hover { opacity: 1; color: var(--primary-color); }
+.delete-block-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.drag-handle { cursor: grab; touch-action: none; }
+.drag-handle:active { cursor: grabbing; }
+.block.copied { outline: 2px solid var(--primary-color); box-shadow: rgba(0, 123, 255, 0.5) 0px 0px 15px; }
+.block-title { display: inline-flex; align-items: center; font-weight: bold; font-size: 0.9em; color: rgb(73, 80, 87); background-color: rgb(233, 236, 239); padding: 4px 12px; border-radius: 15px; margin-bottom: 15px; }
+.text-content { margin-top: -10px; }
+.block-title-text { display: inline-block; min-width: 30px; border-radius: 3px; padding: 0px 5px; outline: none; }
+.block-title-text:focus { background-color: rgb(255, 255, 255); box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="text"] .block-title { background-color: rgb(255, 249, 196); }
+.block[data-type="ox"] .block-title { background-color: rgb(200, 230, 201); }
+.block[data-type="mcq"] .block-title { background-color: rgb(187, 222, 251); }
+.block[data-type="descriptive"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="fill-in"] .block-title { background-color: rgb(255, 204, 188); }
+.block[data-type="table"] .block-title { background-color: rgb(215, 204, 200); }
+.block[data-type="math"] .block-title { background-color: rgb(178, 223, 219); }
+.block[data-type="line-quiz"] .block-title { background-color: rgb(252, 228, 236); }
+.block[data-type="youtube"] .block-title { background-color: rgb(255, 205, 210); }
+.block[data-type="link"] .block-title { background-color: rgb(224, 247, 250); }
+.block[data-type="frame"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="summary"] .block-title { background-color: rgb(225, 245, 254); }
+#editor .block[data-type="summary"] { border-width: 1px 1px 4px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(173, 181, 189); border-image: initial; background-color: rgb(248, 249, 250); box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; }
+#editor .block[data-type="summary"] p { color: rgb(108, 117, 125); }
+.youtube-url-input { width: 100%; padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; box-sizing: border-box; }
+.youtube-placeholder { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background-color: rgb(240, 240, 240); border: 1px dashed rgb(204, 204, 204); border-radius: 8px; cursor: pointer; text-align: center; transition: background-color 0.2s; }
+.youtube-placeholder:hover { background-color: rgb(224, 224, 224); }
+.youtube-placeholder-icon { width: 50px; height: auto; margin-bottom: 10px; }
+.youtube-placeholder-text { font-weight: bold; color: rgb(51, 51, 51); }
+.youtube-iframe-wrapper { position: relative; overflow: hidden; width: 100%; max-width: 640px; margin: 0px auto; padding-top: 56.25%; }
+.youtube-iframe-wrapper iframe { position: absolute; inset: 0px; width: 100%; height: 100%; border: none; }
+.youtube-close-btn { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; background: black; color: white; border: 2px solid white; border-radius: 50%; cursor: pointer; font-size: 16px; font-weight: bold; line-height: 24px; text-align: center; z-index: 10; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px; }
+.link-editor-container, .frame-editor-container { display: flex; flex-direction: column; gap: 10px; }
+.link-editor-row, .frame-editor-row { display: flex; align-items: center; gap: 8px; }
+.link-editor-row > label:first-child, .frame-editor-row > label:first-child { font-weight: bold; flex-shrink: 0; width: 80px; }
+.link-editor-row input[type="text"], .link-editor-row input[type="url"], .frame-editor-row input[type="text"], .frame-editor-row input[type="url"] { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.link-target-options { display: flex; flex-wrap: wrap; gap: 5px 15px; align-items: center; }
+.link-target-options label { white-space: nowrap; }
+.preview-link-wrapper { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; padding: 5px; }
+.preview-link-label { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(224, 247, 250); padding: 6px 10px; border-radius: 15px; }
+.preview-link-title { padding: 6px 12px; background-color: rgb(227, 242, 253); border-radius: 4px; color: rgb(0, 86, 179); font-weight: bold; transition: background-color 0.2s; }
+.preview-link-wrapper:hover .preview-link-title { background-color: rgb(209, 231, 253); }
+.frame-preview-container { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background-color: rgb(255, 255, 255); }
+.frame-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px; cursor: pointer; list-style: none; }
+.frame-preview-summary::-webkit-details-marker { display: none; }
+.frame-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(209, 196, 233); padding: 4px 12px; border-radius: 15px; }
+.frame-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.frame-preview-container[open] .frame-preview-toggle-icon { transform: rotate(180deg); }
+.frame-preview-content { padding: 15px; border-top: 1px solid var(--border-color); }
+.frame-preview-content iframe { width: 100%; max-width: 100%; min-height: 450px; border: none; }
+.frame-preview-content img { display: block; margin: 0px auto; border-radius: 4px; max-width: 100%; max-height: 600px; }
+.frame-source-link { display: block; text-align: right; font-size: 0.8em; margin-top: 10px; color: rgb(108, 117, 125); }
+.summary-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.summary-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.summary-preview-summary::-webkit-details-marker { display: none; }
+.summary-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(225, 245, 254); padding: 4px 12px; border-radius: 15px; }
+.summary-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.summary-preview-container[open] .summary-preview-toggle-icon { transform: rotate(180deg); }
+.summary-preview-content { padding: 15px; color: rgb(108, 117, 125); }
+.summary-preview-content ul { list-style-type: none; padding-left: 0px; margin: 0px; }
+.summary-preview-content li { margin-bottom: 10px; }
+.summary-preview-content strong { color: rgb(73, 80, 87); }
+.block[data-type="flowchart"] .block-title { background-color: rgb(224, 224, 224); }
+.flowchart-editor-row { padding: 10px; margin-bottom: 5px; border: 1px dashed rgb(204, 204, 204); border-radius: 4px; background: rgb(253, 253, 253); position: relative; }
+.flowchart-row-controls { margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.flowchart-row-controls button { padding: 2px 8px; font-size: 0.8em; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); }
+.delete-flowchart-row-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; cursor: pointer; opacity: 0.5; }
+.delete-flowchart-row-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.flowchart-nodes-container { display: flex; gap: 10px; align-items: stretch; }
+.flowchart-node-editor { flex: 1 1 0%; min-height: 50px; }
+.flowchart-connector-editor { flex: 0 0 50px; text-align: center; border-left: 1px solid rgb(238, 238, 238); border-right: 1px solid rgb(238, 238, 238); display: flex; align-items: center; justify-content: center; }
+.flowchart-preview-container { margin-bottom: 15px; }
+.flowchart-preview-row { display: flex; justify-content: center; align-items: stretch; gap: 15px; }
+.flowchart-preview-node { flex: 1 1 0%; padding: 12px; border: 1px solid rgb(209, 213, 219); background-color: rgb(249, 250, 251); border-radius: 6px; }
+.flowchart-preview-connector { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: rgb(107, 114, 128); padding: 0px 10px; }
+.flowchart-preview-arrow { text-align: center; font-size: 1.5em; color: rgb(156, 163, 175); margin: 8px 0px; }
+.flowchart-preview-row.layout-three .flowchart-preview-node { flex-basis: 30%; max-width: 32%; }
+.flowchart-editor-row .drag-handle { cursor: grab; padding-right: 8px; opacity: 0.5; }
+.flowchart-editor-row .drag-handle:active { cursor: grabbing; }
+.flowchart-editor-row.dragging { opacity: 0.5; background-color: rgb(226, 230, 234); pointer-events: none; }
+.flowchart-preview-row.first-col-narrow .flowchart-preview-node:first-child { flex: 0 0 17%; max-width: 180px; }
+.flowchart-first-col-narrow-toggle { font-size: 0.9em; cursor: pointer; display: none; }
+.youtube-title-editor { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.youtube-title-editor strong { flex-shrink: 0; }
+.youtube-title-editor input { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.youtube-preview-title { display: inline-flex; align-items: center; gap: 10px; }
+.youtube-preview-title .pill { background-color: rgb(255, 205, 210); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; font-weight: bold; }
+.block[data-type="drag-drop"] .block-title { background-color: rgb(197, 225, 165); }
+.drag-drop-item-editor { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; background-color: rgb(255, 255, 255); padding: 8px; border-radius: 4px; }
+.drag-drop-item-editor .editable { border: 1px solid rgb(224, 224, 224); padding: 5px; min-width: 50px; flex: 1 1 0%; }
+#editor .drag-drop-item-editor .drag-drop-answer { background-color: rgb(255, 253, 231); border: 1px dashed rgb(201, 188, 143); font-weight: bold; text-align: center; flex: 0 1 120px; }
+.drag-drop-preview-container .sentence { margin-bottom: 10px; line-height: 2.2; padding: 10px; background: rgb(250, 250, 250); border-radius: 4px; }
+.drag-drop-preview-container .drop-target { display: inline-block; width: 100px; height: 28px; border: 1px dashed rgb(173, 181, 189); background-color: rgb(233, 236, 239); vertical-align: middle; margin: 0px 5px; border-radius: 4px; text-align: center; line-height: 26px; font-weight: bold; }
+.drag-drop-preview-container .drop-target.drag-over { background-color: rgb(209, 196, 233); border-style: solid; }
+.drag-drop-preview-container .drop-target.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.drag-drop-preview-container .drop-target.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.drag-drop-preview-container .source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px solid rgb(224, 224, 224); background-color: rgb(248, 249, 250); border-radius: 4px; min-height: 40px; }
+.drag-drop-preview-container .drag-source { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.drag-drop-preview-container .drag-source:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.drag-drop-preview-container .drag-source.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.drag-drop-preview-container .drag-source.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.block[data-type="ordering"] .block-title { background-color: rgb(255, 218, 185); }
+.ordering-preview-container { padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+.ordering-target-container, .ordering-source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px dashed rgb(173, 181, 189); border-radius: 4px; min-height: 50px; align-content: flex-start; }
+.ordering-source-container { background-color: rgb(248, 249, 250); border-style: solid; }
+.ordering-target-container.drag-over { background-color: rgb(224, 242, 241); border-color: var(--primary-color); }
+.ordering-target-container.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.ordering-target-container.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
+.ordering-item { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.ordering-item:active { cursor: grabbing; }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-drop-indicator { width: 4px; height: 30px; background-color: var(--hover-color); border-radius: 2px; align-self: center; }
+.ordering-item.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.block-title-container { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.block-title-container .block-title { margin-bottom: 0px; }
+.math-guide-link { font-size: 0.85em; color: var(--primary-color); text-decoration: none; border-bottom: 1px dashed var(--primary-color); padding-bottom: 1px; transition: 0.2s; }
+.math-guide-link:hover { color: rgb(0, 86, 179); border-bottom-style: solid; }
+#preview .block[data-type="text"]:not(.no-title-block) { background-color: transparent; border-color: transparent; padding: 0px; box-shadow: none; }
+.text-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.text-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.text-preview-summary::-webkit-details-marker { display: none; }
+.text-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(255, 249, 196); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; }
+.text-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.text-preview-container:not([open]) .text-preview-toggle-icon { transform: rotate(-90deg); }
+.text-preview-content-wrapper { padding: 15px; background-color: transparent; border: none; }
+.text-preview-content { background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); padding: 10px 12px; border-radius: 4px; line-height: 1.8; }
+.explainable-in-editor { background-color: rgb(241, 243, 245); color: rgb(73, 80, 87); border-bottom: 1px dotted rgb(173, 181, 189); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-link-from-text { background-color: rgb(227, 242, 253); border: 1px solid rgb(144, 202, 249); border-radius: 4px; padding: 2px 6px; text-decoration: none; color: rgb(13, 71, 161); transition: 0.2s; }
+.inline-link-from-text:hover { background-color: rgb(187, 222, 251); border-color: rgb(66, 165, 245); color: rgb(0, 0, 0); }
+.inline-image-from-text { max-width: 100%; max-height: 300px; border: 1px solid var(--border-color); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; vertical-align: middle; margin: 2px 4px; }
+#preview .block:not(.no-title-block) { background-color: rgb(255, 255, 255); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(233, 236, 239) rgb(187, 222, 251); border-image: initial; box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 6px; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+#preview .block.no-title-block { border-color: transparent; padding: 0px; margin-bottom: 0px; background-color: transparent; box-shadow: none; }
+#preview .block-title { display: inline-flex; width: fit-content; }
+.text-border-black { border: 2px solid black; padding: 0px 2px; border-radius: 3px; }
+.text-border-gray { border: 2px solid gray; padding: 0px 2px; border-radius: 3px; }
+.text-border-red { border: 2px solid red; padding: 0px 2px; border-radius: 3px; }
+.text-border-violet { border: 2px solid violet; padding: 0px 2px; border-radius: 3px; }
+.text-border-blue { border: 2px solid blue; padding: 0px 2px; border-radius: 3px; }
+.text-border-green { border: 2px solid green; padding: 0px 2px; border-radius: 3px; }
+.text-highlight-gray { background-color: rgb(238, 238, 238); border: 2px solid rgb(189, 189, 189); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-violet { background-color: rgb(243, 229, 245); border: 2px solid rgb(206, 147, 216); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-red { background-color: rgb(255, 235, 238); border: 2px solid rgb(229, 115, 115); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-yellow { background-color: rgb(255, 253, 231); border: 2px solid rgb(255, 241, 118); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-blue { background-color: rgb(227, 242, 253); border: 2px solid rgb(144, 202, 249); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-green { background-color: rgb(232, 245, 233); border: 2px solid rgb(165, 214, 167); padding: 1px 3px; border-radius: 3px; }
+#preview .explainable { background-color: rgb(241, 243, 245); color: rgb(73, 80, 87); border-bottom: 1px dotted rgb(173, 181, 189); cursor: pointer; border-radius: 3px; padding: 1px 4px; font-weight: normal; }
+.ox-question-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+.ox-question-row .question-text { flex-grow: 1; padding-left: 1.8em; text-indent: -1.8em; }
+.ox-preview-item { margin-bottom: 15px; }
+.ox-choices { flex-shrink: 0; }
+.quiz-title-container-editor, .ox-item-editor, .mcq-option-editor { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.quiz-title-container-editor .editable, .ox-item-editor .editable, .mcq-option-editor .editable { flex-grow: 1; }
+.ox-item-editor { border-top: 1px solid rgb(238, 238, 238); padding-top: 10px; }
+.ox-item-editor:first-child { border-top: none; padding-top: 0px; }
+.mcq-option-editor { margin-bottom: 5px; }
+.descriptive-editor-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.descriptive-editor-row strong { flex-shrink: 0; }
+.descriptive-editor-row .editable { flex-grow: 1; }
+.quiz-title-preview { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
+.retry-quiz-btn { font-size: 0.8em; margin-left: 10px; cursor: pointer; color: rgb(108, 117, 125); background: rgb(241, 241, 241); border: 1px solid rgb(221, 221, 221); padding: 5px 10px; border-radius: 4px; }
+.mcq-options-preview { margin-left: 20px; }
+#preview .mcq-preview-option { transition: background-color 0.2s; cursor: pointer; padding: 8px 8px 8px 1.3em; border-radius: 4px; text-indent: -1.3em; }
+#preview .mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.quiz-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; }
+.quiz-controls .feedback { margin: 0px; padding: 4px 8px; text-align: right; flex-grow: 1; }
+.descriptive-student-answer { width: 100%; min-height: 60px; border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; margin-top: 10px; box-sizing: border-box; }
+.show-answer-btn, .hide-answer-btn, .check-fill-in-btn, .check-line-quiz-btn, .check-answer-btn { padding: 5px 10px; border: 1px solid var(--primary-color); background-color: var(--primary-color); color: white; border-radius: 4px; cursor: pointer; }
+.fill-in-item-editor { padding: 10px; margin-bottom: 5px; border-radius: 4px; background: rgb(255, 255, 255); }
+.fill-in-question-container { display: flex; align-items: center; gap: 8px; }
+.fill-in-question.placeholder-active { color: rgb(136, 136, 136); }
+.fill-in-answers-container { margin-left: 2em; margin-top: 5px; font-size: 0.9em; color: rgb(85, 85, 85); }
+.fill-in-answer-wrapper { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.fill-in-answer-input { border: 1px solid rgb(204, 204, 204); border-radius: 3px; padding: 2px 4px; background-color: rgb(227, 242, 253); }
+.fill-in-preview-item { margin-bottom: 15px; }
+.blank-input-preview { min-width: 50px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 1px solid rgb(51, 51, 51); text-align: center; font-family: inherit; font-size: 1em; color: rgb(22, 163, 74) !important; font-weight: bold !important; }
+.blank-input-preview.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.blank-input-preview.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.table-editor-container > div:not(.table-records-container) { margin-bottom: 15px; }
+.table-title-editor, .table-desc-editor { display: flex; gap: 8px; align-items: center; }
+.table-title-editor .editable, .table-desc-editor .editable { flex-grow: 1; }
+.fields-container { display: flex; gap: 5px; }
+.table-field { flex: 1 1 0%; font-weight: bold; text-align: center; }
+.table-record-row-wrapper { margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid rgb(238, 238, 238); }
+.table-record-row { display: flex; gap: 5px; }
+.table-record-cell { flex: 1 1 0%; }
+.add-table-row-btn { width: 100%; padding: 8px; margin-top: 10px; }
+.table-preview-container table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+.table-preview-container th, .table-preview-container td { border: 1px solid var(--border-color); padding: 8px; text-align: left; word-break: break-all; vertical-align: top; }
+.table-preview-container th:first-child, .table-preview-container td:first-child { width: 120px; }
+.table-preview-container thead { background-color: var(--background-light); }
+.table-preview-container h3 { margin-bottom: 5px; }
+.table-preview-container p { margin-top: 0px; font-size: 0.9em; color: rgb(102, 102, 102); }
+.math-editor-field { background-color: rgb(255, 255, 255); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; min-height: 40px; }
+.math-editor-field.mq-focused { border-color: var(--primary-color); box-shadow: 0 0 0 1px var(--primary-color); }
+.math-preview-field { padding: 10px; text-align: center; font-size: 1.2em; overflow-x: auto; }
+.line-quiz-item-editor { display: flex; align-items: stretch; gap: 10px; margin-bottom: 5px; }
+.line-quiz-item-editor .editable { flex: 1 1 0%; }
+.line-quiz-item-editor > * { display: flex; align-items: center; }
+.line-quiz-preview { position: relative; display: flex; justify-content: space-between; }
+.line-quiz-column { display: flex; flex-direction: column; gap: 10px; width: 45%; }
+.line-quiz-canvas { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; pointer-events: none; }
+.line-quiz-item { display: flex; align-items: center; padding: 8px; background-color: rgb(248, 249, 250); border: 1px solid rgb(222, 226, 230); border-radius: 5px; min-height: 36px; }
+.line-quiz-item .text { flex-grow: 1; }
+.line-quiz-item .dot { flex-shrink: 0; width: 16px; height: 16px; background-color: rgb(204, 204, 204); border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 3px; }
+.line-quiz-item .dot:hover { background-color: rgb(170, 170, 170); }
+.line-quiz-item .dot.selected { background-color: var(--primary-color); }
+.line-quiz-item .dot.disabled { cursor: default; }
+.feedback { margin-top: 5px; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; display: none; }
+.feedback.show { display: block; }
+.feedback.correct { color: var(--correct-color); }
+.feedback.incorrect { color: var(--incorrect-color); }
+.feedback .correct-highlight { background-color: var(--correct-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.feedback .incorrect-highlight { background-color: var(--incorrect-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.explanation { background: rgb(255, 251, 230); border: 1px solid rgb(255, 229, 143); padding: 10px; margin-top: 10px; border-radius: 5px; display: none; }
+.explanation.show { display: block; }
+.explanation-popup { position: absolute; background-color: rgb(255, 251, 230); color: rgb(93, 64, 55); border: 1px solid rgb(255, 229, 143); border-radius: 8px; padding: 12px 30px 12px 18px; z-index: 1000; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 12px; max-width: 300px; font-size: 0.9em; white-space: pre-wrap; display: none; opacity: 0; transform: translateY(10px) scale(0.95); transition: opacity 0.2s, transform 0.2s; }
+.explanation-popup.show { display: block; opacity: 1; transform: translateY(0px) scale(1); }
+.explanation-popup::before { content: ""; position: absolute; bottom: 100%; left: 20px; border-width: 9px; border-style: solid; border-color: transparent transparent rgb(255, 229, 143); border-image: initial; }
+.explanation-popup::after { content: ""; position: absolute; bottom: 100%; left: 21px; border-width: 8px; border-style: solid; border-color: transparent transparent rgb(255, 251, 230); border-image: initial; }
+.popup-close-btn { position: absolute; top: 2px; right: 5px; background: transparent; border: none; font-size: 1.5em; line-height: 1; color: rgb(192, 192, 192); cursor: pointer; transition: color 0.2s; }
+.popup-close-btn:hover { color: rgb(93, 64, 55); }
+.toolbar-btn-group { display: inline-flex; vertical-align: middle; margin: 2px; }
+.toolbar-btn-group button { margin: 0px; border-radius: 0px; border-right-width: 0px; }
+.toolbar-btn-group button:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.toolbar-btn-group button:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-right-width: 1px; }
+.dropdown { position: relative; display: inline-block; vertical-align: middle; }
+.dropdown-toggle { display: flex; align-items: center; gap: 4px; }
+.color-indicator { display: inline-block; width: 14px; height: 4px; background-color: black; border-radius: 2px; }
+.dropdown-menu { display: none; position: absolute; top: 100%; left: 0px; z-index: 1001; background-color: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+.dropdown-menu.show { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.color-palette .color-swatch { width: 28px; height: 28px; margin: 0px; }
+.style-grid-mini { grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 5px; width: 137px; }
+.dropdown-menu.style-grid-mini.show { display: grid; }
+.style-grid-mini button { width: 15px; height: 15px; min-width: 0px; margin: 0px; }
+.dropdown-menu-right { left: 50%; transform: translateX(-50%); }
+.explanation-modal-header { padding: 15px 25px; background-color: rgb(248, 249, 250); border-bottom: 1px solid rgb(238, 238, 238); border-radius: 8px 8px 0px 0px; }
+.explanation-modal-header .selected-text-display { color: rgb(108, 117, 125); font-weight: normal; }
+.mini-toolbar { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); }
+.mini-toolbar button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1em; vertical-align: middle; min-width: 32px; }
+.mini-toolbar button:hover { background-color: rgb(226, 230, 234); }
+#explanation-emoji-palette { padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); margin-bottom: 10px; }
+.modal-emoji { cursor: pointer; font-size: 1.4em; margin-right: 8px; opacity: 0.7; transition: opacity 0.2s; }
+.modal-emoji:hover { opacity: 1; }
+.editor-column .tab-btn { position: relative; padding-right: 28px; }
+.editor-column .tab-btn .delete-tab-btn { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); font-size: 1.1em; line-height: 1; opacity: 0.3; transition: opacity 0.2s; }
+.editor-column .tab-btn:hover .delete-tab-btn { opacity: 1; }
+.editor-column .tab-btn .delete-tab-btn:hover { color: var(--incorrect-color); font-weight: bold; }
+.editor-column .tab-btn.dragging { opacity: 0.5; background: rgb(226, 230, 234); }
+.exported-body .tab-content { display: none; }
+.exported-body .tab-content.active { display: block; }
+.left-panel::-webkit-scrollbar { display: none; }
+@media (max-width: 1024px) {
+  body { padding: 10px; }
+  .container { flex-direction: column; }
+  .left-panel { position: static; width: 100%; height: auto; overflow-y: visible; padding-right: 0px; }
+}
+.blank-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.blank-choices { font-size: 0.9em; color: rgb(108, 117, 125); background-color: rgb(248, 249, 250); padding: 2px 6px; border-radius: 4px; border: 1px solid rgb(233, 236, 239); }
+.revealable-cloze { border: 1px dashed var(--primary-color); color: var(--primary-color); padding: 1px 5px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+.revealable-cloze:hover { background-color: rgb(227, 242, 253); }
+.revealed-answer { font-weight: bold; color: var(--correct-color); padding: 1px 5px; cursor: pointer; }
+.CtxtMenu_InfoClose { top: 0.2em; right: 0.2em; }
+.CtxtMenu_InfoContent { overflow: auto; text-align: left; font-size: 80%; padding: 0.4em 0.6em; border: 1px inset; margin: 1em 0px; max-height: 20em; max-width: 30em; background-color: rgb(238, 238, 238); white-space: normal; }
+.CtxtMenu_Info.CtxtMenu_MousePost { outline: none; }
+.CtxtMenu_Info { position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: rgb(221, 221, 221); color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuClose { position: absolute; cursor: pointer; display: inline-block; border: 2px solid rgb(170, 170, 170); border-radius: 18px; font-family: "Courier New", Courier; font-size: 24px; color: rgb(240, 240, 240); }
+.CtxtMenu_MenuClose span { display: block; background-color: rgb(170, 170, 170); border: 1.5px solid; border-radius: 18px; line-height: 0; padding: 8px 0px 6px; }
+.CtxtMenu_MenuClose:hover { color: white !important; border: 2px solid rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover span { background-color: rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover:focus { outline: none; }
+.CtxtMenu_Menu { position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid rgb(204, 204, 204); margin: 0px; cursor: default; font-style: ; font-variant: normal; font-weight: ; font-stretch: ; font-size: ; font-family: ; font-optical-sizing: ; font-size-adjust: ; font-kerning: ; font-feature-settings: ; font-variation-settings: ; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuItem { padding: 1px 2em; background: transparent; }
+.CtxtMenu_MenuArrow { position: absolute; right: 0.5em; padding-top: 0.25em; color: rgb(102, 102, 102); font-family: null; font-size: 0.75em; }
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow { color: white; }
+.CtxtMenu_MenuArrow.CtxtMenu_RTL { left: 0.5em; right: auto; }
+.CtxtMenu_MenuCheck { position: absolute; left: 0.7em; font-family: null; }
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuRadioCheck { position: absolute; left: 0.7em; }
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuInputBox { padding-left: 1em; right: 0.5em; color: rgb(102, 102, 102); font-family: null; }
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL { left: 0.1em; }
+.CtxtMenu_MenuComboBox { left: 0.1em; padding-bottom: 0.5em; }
+.CtxtMenu_MenuSlider { left: 0.1em; }
+.CtxtMenu_SliderValue { position: absolute; right: 0.1em; padding-top: 0.25em; color: rgb(51, 51, 51); font-size: 0.75em; }
+.CtxtMenu_SliderBar { outline: none; background: rgb(211, 211, 211); }
+.CtxtMenu_MenuLabel { padding: 1px 2em 3px 1.33em; font-style: italic; }
+.CtxtMenu_MenuRule { border-top: 1px solid rgb(221, 221, 221); margin: 4px 3px; }
+.CtxtMenu_MenuDisabled { color: graytext; }
+.CtxtMenu_MenuActive { background-color: rgb(96, 104, 114); color: white; }
+.CtxtMenu_MenuDisabled:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_MenuLabel:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_ContextMenu:focus { outline: none; }
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus { outline: none; }
+.CtxtMenu_SelectionMenu { position: relative; float: left; border-bottom: none; box-shadow: none; border-radius: 0px; }
+.CtxtMenu_SelectionItem { padding-right: 1em; }
+.CtxtMenu_Selection { right: 40%; width: 50%; }
+.CtxtMenu_SelectionBox { padding: 0em; max-height: 20em; max-width: none; background-color: rgb(255, 255, 255); }
+.CtxtMenu_SelectionDivider { clear: both; border-top: 2px solid rgb(0, 0, 0); }
+.CtxtMenu_Menu .CtxtMenu_MenuClose { top: -10px; left: -10px; }
+mjx-container[jax="SVG"] { direction: ltr; }
+mjx-container[jax="SVG"] > svg { overflow: visible; min-height: 1px; min-width: 1px; }
+mjx-container[jax="SVG"] > svg a { fill: blue; stroke: blue; }
+mjx-assistive-mml { top: 0px; left: 0px; clip: rect(1px, 1px, 1px, 1px); user-select: none; position: absolute !important; padding: 1px 0px 0px !important; border: 0px !important; display: block !important; width: auto !important; overflow: hidden !important; }
+mjx-assistive-mml[display="block"] { width: 100% !important; }
+mjx-container[jax="SVG"][display="true"] { display: block; text-align: center; margin: 1em 0px; }
+mjx-container[jax="SVG"][display="true"][width="full"] { display: flex; }
+mjx-container[jax="SVG"][justify="left"] { text-align: left; }
+mjx-container[jax="SVG"][justify="right"] { text-align: right; }
+g[data-mml-node="merror"] > g { fill: red; stroke: red; }
+g[data-mml-node="merror"] > rect[data-background] { fill: yellow; stroke: none; }
+g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed { stroke-dasharray: 140; }
+g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted { stroke-linecap: round; stroke-dasharray: 0, 140; }
+g[data-mml-node="mtable"] > g > svg { overflow: visible; }
+[jax="SVG"] mjx-tool { display: inline-block; position: relative; width: 0px; height: 0px; }
+[jax="SVG"] mjx-tool > mjx-tip { position: absolute; top: 0px; left: 0px; }
+mjx-tool > mjx-tip { display: inline-block; padding: 0.2em; border: 1px solid rgb(136, 136, 136); font-size: 70%; background-color: rgb(248, 248, 248); color: black; box-shadow: rgb(170, 170, 170) 2px 2px 5px; }
+g[data-mml-node="maction"][data-toggle] { cursor: pointer; }
+mjx-status { display: block; position: fixed; left: 1em; bottom: 1em; min-width: 25%; padding: 0.2em 0.4em; border: 1px solid rgb(136, 136, 136); font-size: 90%; background-color: rgb(248, 248, 248); color: black; }
+foreignobject[data-mjx-xml] { font-family: initial; line-height: normal; overflow: visible; }
+mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { stroke-width: 3; }</style>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js"></script>
+                    <script>
+                        window.MathJax = {
+                          tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+                          svg: { fontCache: 'global' }
+                        };
+                    </script>
+                    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+                </head>
+                <body class="exported-body" style="background-color: #f4f7f9; font-family: 'Malgun Gothic', sans-serif;">
+                    <div id="exported-container" style="width: 90%; max-width: 1100px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        
+                <div class="preview-top-bar">
+                    <h1 id="preview-main-title">수라-백석</h1>
+                </div>
+                <div id="preview-tab-bar" class="tab-bar preview-tabs">
+                    <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1758455763173">본문</button><button class="tab-btn " data-tab-id="tab-1758629506712">내용 정리</button><button class="tab-btn " data-tab-id="tab-1758632720384">퀴즈</button></div>
+                </div>
+                <div id="preview"><div class="tab-content active" data-tab-content-id="tab-1758455763173"><h2 style="display:none;">본문</h2><div class="block" data-type="text"><details class="text-preview-container" open="">
+                                <summary class="text-preview-summary">
+                                    <span class="text-preview-title-pill">📝 수라 전문</span>
+                                    <span class="text-preview-toggle-icon">▼</span>
+                                </summary>
+                                <div class="text-preview-content-wrapper">
+                                    <div class="text-preview-content"><h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6 text-center" style="--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; box-sizing: border-box; border-width: 0px; border-style: solid; border-color: rgb(229, 231, 235); margin: 0px 0px 1.5rem; line-height: 2.25rem; --tw-text-opacity: 1; background-color: rgb(248, 245, 242); font-size: 1.875rem; font-family: &quot;Noto Sans KR&quot;, sans-serif; color: rgb(30, 41, 59); text-align: center;"><span class="explainable" data-explanation="💬아수라의 줄임말. 싸움 따위로 혼잡하고 어지러운 상태에 빠지는 것&lt;div&gt;&lt;br&gt;&lt;/div&gt;">수라 (修羅)</span>​</h2><div><div style="text-align: right;">백석</div><div><br></div><div>&nbsp; 1️⃣</div><div>&nbsp; <span class="text-highlight-red">거미 새끼</span> 하나 <span class="explainable" data-explanation="거미 가족이 해체되는 공간">방바닥</span>​에 나린 것을 나는 아모 생각 없이 <span style="background-color: rgb(255, 250, 205);">문밖으로 쓸어버린다</span></div><div>&nbsp; <span class="explainable" data-explanation="💬거미 가족의 시련을 상징하는 부정적인 시간&lt;div&gt;💬감각적 이미지 사용 → &lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;거미 가족이 처한 비극성&lt;/span&gt;과 아무 생각 없이 거미를 버린 &lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;화자의 무심함&lt;/span&gt;을 부각함.&lt;/div&gt;">차디찬 밤</span>​이다&nbsp;&nbsp;</div><div><br></div><div style="text-align: left;"><br></div><div><br></div><div>&nbsp; 2️⃣</div><div>&nbsp; <span class="explainable" data-explanation="'언젠가'의 &lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;평안도&lt;/span&gt; 방언. 여기서는 '&lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;어느 사이엔가&lt;/span&gt;'라는 뜻.">어니젠가</span>​ 새끼 거미 쓸려 나간 곳에&nbsp;<span class="text-highlight-red"><span class="explainable" data-explanation="어미 거미">큰 거미</span>​</span>가 왔다</div><div>&nbsp; <span class="text-highlight-blue"><span class="explainable" data-explanation="새끼를 잃은 어미 거미의 슬픔에 대한 화자의 공감 → 화자의 정서가 변화하고 있음.">나는 가슴이 짜릿한다</span>​</span></div><div>&nbsp; 나는 <span class="explainable" data-explanation="문밖으로 버리는 행위가 반복됨을 의미">또</span>​ 큰 거미를 쓸어 <span class="explainable" data-explanation="거미 새끼와 만나게 해 주기 위해서" style="background-color: rgb(255, 250, 205);">문밖으로 버리며</span>​</div><div>&nbsp; <span class="explainable" data-explanation="(화자가 자신의 행동으로 인해 거미 가족이 헤어진 것에 대한) 연민과 안타까움을 느낌.">&nbsp;찬 밖이라도 새끼 있는 데로 가라고 하며 <span class="text-highlight-blue">서러워한다</span>&nbsp;</span>​&nbsp;</div><div><br></div><div style="text-align: right;"><br></div><div style="text-align: right;"><br></div><div>&nbsp; 3️⃣</div><div>&nbsp; <span class="explainable" data-explanation="어미 거미와 거미 새끼가 헤어진 모습을 목격하면서 느낀 서러움과 안타까움">이렇게 해서 아린 가슴</span>​이 <span class="explainable" data-explanation="삭다. 긴장이나 화가 풀려 마음이 가라앉다.">싹기도</span>​ 전이다</div><div>&nbsp; 어데서 <span class="explainable" data-explanation="묘사. 연약한 모습">좁쌀알만 한 알에서 가제 깨인 듯한 발이 채 서지도 못한</span>​ <span class="text-highlight-red">무척 작은 새끼 거미</span>가&nbsp; 이번엔 큰 거미 없어진 곳으로 와서 <span class="explainable" data-explanation="조금씩 움직임">아물거린다</span>​</div><div>&nbsp; 나는 <span class="text-highlight-blue"><span class="explainable" data-explanation="어미를 찾는 듯한 새끼 거미에 대한 안타까움. 거미 가족 공동체의 해체로 인한 슬픔">가슴이 메이는 듯하다</span>​</span></div><div>&nbsp; 내 손에 오르기라도 하라고 나는 <span class="explainable" data-explanation="연민의 감정이 드러남.">손을 내어 미나</span>​ 분명히 울고불고 할 이 작은 것은 나를 무서우이 달아나 버리며 <span class="text-highlight-blue">나를 서럽게 한다</span></div><div>&nbsp; 나는 <span class="explainable" data-explanation="무척 작은 새끼 거미">이 작은 것</span>​을 보이 보드라운 종이에 받어 <span style="background-color: rgb(255, 250, 205);">또 <span class="explainable" data-explanation="위험하지만 가족과 함께 할 수 있는 곳이자 공동체 회복의 공간">문밖</span>​으로 버리며</span></div><div>&nbsp; 이것의 엄마와 누나나 형이 가까이 이것의 걱정을 하며 있다가 <span class="explainable" data-explanation="붕괴된 가족 공동체의 회복에 대한 소망">쉬이 만나기나 했으면 좋으련만</span>​ 하고<span class="text-highlight-blue"> 슬퍼한다.</span></div></div><div><br></div></div>
+                                </div>
+                            </details></div><div class="block no-title-block" data-type="summary"><details class="summary-preview-container">
+                            <summary class="summary-preview-summary">
+                                <span class="summary-preview-title-pill">📖 핵심 구절 요약</span>
+                                <span class="summary-preview-toggle-icon">▼</span>
+                            </summary>
+                            <div class="summary-preview-content">
+                                <ul><li><strong>▪️수라 (修羅)</strong> : 💬아수라의 줄임말. 싸움 따위로 혼잡하고 어지러운 상태에 빠지는 것<div><br></div></li><li><strong>▪️방바닥</strong> : 거미 가족이 해체되는 공간</li><li><strong>▪️차디찬 밤</strong> : 💬거미 가족의 시련을 상징하는 부정적인 시간<div>💬감각적 이미지 사용 → <span style="background-color: rgb(255, 250, 205);">거미 가족이 처한 비극성</span>과 아무 생각 없이 거미를 버린 <span style="background-color: rgb(255, 250, 205);">화자의 무심함</span>을 부각함.</div></li><li><strong>▪️어니젠가</strong> : '언젠가'의 <span style="background-color: rgb(255, 250, 205);">평안도</span> 방언. 여기서는 '<span style="background-color: rgb(255, 250, 205);">어느 사이엔가</span>'라는 뜻.</li><li><strong>▪️큰 거미</strong> : 어미 거미</li><li><strong>▪️나는 가슴이 짜릿한다</strong> : 새끼를 잃은 어미 거미의 슬픔에 대한 화자의 공감 → 화자의 정서가 변화하고 있음.</li><li><strong>▪️또</strong> : 문밖으로 버리는 행위가 반복됨을 의미</li><li><strong>▪️문밖으로 버리며</strong> : 거미 새끼와 만나게 해 주기 위해서</li><li><strong>▪️&nbsp;찬 밖이라도 새끼 있는 데로 가라고 하며 서러워한다&nbsp;</strong> : (화자가 자신의 행동으로 인해 거미 가족이 헤어진 것에 대한) 연민과 안타까움을 느낌.</li><li><strong>▪️이렇게 해서 아린 가슴</strong> : 어미 거미와 거미 새끼가 헤어진 모습을 목격하면서 느낀 서러움과 안타까움</li><li><strong>▪️싹기도</strong> : 삭다. 긴장이나 화가 풀려 마음이 가라앉다.</li><li><strong>▪️좁쌀알만 한 알에서 가제 깨인 듯한 발이 채 서지도 못한</strong> : 묘사. 연약한 모습</li><li><strong>▪️아물거린다</strong> : 조금씩 움직임</li><li><strong>▪️가슴이 메이는 듯하다</strong> : 어미를 찾는 듯한 새끼 거미에 대한 안타까움. 거미 가족 공동체의 해체로 인한 슬픔</li><li><strong>▪️손을 내어 미나</strong> : 연민의 감정이 드러남.</li><li><strong>▪️이 작은 것</strong> : 무척 작은 새끼 거미</li><li><strong>▪️문밖</strong> : 위험하지만 가족과 함께 할 수 있는 곳이자 공동체 회복의 공간</li><li><strong>▪️쉬이 만나기나 했으면 좋으련만</strong> : 붕괴된 가족 공동체의 회복에 대한 소망</li></ul>
+                            </div>
+                        </details></div><div style="height: 58px;"></div><div class="block" data-type="text"><details class="text-preview-container" open="">
+                                <summary class="text-preview-summary">
+                                    <span class="text-preview-title-pill">📝 창자 배경과 제목 수라의 의미</span>
+                                    <span class="text-preview-toggle-icon">▼</span>
+                                </summary>
+                                <div class="text-preview-content-wrapper">
+                                    <div class="text-preview-content">&nbsp; 『수라』가 창작된 <span style="background-color: rgb(224, 242, 241);">1930년대는 일제 강점하</span>에 <span style="background-color: rgb(224, 242, 241);">수탈 정책</span>이 강화된 시기로, 많은 사람이 생계를 유지하기 위해 만주와 연해주 등지로 이주하면서 <span style="background-color: rgb(224, 242, 241);">가족과 헤어지는 아픔</span>을 겪었다. 이러한 상황 속에서 백석은 가족 공동체를 소재로 한 작품을 많이 창작하였다. 『수라』도 그중 하나로, 공<span style="background-color: rgb(224, 242, 241);">동체적 삶이 붕괴되는 당대의 상황</span>을 그리고 있다.<div><br><div>&nbsp; 이 작품에서 거미 가족은 차디찬 밤에 밖으로 쫓겨나고 이로 인해 <span style="background-color: rgb(224, 242, 241);">가족이 해체</span>되는 비극적 상황에 처하게 된다. 이러한 상황은 일제 강점하에 <span style="background-color: rgb(224, 242, 241);">우리 민족이 처한 상황</span>과 다르지 않기 때문에 작가는 이러한 <span style="background-color: rgb(224, 242, 241);">비극적 상황</span>을 반영하여 아수라장을 줄여서 쓴 말인 『수라』로 제목을 지은 것이다.</div></div><div><br></div></div>
+                                </div>
+                            </details></div></div><div class="tab-content " data-tab-content-id="tab-1758629506712"><h2 style="display:none;">내용 정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심 정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td><b>갈래</b></td><td>자유시, 서정시</td></tr><tr><td><b>제재</b></td><td>거미 가족을 문밖으로 쓸어 버린 경험</td></tr><tr><td><b>주제</b></td><td>해체된 가족 공동체에 대한 슬픔과 가족에 대한 그리움</td></tr><tr><td><b>특징</b></td><td>1️⃣ 시적 대상을 <span class="revealable-cloze" data-answer="JUVDJTlEJTk4JUVDJTlEJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>화함<div>2️⃣ 시적 대상에 대한 화자의 정서가&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 심화됨</div><div>3️⃣ 거미를 문밖으로 버리는 화자의&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적인 행위를 통해 시상이 전개됨</div></td></tr></tbody></table></div></div><div class="block" data-type="table"><div class="block-title">田 각 연별 요지</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>연</th><th>요지</th></tr></thead><tbody><tr><td>1️⃣</td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span> 를 아무 <span class="revealable-cloze" data-answer="JUVDJTgzJTlEJUVBJUIwJTgx" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 없이 <span class="revealable-cloze" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 으로 쓸어버림</td></tr><tr><td>2️⃣</td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span>가 새끼 거미 있는 데로 가기를 바라면서 큰 거미도 문밖으로 <span class="revealable-cloze" data-answer="JUVDJTkzJUI4JUVDJTk2JUI0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 버림.</td></tr><tr><td>3️⃣</td><td>갓 태어난 <span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□ □□</span> 가&nbsp;가족을 <span class="revealable-cloze" data-answer="JUVCJUE3JThDJUVCJTgyJTk4JUVBJUI4JUIw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>&nbsp;를 바라며 문밖으로 버림.</td></tr></tbody></table></div></div><div class="block" data-type="table"><div class="block-title">田 화자의 행동과 정서 변화</div><div class="table-preview-container" data-attempts="0"><h3>시적 화자가 대상에게 한 행동을 살펴보며 화자의 정서를 파악해 보자.</h3><table><thead><tr><th>연</th><th>대상</th><th>시적 화자의 행동</th><th>시적 화자의 정서</th></tr></thead><tbody><tr><td><b>1연</b><div><font color="#0000ff">(2행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span></td><td>문밖으로 쓸어 버림.</td><td>▪️아무 생각 없음<div>▪️무심함</div></td></tr><tr><td><b>2연</b><div><font color="#0000ff">(4행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJTk4JTkw"> 문밖으로 쓸어 버림.</td><td>▪️가슴이 <span class="revealable-cloze" data-answer="JUVDJUE3JTlDJUVCJUE2JUJG" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>함<div>▪️서러워함.</div></td></tr><tr><td><b>3연</b><div><font color="#0000ff">(6행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJUIzJUI0JUVCJTkzJTlDJUVCJTlEJUJDJUVDJTlBJUI0"> 종이에 받아 <input type="text" class="blank-input-preview" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2">으로 버림.</td><td>▪️가슴이 메이고 <span class="revealable-cloze" data-answer="JUVDJTg0JTlDJUVCJTlGJUFDJUVDJTlCJTgw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span><div>▪️ 슬픔</div></td></tr></tbody></table>
+                        <div class="quiz-controls">
+                            <span class="feedback"></span>
+                            <button class="check-fill-in-btn">정답 확인</button>
+                            <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                        </div></div></div><div class="block" data-type="text"><details class="text-preview-container" open="" data-attempts="0">
+                                <summary class="text-preview-summary">
+                                    <span class="text-preview-title-pill">📝 연이 바뀌면서 행이 길어지는 까닭은?</span>
+                                    <span class="text-preview-toggle-icon">▼</span>
+                                </summary>
+                                <div class="text-preview-content-wrapper">
+                                    <div class="text-preview-content">『수라』는 연이 바뀌면서 행이 길어지고 있는데 <span style="background-color: rgb(230, 230, 250);">화자의 고조된 정서</span>를 <span class="blank-container"><input type="text" class="blank-input-preview" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1JUVCJUIyJTk1"><span class="blank-choices">{보기: 점층법, 점강법, 설의법}</span></span> 으로 강조하고 있다.<div><br><div>이러한 형식은</div><div>&nbsp; ①&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 아수라장으로 빠져드는 끔찍한 상황</span>과</div><div>&nbsp; ②&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 깊어지는 화자의 탄식</span>을 반영한다.</div></div></div>
+                                </div>
+                        <div class="quiz-controls" style="text-align: right; margin-top: 10px; padding: 0 15px 15px;">
+                            <span class="feedback"></span>
+                            <button class="check-fill-in-btn">정답 확인</button>
+                            <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                        </div>
+                            </details></div><div class="block" data-type="flowchart" data-attempts="0"><div class="block-title">➔ 시 ·공간적 배경의 의미</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node">방바닥</div><div class="flowchart-preview-node">거미 가족이 <span class="revealable-cloze" data-answer="JUVEJTk1JUI0JUVDJUIyJUI0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>되는 공간</div></div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><input type="text" class="blank-input-preview" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2"></div><div class="flowchart-preview-node">▪️거미 가족이 <span class="revealable-cloze" data-answer="JUVCJUIyJTg0JUVCJUEwJUE0JUVDJUE3JTg0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span> 공간<div>▪️거미 가족이 다시 <span class="revealable-cloze" data-answer="JUVDJTlFJUFDJUVEJTlBJThD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>할 수 있는 공간</div><div>&nbsp; &nbsp; (가족 공동체의 회복 가능성이 있음)</div></div></div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node">(차디찬)<div><input type="text" class="blank-input-preview" data-answer="JUVCJUIwJUE0"></div></div><div class="flowchart-preview-node">▪️거미 가족의 시련을 상징하는 <span class="revealable-cloze" data-answer="JUVCJUI2JTgwJUVDJUEwJTk1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적인 시간<div>▪️<span class="revealable-cloze" data-answer="JUVCJUFGJUJDJUVDJUExJUIx" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적 아픔과 고난의 <span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>을 상징한다고 볼 수도 있음.</div></div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;">거미 가족이 처한 비극성을 강조함.</div></div></div></div><div class="quiz-controls" style="text-align: right; margin-top: 10px; padding: 0 15px 15px;"><span class="feedback"></span><button class="check-fill-in-btn">정답 확인</button><button class="retry-quiz-btn" style="display:none;">다시 풀기</button></div></div><div class="block" data-type="table"><div class="block-title">田 표현상의 특징</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>표현</th><th>특징</th></tr></thead><tbody><tr><td>행위의 <span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span></td><td>화자가 각 연별로 거미를 쓸어버리는 행위를 <input type="text" class="blank-input-preview" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1">함</td></tr><tr><td>적절한 <span class="revealable-cloze" data-answer="JUVCJUI5JTg0JUVDJTlDJUEw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 사용</td><td>거미를 감정을 가진 인간고 같은 존재로 <input type="text" class="blank-input-preview" data-answer="JUVDJTlEJTk4JUVDJTlEJUI4JUVEJTk5JTk0">하여 독자의 공감을 도움.</td></tr><tr><td>정서와 감정의 <span class="revealable-cloze" data-answer="JUVEJTk5JTk1JUVCJThDJTgw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span></td><td>▪️1연→2연→3연으로 진행될수록 각 연의 길이가 점차 <span class="revealable-cloze" data-answer="JUVBJUI4JUI4JUVDJTk2JUI0JUVDJUE3JTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>.<div>▪️연이 진행될수록 화자의 정서와 감정이 <span class="revealable-cloze" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 확대됨.</div></td></tr><tr><td>배경의 상징적 의미</td><td>'<span class="revealable-cloze" data-answer="JUVDJUIwJUE4JUVCJTk0JTk0JUVDJUIwJUFDJTIwJUVCJUIwJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUEx">□□□ □</span>'에서 '<span class="revealable-cloze" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>'이라는 시간적, 공간적 배경은 거미 가족의 처한 <span class="revealable-cloze" data-answer="JUVCJUI5JTg0JUVBJUI3JUI5JUVDJUEwJTgxJTIwJUVEJTk4JTg0JUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUVDJUEwJTgxJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□적 □□</span>을 상징함.</td></tr></tbody></table>
+                        <div class="quiz-controls">
+                            <span class="feedback"></span>
+                            <button class="check-fill-in-btn">정답 확인</button>
+                            <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                        </div></div></div></div><div class="tab-content " data-tab-content-id="tab-1758632720384"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview"></div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q1.</strong> 시의 제목인 '수라(修羅)'는 평화롭고 안정된 상태를 의미한다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q2.</strong> 이 시는 1930년대 일제 강점기라는 시대적 배경과 관련이 깊다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q3.</strong> 시에서 '방바닥'은 거미 가족이 함께 모이는 안전한 공간을 상징한다</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q4.</strong> 화자의 정서는 시가 진행됨에 따라 '무심함'에서 '연민과 슬픔'으로 변화한다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q5.</strong> 2연에서 화자가 큰 거미를 문밖으로 버리는 행위는 새끼 거미와 만나게 해주려는 의도이다</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q6.</strong> 시에서 '문밖'은 거미 가족에게 위험한 공간이지만, 동시에 가족이 다시 만날 수 있는 희망의 공간이기도 하다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q7.</strong> 3연에 묘사된 '무척 작은 새끼 거미'의 모습은 연약함을 강조하여 화자의 슬픔을 심화시킨다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q8.</strong> 이 시는 연이 거듭될수록 행의 길이가 짧아지며 감정을 절제하는 특징을 보인다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q9.</strong> 화자는 3연에서 자신을 무서워하며 달아나는 새끼 거미를 보며 안도감을 느낀다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q10.</strong> 화자의 행위는 각 연에서 '쓸어버린다' → '쓸어 버리며' → '받어 버리며'로 변화하며, 대상에 대한 태도 변화를 보여준다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q11.</strong> 이 시의 주제는 해체된 가족 공동체에 대한 안타까움과 슬픔이라고 할 수 있다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q12.</strong> 화자는 마지막에 거미 가족이 다시 만났을 것이라고 확신하며 시를 마무리한다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div></div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                <div class="quiz-title-preview">시어의 상징적 의미 연결하기</div>
+                                <div class="line-quiz-preview">
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">방바닥</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">문밖</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">차디찬 밤</span><span class="dot" data-id="2"></span></div></div>
+                                    <canvas class="line-quiz-canvas"></canvas>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">가족이 해체되기 시작하는 공간</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">우리 민족이 처한 비극적 현실과 시련</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가족 공동체 회복의 가능성이 있는 공간</span></div></div>
+                                </div>
+                                <div class="quiz-controls">
+                                    <button class="check-line-quiz-btn">정답 확인</button>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                </div>
+                            </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                <div class="quiz-title-preview">화자의 정서 변화 연결하기</div>
+                                <div class="line-quiz-preview">
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">거미 새끼</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">큰 거미 (어미 거미)</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">무척 작은 새끼 거미</span><span class="dot" data-id="2"></span></div></div>
+                                    <canvas class="line-quiz-canvas"></canvas>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">아무 생각 없음 (무심함)</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가슴이 짜릿하고 서러움</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">가슴이 메이고 슬픔</span></div></div>
+                                </div>
+                                <div class="quiz-controls">
+                                    <button class="check-line-quiz-btn">정답 확인</button>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                </div>
+                            </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                <div class="quiz-title-preview">화자의 행동과 의도 연결하기</div>
+                                <div class="line-quiz-preview">
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">(1연) 문밖으로 쓸어버린다</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">2연) 문밖으로 버리며</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">(3연) 보드라운 종이에 받어 버리며</span><span class="dot" data-id="2"></span></div></div>
+                                    <canvas class="line-quiz-canvas"></canvas>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">아무 생각 없는 무심한 행위</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">가족 공동체의 회복을 간절히 바람</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">연민과 안타까움, 가족이 만나기를 소망함</span></div></div>
+                                </div>
+                                <div class="quiz-controls">
+                                    <button class="check-line-quiz-btn">정답 확인</button>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                </div>
+                            </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                <div class="quiz-title-preview">작품의 표현상 특징 연결하기</div>
+                                <div class="line-quiz-preview">
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">'어니젠가'와 같은 평안도 방언을 사용함</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">거미를 감정을 가진 인간처럼 표현함</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">연이 진행될수록 화자의 슬픔과 안타까움이 깊어짐</span><span class="dot" data-id="2"></span></div></div>
+                                    <canvas class="line-quiz-canvas"></canvas>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">향토적 시어</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">점층적 심화</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">의인화</span></div></div>
+                                </div>
+                                <div class="quiz-controls">
+                                    <button class="check-line-quiz-btn">정답 확인</button>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                </div>
+                            </div></div><div class="block" data-type="mcq"><div class="block-title">🔢 객관식</div><div class="mcq-preview-item" data-attempts="0" data-answer="4" data-explanation="JTNDZGl2JTNFJUVDJTlEJUI0JTIwJUVCJUFDJUI4JUVDJUEwJTlDJUVCJThBJTk0JTIwJUVCJUIwJUIxJUVDJTg0JTlEJTIwJUVDJThCJTlDJUVDJTk3JTkwJTIwJUVCJTgyJTk4JUVEJTgzJTgwJUVCJTgyJTk4JUVCJThBJTk0JTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JUVDJThCJTlEJUVBJUIzJUJDJTIwJUVBJUIzJUI1JUVBJUIwJTg0JUVDJTlEJTk4JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJTg0JUIxJUVDJTlEJTg0JTIwJUVCJThCJUE0JUVCJUEzJUFDJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQiVBNSVCQyUyMCVFQSVCOCVCMCVFQyVBNCU4MCVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQyU5RSU5MSVFRCU5MiU4OCVFQyU5RCU4NCUyMCVFQSVCOSU4QSVFQyU5RCVCNCUyMCVFQyU5RSU4OCVFQSVCMiU4QyUyMCVFQSVCMCU5MCVFQyU4MyU4MSVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQiVCNiU4NCVFQyU4NCU5RCVFRCU5NSVBMCUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU4QSU5NCVFQyVBNyU4MCVFQiVBNSVCQyUyMCVFRCU4RiU4OSVFQSVCMCU4MCVFRCU5NSU5OCVFQiU4QSU5NCUyMCVFQiVBQyVCOCVFRCU5NSVBRCVFQyU5RSU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMCUyMCglRUMlQTAlODElRUMlQTAlODgpJTIwMSVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCclRUMlOTUlODQlRUIlQUElQTglMjAlRUMlODMlOUQlRUElQjAlODElMjAlRUMlOTclODYlRUMlOUQlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJDJUVCJUE1JUJDJTIwJUVCJUFDJUI4JUVCJUIwJTk2JUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJTkzJUI4JUVDJTk2JUI0JUVCJUIyJTg0JUVCJUE2JUJEJUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUQlOTUlOUMlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JTIwJUVEJTk1JUI0JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlDJUEwJUVCJUIwJTlDJUVEJTk1JTk4JUVCJThBJTk0JyUyMCVFQyU5OSVCOCVFQiVCNiU4MCVFQyU5RCU5OCUyMCVFRCU5RSU5OCVFQyU5QyVCQyVFQiVBMSU5QyVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQyU5NyVBRCVFRCU5NSVBMCVFQyU5RCU4NCUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUMlQjIlOTglRUMlOUQlOEMlRUMlOTclOTAlRUIlOEElOTQlMjAlRUMlOUQlOTglRUIlOEYlODQlRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMkMlMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUQlOTYlODklRUMlOUMlODQlRUElQjAlODAlMjAlRUElQjElQjAlRUIlQUYlQjglMjAlRUElQjAlODAlRUMlQTElQjElRUMlOUQlQjQlRUIlOUQlQkMlRUIlOEElOTQlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlMjAlRUQlOTUlQjQlRUMlQjIlQjQlRUMlOUQlOTglMjAlRUMlOEIlOUMlRUIlQjAlOUMlRUMlQTAlOTAlRUMlOUQlQjQlMjAlRUIlOTAlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTElMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMDIlRUMlOTclQjAlRUMlOTclOTAlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUIlOEElOTQlMjAlRUMlODMlODglRUIlODElQkMlRUIlQTUlQkMlMjAlRUMlQjAlQkUlRUMlOTUlODQlRUMlOTglQTglMjAlRUIlOTMlQUYlRUQlOTUlOUMlMjAlRUMlOTYlQjQlRUIlQUYlQjglMjAlRUElQjElQjAlRUIlQUYlQjglRUIlQTUlQkMlMjAlRUIlQjMlQjQlRUElQjMlQTAlMjAnJUVBJUIwJTgwJUVDJThBJUI0JUVDJTlEJUI0JTIwJUVDJUE3JTlDJUVCJUE2JUJGJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUMlODQlOUMlRUIlOUYlQUMlRUMlOUIlOEMnJUVEJTk1JUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCVFQyU5RSU5MCVFQyU4QiVBMCVFQyU5RCU5OCUyMCVFRCU5NiU4OSVFQyU5QyU4NCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFQyU5RCVCNCVFQyU4MiVCMCglRTklOUIlQTIlRTYlOTUlQTMpJUVEJTk1JTk4JUVBJUIyJThDJTIwJUVCJTkwJTlDJTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JTIwJUVBJUI1JUFDJUVDJTg0JUIxJUVDJTlCJTkwKCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSklRUMlOUQlODQlMjAlRUQlOTYlQTUlRUQlOTUlOUMlMjAlRUMlOTclQjAlRUIlQUYlQkMlRUElQjMlQkMlMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlOTglMjAlRUMlQTAlOTUlRUMlODQlOUMlRUElQjAlODAlMjAlRUMlODMlOUQlRUElQjIlQTglRUIlODIlQUMlRUMlOUQlOEMlRUMlOUQlODQlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlOTglRUIlQTklQjAlMkMlMjAlMjZsdCUzQiVFQiVCMyVCNCVFQSVCOCVCMCUyNmd0JTNCJUVDJTlEJTk4JTIwJyVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQyVBMSVCNCVFQyU5RSVBQyVFQiU5MyVBNCVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSVCNCUyMCVFQSVCOSU4QSVFQyU5RCU4MCUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MiVCOCVFQiU4QiVBNCclRUIlOEElOTQlMjAlRUMlODQlQTQlRUIlQUElODUlRUElQjMlQkMlMjAlRUMlOUQlQkMlRUMlQjklOTglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTIlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUIlOTAlOUMlMjAnJUVDJTk1JTg4JUVDJTk4JUE4JUVEJTk1JTlDJTIwJUVCJTgyJUI0JUVCJUI2JTgwJTIwJUVBJUIzJUI1JUVBJUIwJTg0JyVFQSVCMyVCQyUyMCclRUMlOUMlODQlRUQlOTglOTElRUMlQTAlODElRUMlOUQlQjglMjAlRUMlOTklQjglRUIlQjYlODAlMjAlRUElQjMlQjUlRUElQjAlODQnJUVDJTlEJTk4JTIwJUVCJThDJTgwJUVCJUE2JUJEJUVDJTlEJTgwJTIwJUVDJThCJTlDJUVDJTlEJTk4JTIwJyVFQiVCMCVBOSVFQiVCMCU5NCVFQiU4QiVBNSclRUElQjMlQkMlMjAnJUVDJUIwJUE4JUVCJTk0JTk0JUVDJUIwJUFDJTIwJUVCJUIwJUE0JyVFQyU5RCU5OCUyMCclRUIlQUMlQjglRUIlQjAlOTYnJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVBJUI1JUFDJUVDJUIyJUI0JUVEJTk5JTk0JUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQiU5NCVCMCVFQiU5QyVCQiVFRCU5NSU5QyUyMCVFQiVCMCVBOSVFQSVCMyVCQyUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQyVCNiVBNSVFQSVCMyVBMCUyMCVFQyU5QyU4NCVFRCU5NyU5OCVFRCU5NSU5QyUyMCVFQiVCMCU5NiVFQyU5RCU5OCUyMCVFQSVCMyVCNSVFQSVCMCU4NCVFQyVBMCU4MSUyMCVFQiU4QyU4MCVFQiVCOSU4NCVFQiU4QSU5NCUyQyUyMCVFQyU4MiVCNiVFQyU5RCU5OCUyMCVFRCU4NCVCMCVFQyVBMCU4NCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQiU4MiVCNCVFQyVBQiU5MyVFQSVCMiVBOCUyMCVFQyU4QiU5QyVFQiVBMCVBOCVFQyU5RCU4NCUyMCVFQSVCMiVBQSVFQSVCMiU4QyUyMCVFQiU5MCU5OCVFQiU4QSU5NCUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCU5OCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyU4NCVCMSVFQyU5RCU4NCUyMCVFRCU5QSVBOCVFQSVCMyVCQyVFQyVBMCU4MSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MyU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMyUyMCglRUIlQjYlODAlRUMlQTAlODElRUMlQTAlODgpJTIwMyVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQSVCMCU4MCUyMCclRUIlQjMlQjQlRUIlOTMlOUMlRUIlOUQlQkMlRUMlOUElQjQlMjAlRUMlQTIlODUlRUMlOUQlQjQlRUMlOTclOTAlMjAlRUIlQjAlOUIlRUMlOTYlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JUVCJUE1JUJDJTIwJUVCJUIyJTg0JUVCJUE2JUFDJUVCJThBJTk0JTIwJUVEJTk2JTg5JUVDJTlDJTg0JUVCJThBJTk0JTIwMSVFQyU5NyVCMCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU4MyU5QyVFQiU4RiU4NCVFQyU5OSU4MCUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQiU4QyU4MCVFQyU4MyU4MSVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSU5QyUyMCVFQyVBMSVCMCVFQyU4QiVBQyVFQyU4NCVCMSVFQSVCMyVCQyUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQyU5RCVCNCUyMCVFQiU4QiVCNCVFQSVCOCVCNCUyMCVFRCU5NiU4OSVFQiU4RiU5OSVFQyU5RCU5OCUyMCVFQiVCMyU4MCVFRCU5OSU5NCVFQiVBNSVCQyUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUQlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMjAlRUMlOUQlQjQlRUElQjIlODMlRUMlOUQlQjQlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlFJTkwJUVDJThCJUEwJUVDJTlEJTk4JTIwJUVDJTlEJTk4JUVDJUE3JTgwJUVCJUExJTlDJTIwJUVDJUEwJTgxJUVBJUI3JUI5JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVCJUIzJUI1JUVDJTlCJTkwJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUElQjclQjglMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlOTclOTAlMjAlRUMlOTUlODglRUIlOEYlODQnJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTgzJTlDJUVCJThGJTg0JUVCJThBJTk0JTIwJUVDJTk1JTg0JUVCJThCJTk5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5OCVBNCVFRCU5RSU4OCVFQiVBMCVBNCUyMCVFQiVBNyU4OCVFQyVBNyU4MCVFQiVBNyU4OSUyMCVFQSVCNSVBQyVFQyVBMCU4OCVFQyU5RCVCOCUyMCUyMiVFQyU4OSVBQyVFQyU5RCVCNCUyMCVFQiVBNyU4QyVFQiU4MiU5OCVFQSVCOCVCMCVFQiU4MiU5OCUyMCVFRCU5NiU4OCVFQyU5QyVCQyVFQiVBOSVCNCUyMCVFQyVBMiU4QiVFQyU5QyVCQyVFQiVBMCVBOCVFQiVBNyU4QyUyMCVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQyU4QSVBQyVFRCU4RCVCQyVFRCU5NSU5QyVFQiU4QiVBNCUyMiVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQyU5NSU4QyUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU5MyVBRiVFQyU5RCVCNCUyQyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCVFQSVCNyVCOCVFQiU5MyVBNCVFQyU5RCU5OCUyMCVFQyU5RSVBQyVFRCU5QSU4QyVFQiVBNSVCQyUyMCVFQiU4QiVBOCVFQyVBNyU4MCUyMCVFQyU4NiU4QyVFQiVBNyU5RCVFRCU5NSVBMCUyMCVFQiVCRiU5MCUyMCVFQSVCNyVCOCUyMCVFQSVCMiVCMCVFQSVCMyVCQyVFQiVBNSVCQyUyMCVFRCU5OSU5NSVFQyU4QiVBMCVFRCU5NSU5OCVFQyVBNyU4MCUyMCVFQiVBQSVCQiVFRCU5NSU5OCVFQiVBOSVCMCUyQyUyMCVFQiVBQyVCNCVFQiVBMCVBNSVFQSVCMCU5MCVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU4QSU5MCVFQiU4MSVCQyVFQSVCMyVBMCUyMCVFQyU5RSU4OCVFQyU4QSVCNSVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUIlOTQlQjAlRUIlOUQlQkMlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUElQjAlODAlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlRUIlQTUlQkMlMjAlRUMlQTAlODElRUElQjclQjklRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUIlQjMlQjUlRUMlOUIlOTAlRUQlOTUlOTglRUElQjMlQTAlMjAlRUMlOTUlODglRUIlOEYlODQlRUQlOTUlOUMlRUIlOEIlQTQlRUIlOEElOTQlMjAlRUMlQTclODQlRUMlODglQTAlRUMlOUQlODAlMjAlRUMlOEIlOUMlRUMlOUQlOTglMjAlRUIlQjklODQlRUElQjclQjklRUMlQTAlODElMjAlRUMlQTAlOTUlRUMlODQlOUMlRUMlOTklODAlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlODQlMjAlRUElQjMlQTAlRUIlQTAlQTQlRUQlOTUlQTAlMjAlRUIlOTUlOEMlMjAlRUMlQTAlODElRUMlQTAlODglRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOEElQjUlRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTQlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCclRUMlODglOTglRUIlOUQlQkMoJUVDJTk1JTg0JUVDJTg4JTk4JUVCJTlEJUJDKSclRUIlOEElOTQlMjAlRUIlQjMlQjglRUIlOUUlOTglMjAlRUMlOEIlQjglRUMlOUIlODAlRUMlOUQlQjQlMjAlRUIlODElOEElRUMlOUQlQjQlRUMlQTclODAlMjAlRUMlOTUlOEElRUIlOEElOTQlMjAlRUQlOTglQkMlRUIlOUUlODAlRUMlOUQlOTglMjAlRUMlODQlQjglRUElQjMlODQlRUIlQTUlQkMlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQyU5RCU5OCUyMCVFQyU4NCVBNCVFQiVBQSU4NSVFQyVCMiU5OCVFQiU5RiVCQyUyQyUyMCVFQyU5RCVCNCUyMCVFQyU4QiU5QyVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCVCNCVFQiU5RCVCQyVFQiU4QSU5NCUyMCVFQyU5RSU5MSVFQyU5RCU4MCUyMCVFQSVCMyVCNSVFQiU4RiU5OSVFQyVCMiVCNCVFQSVCMCU4MCUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU5NiU4OSVFQyU5QyU4NCUyMCVFRCU5NSU5OCVFQiU4MiU5OCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFRCU5NSVCNCVFQyVCMiVCNCVFQiU5MCU5OCVFQSVCMyVBMCUyMCVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyVBMCU4MSVFQyU5RCVCNCVFQSVCMyVBMCUyMCVFQyVCMCVCOCVFRCU5OCVCOSVFRCU5NSU5QyUyMCVFQyU4MyU4MSVFRCU5OSVBOSVFQyU5RCU4MCUyMCclRUMlODglOTglRUIlOUQlQkMnJUVCJTlEJUJDJUVCJThBJTk0JTIwJUVDJUEwJTlDJUVCJUFBJUE5JUVDJTlEJTg0JTIwJUVEJTg2JUI1JUVEJTk1JUI0JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJUE3JTkxJUVDJTk1JUJEJUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUzQyUyRmRpdiUzRQ=="><p><strong>Q.</strong> <span style="font-size: 17px;">『수라』를 &lt;보기&gt;의 관점에서 감상한 내용으로 적절하지 <u><b>않은</b></u> 것은?</span></p><div><br></div><div><div style="text-align: center;"><b>&lt; 보 기 &gt;&nbsp;</b></div><div>&nbsp; 백석의 시에서 ‘공동체’는 중요한 의미를 지닌다. 그의 시에 나타나는 공동체는 따뜻하고 정겨운 삶의 공간이지만, 외부의 힘에 의해 쉽게 해체될 수 있는 연약한 모습을 보이기도 한다. 이 과정에서 시적 화자는 공동체의 해체를 유발하거나 목격하는 역할을 하며, 흩어지는 존재들에 대해 깊은 연민과 슬픔을 드러낸다. 특히 그의 시에서는 안온한 내부 공간과 위협적인 외부 공간의 대립이 나타나는데, 생명체들이 내부에서 외부로 내몰리는 과정은 공동체 붕괴의 비극성을 심화시킨다. 시인은 이러한 비극적 상황을 ‘수라’와 같은 혼란의 이미지로 형상화한다.</div></div><p></p><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① 1연에서 화자가 ‘거미 새끼’를 ‘아모 생각 없이’ ‘문밖으로 쓸어버리’는 행위는, 화자가 공동체 해체를 유발하는 외부의 힘으로 작용하는 순간을 보여주는군.</div><div class="mcq-preview-option" data-choice="2">② 2연에서 ‘큰 거미’가 ‘새끼 거미 쓸려 나간 곳’에 나타난 것을 보고 화자가 ‘서러워’하는 것은, 흩어진 공동체 구성원에 대한 연민의 정서가 발현된 것으로 볼 수 있군.</div><div class="mcq-preview-option" data-choice="3">③ ‘방바닥’이 안온한 내부 공간이라면 ‘차디찬 밤’의 ‘문밖’은 위협적인 외부 공간으로 설정되어, 두 공간의 대립을 통해 거미 가족이 처한 비극적 상황을 부각하고 있군.</div><div class="mcq-preview-option" data-choice="4">④ 3연에서 화자가 ‘무척 작은 새끼 거미’를 ‘보드라운 종이에 받어’ ‘문밖으로 버리’는 행위는, 파괴되었던 공동체를 자신의 의지로 적극적으로 복원시키고 그 결과에 안도하는 화자의 태도를 보여주는군.</div><div class="mcq-preview-option" data-choice="5">⑤ 이 시의 제목인 ‘수라’는 한 가족 공동체가 해체되어 뿔뿔이 흩어지는 혼란스럽고 참혹한 상황 그 자체를 상징적으로 압축하여 보여주는 것이라고 할 수 있군.</div></div>
+                            <div class="quiz-controls">
+                                <span class="feedback"></span>
+                                <button class="retry-quiz-btn">다시 풀기</button>
+                            </div>
+                            <div class="explanation"></div>
+                            </div></div></div></div>
+                <div id="explanationPopup" class="explanation-popup"></div>
+            
+                    </div>
+                    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const explanationPopup = document.getElementById('explanationPopup');
+            const previewContainer = document.getElementById('exported-container');
+
+            const tabButtonsContainer = document.querySelector('#preview-tab-buttons');
+            if (tabButtonsContainer) {
+                tabButtonsContainer.addEventListener('click', e => {
+                    const tabButton = e.target.closest('.tab-btn');
+                    if (!tabButton) return;
+
+                    const tabId = tabButton.dataset.tabId;
+
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                    tabButton.classList.add('active');
+                    const activeContent = document.querySelector('.tab-content[data-tab-content-id="' + tabId + '"]');
+                    if (activeContent) {
+                        activeContent.classList.add('active');
+                        adjustBlankInputWidths(activeContent);
+                        if (window.MathJax && window.MathJax.typesetPromise) {
+                            window.MathJax.typesetPromise([activeContent]);
+                        }
+                    }
+                    
+                    if (previewContainer) {
+                        previewContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
+
+            function adjustBlankInputWidths(container) {
+                const measureSpan = document.createElement('span');
+                measureSpan.style.visibility = 'hidden';
+                measureSpan.style.position = 'absolute';
+                measureSpan.style.fontFamily = 'inherit';
+                measureSpan.style.fontSize = '1em';
+                document.body.appendChild(measureSpan);
+
+                container.querySelectorAll('.blank-input-preview').forEach(input => {
+                    const encodedAnswer = input.dataset.answer;
+                    if (encodedAnswer) {
+                        try {
+                            const answer = decodeURIComponent(atob(encodedAnswer));
+                            measureSpan.textContent = answer || '____';
+                            const textWidth = measureSpan.offsetWidth;
+                            input.style.width = (textWidth + 10) + 'px';
+                        } catch (e) {}
+                    }
+                });
+                document.body.removeChild(measureSpan);
+            }
+
+            function initializeAllInteractiveBlocks() {
+                document.querySelectorAll('.line-quiz-preview').forEach(quizEl => {
+                    initializeLineQuiz(quizEl);
+                });
+            }
+
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function initializeLineQuiz(quizEl) {
+                if (quizEl.lineQuizInstance) {
+                    quizEl.lineQuizInstance.reset();
+                    return;
+                }
+                const canvas = quizEl.querySelector('.line-quiz-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const allDots = quizEl.querySelectorAll('.dot');
+                let selectedDot = null;
+                let connections = [];
+
+                const matchItemHeights = () => {
+                    const leftItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item'));
+                    const rightItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:last-child .line-quiz-item'));
+                    const numItems = Math.min(leftItems.length, rightItems.length);
+                    for (let i = 0; i < numItems; i++) {
+                        leftItems[i].style.height = '';
+                        rightItems[i].style.height = '';
+                        const leftHeight = leftItems[i].offsetHeight;
+                        const rightHeight = rightItems[i].offsetHeight;
+                        const maxHeight = Math.max(leftHeight, rightHeight);
+                        if (maxHeight > 36) {
+                            leftItems[i].style.height = maxHeight + 'px';
+                            rightItems[i].style.height = maxHeight + 'px';
+                        }
+                    }
+                };
+
+                const resizeCanvas = () => {
+                    if (!quizEl.isConnected) return;
+                    canvas.width = quizEl.clientWidth;
+                    canvas.height = quizEl.clientHeight;
+                    matchItemHeights();
+                    redrawLines();
+                };
+
+                const getDotPosition = (dot) => {
+                    const dotRect = dot.getBoundingClientRect();
+                    const canvasRect = canvas.getBoundingClientRect();
+                    return {
+                        x: dotRect.left - canvasRect.left + dotRect.width / 2,
+                        y: dotRect.top - canvasRect.top + dotRect.height / 2
+                    };
+                };
+                const redrawLines = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    connections.forEach(conn => {
+                        const startDot = quizEl.querySelector('.line-quiz-column:first-child .dot[data-id="' + conn.leftId + '"]');
+                        const endDot = quizEl.querySelector('.line-quiz-column:last-child .dot[data-id="' + conn.rightId + '"]');
+                        if (!startDot || !endDot) return;
+                        const startPos = getDotPosition(startDot);
+                        const endPos = getDotPosition(endDot);
+                        ctx.beginPath();
+                        ctx.moveTo(startPos.x, startPos.y);
+                        ctx.lineTo(endPos.x, endPos.y);
+                        ctx.strokeStyle = conn.color || '#007bff';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    });
+                };
+                const handleDotClick = (e) => {
+                    const dot = e.target;
+                    if (!dot.classList.contains('dot') || dot.classList.contains('disabled')) return;
+                    if (!selectedDot) {
+                        selectedDot = dot;
+                        dot.classList.add('selected');
+                    } else {
+                        if (selectedDot.closest('.line-quiz-column') === dot.closest('.line-quiz-column')) {
+                            selectedDot.classList.remove('selected');
+                            selectedDot = dot;
+                            dot.classList.add('selected');
+                            return;
+                        }
+                        const leftDot = selectedDot.closest('.line-quiz-column:first-child') ? selectedDot : dot;
+                        const rightDot = selectedDot.closest('.line-quiz-column:last-child') ? selectedDot : dot;
+                        const leftId = leftDot.dataset.id;
+                        const rightId = rightDot.dataset.id;
+                        connections = connections.filter(c => c.leftId !== leftId);
+                        connections.push({ leftId, rightId });
+                        redrawLines();
+                        selectedDot.classList.remove('selected');
+                        selectedDot = null;
+                    }
+                };
+
+                const instance = {
+                    checkAnswers: () => {
+                        connections.forEach(conn => {
+                            conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
+                        });
+                        redrawLines();
+                        allDots.forEach(d => d.classList.add('disabled'));
+                    },
+                    reset: () => {
+                        connections = [];
+                        selectedDot = null;
+                        allDots.forEach(dot => dot.classList.remove('selected', 'disabled'));
+                        const rightColumnEl = quizEl.querySelector('.line-quiz-column:last-child');
+                        const rightItems = Array.from(rightColumnEl.querySelectorAll('.line-quiz-item'));
+                        shuffle(rightItems);
+                        rightColumnEl.innerHTML = '';
+                        rightItems.forEach(item => rightColumnEl.appendChild(item));
+                        redrawLines();
+                        setTimeout(resizeCanvas, 0);
+                    }
+                };
+                quizEl.lineQuizInstance = instance;
+                quizEl.addEventListener('click', handleDotClick);
+                const resizeObserver = new ResizeObserver(resizeCanvas);
+                resizeObserver.observe(quizEl);
+                instance.reset();
+            }
+
+            let currentDraggedItem = null;
+            let dropIndicator = null; 
+
+            function getDragAfterElementHorizontal(container, x) {
+                const draggableElements = [...container.querySelectorAll('.ordering-item:not(.dragging)')];
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = x - box.left - box.width / 2;
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            }
+
+            previewContainer.addEventListener('dragstart', e => {
+                if (e.target.matches('.drag-source, .ordering-item')) {
+                    currentDraggedItem = e.target;
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                    e.dataTransfer.setData('text/plain', e.target.textContent);
+                    if (e.target.matches('.ordering-item')) {
+                        dropIndicator = document.createElement('div');
+                        dropIndicator.className = 'ordering-drop-indicator';
+                    }
+                }
+            });
+
+            previewContainer.addEventListener('dragend', e => {
+                if (e.target.matches('.drag-source, .ordering-item')) {
+                    e.target.classList.remove('dragging');
+                    if (dropIndicator && dropIndicator.parentNode) {
+                        dropIndicator.parentNode.removeChild(dropIndicator);
+                    }
+                    dropIndicator = null;
+                    currentDraggedItem = null;
+                }
+            });
+
+            previewContainer.addEventListener('dragover', e => {
+                e.preventDefault();
+                const targetContainer = e.target.closest('.ordering-target-container');
+                if (e.target.matches('.drop-target')) {
+                    e.target.classList.add('drag-over');
+                }
+                else if (targetContainer && currentDraggedItem && currentDraggedItem.matches('.ordering-item')) {
+                    targetContainer.classList.add('drag-over');
+                    const afterElement = getDragAfterElementHorizontal(targetContainer, e.clientX);
+                    if (afterElement == null) {
+                        if (targetContainer.lastChild !== dropIndicator) {
+                            targetContainer.appendChild(dropIndicator);
+                        }
+                    } else {
+                        if (afterElement.previousSibling !== dropIndicator) {
+                            targetContainer.insertBefore(dropIndicator, afterElement);
+                        }
+                    }
+                }
+            });
+            
+            previewContainer.addEventListener('dragleave', e => {
+                const targetContainer = e.target.closest('.ordering-target-container');
+                if (e.target.matches('.drop-target')) {
+                    e.target.classList.remove('drag-over');
+                } else if(targetContainer){
+                    targetContainer.classList.remove('drag-over');
+                }
+                if(targetContainer && dropIndicator && dropIndicator.parentNode) {
+                    dropIndicator.parentNode.removeChild(dropIndicator);
+                }
+            });
+            
+            previewContainer.addEventListener('drop', e => {
+                e.preventDefault();
+                if (e.target.classList.contains('drop-target')) {
+                    e.target.classList.remove('drag-over');
+                    const sourceContainer = e.target.closest('.drag-drop-preview-container').querySelector('.source-container');
+                    if (e.target.textContent) {
+                        const oldSource = document.createElement('span');
+                        oldSource.className = 'drag-source';
+                        oldSource.draggable = true;
+                        oldSource.textContent = e.target.textContent;
+                        sourceContainer.appendChild(oldSource);
+                    }
+                    e.target.textContent = e.dataTransfer.getData('text/plain');
+                    if (currentDraggedItem) {
+                        if(currentDraggedItem.parentElement.classList.contains('source-container')){
+                            currentDraggedItem.parentElement.removeChild(currentDraggedItem);
+                        } else {
+                            currentDraggedItem.textContent = '';
+                        }
+                    }
+                }
+                else if (e.target.closest('.ordering-source-container, .ordering-target-container')) {
+                    const container = e.target.closest('.ordering-source-container, .ordering-target-container');
+                    container.classList.remove('drag-over');
+                    if (dropIndicator && dropIndicator.parentNode) {
+                        dropIndicator.parentNode.replaceChild(currentDraggedItem, dropIndicator);
+                    } else if (currentDraggedItem) { 
+                        const afterElement = getDragAfterElementHorizontal(container, e.clientX);
+                        if (afterElement == null) {
+                            container.appendChild(currentDraggedItem);
+                        } else {
+                            container.insertBefore(currentDraggedItem, afterElement);
+                        }
+                    }
+                    const quizContainer = container.closest('.ordering-preview-container');
+                    if (quizContainer && container.classList.contains('ordering-target-container')) {
+                        if (container.classList.contains('correct') || container.classList.contains('incorrect')) {
+                            container.classList.remove('correct', 'incorrect');
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls) {
+                                controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                controls.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                                const feedbackEl = controls.querySelector('.feedback');
+                                feedbackEl.className = 'feedback';
+                                feedbackEl.innerHTML = '';
+                            }
+                        }
+                    }
+                }
+            });
+
+            previewContainer.addEventListener('click', e => {
+                const cloze = e.target.closest('.revealable-cloze');
+                const revealed = e.target.closest('.revealed-answer');
+
+                if (cloze) {
+                    const answer = decodeURIComponent(atob(cloze.dataset.answer));
+                    cloze.textContent = answer;
+                    cloze.className = 'revealed-answer';
+                    return;
+                }
+                if (revealed) {
+                    const hint = decodeURIComponent(atob(revealed.dataset.hint));
+                    revealed.textContent = hint;
+                    revealed.className = 'revealable-cloze';
+                    return;
+                }
+                
+                const summary = e.target.closest('.frame-preview-summary, .summary-preview-summary, .text-preview-summary');
+                if (summary) {
+                    e.preventDefault();
+                    const details = summary.parentElement;
+                    details.open = !details.open;
+                    return;
+                }
+                const retryBtn = e.target.closest('.retry-quiz-btn');
+                const checkAnswerBtn = e.target.closest('.check-answer-btn');
+                const checkFillInBtn = e.target.closest('.check-fill-in-btn');
+                const checkLineQuizBtn = e.target.closest('.check-line-quiz-btn');
+                const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
+                const checkOrderingBtn = e.target.closest('.check-ordering-btn');
+                const youtubePlaceholder = e.target.closest('.youtube-placeholder');
+
+                if (retryBtn) {
+                    const quizContainer = retryBtn.closest('.quiz-container, .mcq-preview-item, .descriptive-preview-item, .fill-in-container, .table-preview-container, .drag-drop-preview-container, .ordering-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                    if (quizContainer) {
+                        const controls = quizContainer.querySelector('.quiz-controls');
+                        if (controls && controls.querySelector('.feedback')) {
+                            controls.querySelector('.feedback').className = 'feedback';
+                            controls.querySelector('.feedback').innerHTML = '';
+                        }
+                        quizContainer.querySelectorAll('.explanation').forEach(el => { el.className = 'explanation' });
+                        if (quizContainer.querySelector('.ox-preview-item')) {
+                            quizContainer.querySelectorAll('.ox-preview-item .feedback').forEach(fb => {
+                                fb.className = 'feedback';
+                                fb.innerHTML = '';
+                            });
+                        }
+                        if (quizContainer.classList.contains('mcq-preview-item')) {
+                            quizContainer.dataset.attempts = "0";
+                        }
+                        if (quizContainer.classList.contains('descriptive-preview-item')) {
+                            const studentAnswerEl = quizContainer.querySelector('.descriptive-student-answer');
+                            studentAnswerEl.value = '';
+                            studentAnswerEl.disabled = false;
+                            quizContainer.querySelector('.check-answer-btn').style.display = 'inline-block';
+                            retryBtn.style.display = 'none';
+                        }
+                        const fillInBlanks = quizContainer.querySelectorAll('.blank-input-preview');
+                        if (fillInBlanks.length > 0) {
+                            quizContainer.dataset.attempts = "0";
+                            fillInBlanks.forEach(input => {
+                                input.value = '';
+                                input.disabled = false;
+                                input.className = 'blank-input-preview';
+                            });
+                            const checkBtn = quizContainer.querySelector('.check-fill-in-btn');
+                            if (checkBtn) checkBtn.style.display = 'inline-block';
+                            retryBtn.style.display = 'none';
+                        }
+                        const lineQuizPreview = quizContainer.querySelector('.line-quiz-preview');
+                        if (lineQuizPreview && lineQuizPreview.lineQuizInstance) {
+                            lineQuizPreview.lineQuizInstance.reset();
+                            retryBtn.style.display = 'none';
+                            quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+                        }
+                        if (quizContainer.classList.contains('drag-drop-preview-container')) {
+                            const sourceContainer = quizContainer.querySelector('.source-container');
+                            const allWords = [];
+                            quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                if (target.textContent.trim()) { allWords.push(target.textContent.trim()); }
+                                target.textContent = '';
+                                target.className = 'drop-target';
+                            });
+                            sourceContainer.querySelectorAll('.drag-source').forEach(source => {
+                                allWords.push(source.textContent.trim());
+                            });
+                            const originalAnswers = Array.from(quizContainer.querySelectorAll('.drop-target')).map(t => t.dataset.answer);
+                            while(allWords.length < originalAnswers.length) {
+                                const wordCount = allWords.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                const originalWordCount = originalAnswers.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                let missingWordFound = false;
+                                for(const word in originalWordCount) {
+                                    if((wordCount[word] || 0) < originalWordCount[word]) {
+                                        allWords.push(word);
+                                        missingWordFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!missingWordFound) break;
+                            }
+                            sourceContainer.innerHTML = '';
+                            const shuffledWords = shuffle(allWords);
+                            shuffledWords.forEach(word => {
+                                const newSource = document.createElement('span');
+                                newSource.className = 'drag-source';
+                                newSource.draggable = true;
+                                newSource.textContent = word;
+                                sourceContainer.appendChild(newSource);
+                            });
+                            retryBtn.style.display = 'none';
+                            quizContainer.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                        }
+                        if (quizContainer.classList.contains('ordering-preview-container')) {
+                            const sourceContainer = quizContainer.querySelector('.ordering-source-container');
+                            const targetContainer = quizContainer.querySelector('.ordering-target-container');
+                            const allItems = Array.from(quizContainer.querySelectorAll('.ordering-item'));
+                            shuffle(allItems).forEach(item => sourceContainer.appendChild(item));
+                            targetContainer.innerHTML = '';
+                            targetContainer.className = 'ordering-target-container';
+                            retryBtn.style.display = 'none';
+                            quizContainer.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                        }
+                    }
+                } else if (checkAnswerBtn) {
+                    const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                    const studentAnswerEl = item.querySelector('.descriptive-student-answer');
+                    const studentAnswer = studentAnswerEl.value.trim();
+                    const feedbackEl = item.querySelector('.feedback');
+                    const retryBtnItem = item.querySelector('.retry-quiz-btn');
+                    const encodedAnswers = item.dataset.answers;
+                    const correctAnswers = JSON.parse(decodeURIComponent(atob(encodedAnswers)));
+                    if (!studentAnswer) { alert('답을 입력해주세요!'); return; }
+                    const isCorrect = correctAnswers.some(ans => ans.toLowerCase() === studentAnswer.toLowerCase());
+                    feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                    feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 훌륭해요! 👍' : '<span class="incorrect-highlight">오답</span> 정답: ' + correctAnswers.join(', ');
+                    studentAnswerEl.disabled = true;
+                    checkAnswerBtn.style.display = 'none';
+                    retryBtnItem.style.display = 'inline-block';
+                } else if (checkFillInBtn) {
+                    const container = checkFillInBtn.closest('.fill-in-container, .table-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                    if (!container) return;
+                    const feedbackEl = container.querySelector('.feedback');
+                    let attempts = parseInt(container.dataset.attempts, 10);
+                    attempts++;
+                    container.dataset.attempts = attempts;
+                    let allCorrect = true;
+                    
+                    container.querySelectorAll('.blank-input-preview').forEach(inputEl => {
+                        const studentAnswer = inputEl.value.trim();
+                        const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
+                        if (studentAnswer && studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            inputEl.className = 'blank-input-preview correct';
+                        } else {
+                            inputEl.className = 'blank-input-preview incorrect';
+                            allCorrect = false;
+                        }
+                    });
+
+                    if (allCorrect) {
+                        feedbackEl.textContent = '모두 정답입니다!';
+                        feedbackEl.className = 'feedback show correct';
+                        container.querySelectorAll('.blank-input-preview').forEach(inputEl => inputEl.disabled = true);
+                        checkFillInBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (attempts < 2) {
+                        feedbackEl.textContent = '아쉬워요. 틀린 문제를 다시 풀어보세요!';
+                        feedbackEl.className = 'feedback show incorrect';
+                        setTimeout(() => { feedbackEl.className = 'feedback'; feedbackEl.textContent = ''; }, 2500);
+                        container.querySelectorAll('.blank-input-preview.incorrect').forEach(inputEl => {
+                            inputEl.value = '';
+                            inputEl.className = 'blank-input-preview';
+                        });
+                    } else {
+                        feedbackEl.textContent = '정답을 확인하세요.';
+                        feedbackEl.className = 'feedback show incorrect';
+                        container.querySelectorAll('.blank-input-preview.incorrect').forEach(inputEl => {
+                            inputEl.disabled = true;
+                            const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
+                            inputEl.value = correctAnswer;
+                        });
+                        checkFillInBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    }
+                } else if (checkDragDropBtn) {
+                    const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                    const feedbackEl = container.querySelector('.feedback');
+                    let allCorrect = true;
+                    container.querySelectorAll('.drop-target').forEach(target => {
+                        const studentAnswer = target.textContent.trim();
+                        const correctAnswer = target.dataset.answer;
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            target.className = 'drop-target correct';
+                        } else {
+                            target.className = 'drop-target incorrect';
+                            allCorrect = false;
+                        }
+                    });
+                    if (allCorrect) {
+                        feedbackEl.textContent = '모두 정답입니다!';
+                        feedbackEl.className = 'feedback show correct';
+                    } else {
+                        feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                        feedbackEl.className = 'feedback show incorrect';
+                    }
+                    checkDragDropBtn.style.display = 'none';
+                    container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                } else if (checkOrderingBtn) {
+                    const container = checkOrderingBtn.closest('.ordering-preview-container');
+                    const targetContainer = container.querySelector('.ordering-target-container');
+                    const feedbackEl = container.querySelector('.feedback');
+                    const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(item => item.textContent.trim());
+                    const studentAnswer = studentItems.join(' // ');
+                    const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
+                    if (studentAnswer === correctAnswer) {
+                        targetContainer.classList.add('correct');
+                        feedbackEl.textContent = '정답입니다! 완벽해요! ✨';
+                        feedbackEl.className = 'feedback show correct';
+                    } else {
+                        targetContainer.classList.add('incorrect');
+                        feedbackEl.textContent = '아쉬워요. 순서를 다시 확인해보세요.';
+                        feedbackEl.className = 'feedback show incorrect';
+                    }
+                    checkOrderingBtn.style.display = 'none';
+                    container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                } else if (checkLineQuizBtn) {
+                    const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
+                    if (quizEl && quizEl.lineQuizInstance) {
+                        quizEl.lineQuizInstance.checkAnswers();
+                        checkLineQuizBtn.style.display = 'none';
+                        checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
+                    }
+                } else if (youtubePlaceholder) {
+                    const videoId = youtubePlaceholder.dataset.videoId;
+                    if(videoId) {
+                        const iframeWrapper = document.createElement('div');
+                        iframeWrapper.className = 'youtube-iframe-wrapper';
+                        iframeWrapper.dataset.videoId = videoId;
+                        iframeWrapper.innerHTML = '<button class="youtube-close-btn" title="영상 닫기">&times;</button><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                        youtubePlaceholder.replaceWith(iframeWrapper);
+                    }
+                } else {
+                    const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
+                    if (youtubeCloseBtn) {
+                        const iframeWrapper = youtubeCloseBtn.parentElement;
+                        const videoId = iframeWrapper.dataset.videoId;
+                        if(videoId) {
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'youtube-placeholder';
+                            placeholder.dataset.videoId = videoId;
+                            placeholder.innerHTML = '🎬<div class="youtube-placeholder-text">클릭하여 영상 보기</div>';
+                            iframeWrapper.replaceWith(placeholder);
+                        }
+                    } else {
+                        const oxChoiceBtn = e.target.closest('.ox-choices button');
+                        const mcqOptionDiv = e.target.closest('.mcq-preview-option');
+                        const explainable = e.target.closest('.explainable');
+                        if (oxChoiceBtn) {
+                            const item = oxChoiceBtn.closest('.ox-preview-item');
+                            const choicesDiv = item.querySelector('.ox-choices');
+                            const choice = oxChoiceBtn.dataset.choice;
+                            const answer = choicesDiv.dataset.answer;
+                            const feedbackEl = item.querySelector('.feedback');
+                            feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
+                            feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+                        } else if (mcqOptionDiv) {
+                            const item = mcqOptionDiv.closest('.mcq-preview-item');
+                            const controls = item.querySelector('.quiz-controls');
+                            if (controls) controls.style.display = 'flex';
+                            let attempts = parseInt(item.dataset.attempts, 10);
+                            if (item.querySelector('.feedback').classList.contains('correct') || attempts >= 2) return;
+                            attempts++;
+                            item.dataset.attempts = attempts;
+                            const choice = mcqOptionDiv.dataset.choice;
+                            const answer = item.dataset.answer;
+                            const feedbackEl = item.querySelector('.feedback');
+                            const explanationEl = item.querySelector('.explanation');
+                            if (choice === answer) {
+                                feedbackEl.className = 'feedback show correct';
+                                feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요, 💯';
+                                item.dataset.attempts = 2;
+                                if(explanationEl) explanationEl.className = 'explanation show';
+                            } else {
+                                feedbackEl.className = 'feedback show incorrect';
+                                if (attempts < 2) {
+                                    feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                } else {
+                                    feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                    if(explanationEl) explanationEl.className = 'explanation show';
+                                }
+                            }
+                            if(explanationEl.classList.contains('show')) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
+                                    if (decodedExplanation.trim()) explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                } catch(err) {}
+                            }
+                        } else if (explainable) {
+                            explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
+                            const rect = explainable.getBoundingClientRect();
+                            explanationPopup.style.top = (rect.bottom + window.scrollY + 12) + 'px';
+                            explanationPopup.style.left = (rect.left + window.scrollX) + 'px';
+                            explanationPopup.classList.add('show');
+                            e.stopPropagation();
+                        }
+                    }
+                }
+            });
+            document.addEventListener('click', e => { 
+                if (!e.target.closest('.explainable') && !e.target.closest('.explanation-popup')) {
+                    explanationPopup.classList.remove('show');
+                }
+            });
+
+            explanationPopup.addEventListener('click', e => {
+                if (e.target.classList.contains('popup-close-btn')) {
+                    explanationPopup.classList.remove('show');
+                }
+            });
+
+            initializeAllInteractiveBlocks();
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+
+            document.querySelectorAll('.tab-content').forEach(adjustBlankInputWidths);
+        });
+        </script>
+                </body>
+                </html>
