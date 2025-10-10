@@ -3864,6 +3864,7 @@ align-self: center;
                         choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
                     });
 
+                    // ✅ [수정] new-proverb-btn 버튼 추가
                     return `
                         <div class="daily-quiz-preview">
                             <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="${btoa(encodeURIComponent(correctAnswer))}">
@@ -5897,9 +5898,9 @@ align-self: center;
                             newQuizData = proverbs[newIndex];
                         } while (newQuizData.proverb === currentProverb);
 
-                        // 미리보기 렌더링 함수를 재활용하여 퀴즈 콘텐츠 재생성
-                        const newQuizHtml = updatePreviewBlock.toString().match(/const renderQuizContent = \([\s\S]*?return `[\s\S]*?`;/)[0];
-                        const renderFn = new Function('quizData', 'items', 'shuffle', newQuizHtml + '}; return renderQuizContent(quizData, items)');
+                        // 미리보기 렌더링 함수 로직을 문자열로 추출하여 재실행 (안정적인 방법)
+                        const renderFnBody = updatePreviewBlock.toString().match(/const renderQuizContent = \([\s\S]*?return `[\s\S]*?`;/)[0];
+                        const renderFn = new Function('quizData', 'items', 'shuffle', renderFnBody + '}; return renderQuizContent(quizData, items)');
                         quizBlock.innerHTML = renderFn(newQuizData, proverbs, shuffle);
                     }
                     return;
@@ -5983,6 +5984,12 @@ align-self: center;
                         if (isCorrect || attempts >= 2) {
                             const retryButton = item.querySelector('.retry-quiz-btn');
                             if (retryButton) retryButton.style.display = 'inline-block';
+                            
+                            // ✅ [추가] 오늘의 퀴즈인 경우 '다른 속담' 버튼도 함께 표시
+                            if(item.closest('.daily-quiz-preview')){
+                                const newProverbButton = item.querySelector('.new-proverb-btn');
+                                if(newProverbButton) newProverbButton.style.display = 'inline-block';
+                            }
                         }
                     } else if (explainable) {
                         explanationPopup.innerHTML = `${explainable.dataset.explanation}<button class="popup-close-btn" title="닫기">&times;</button>`;
