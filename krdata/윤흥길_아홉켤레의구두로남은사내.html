@@ -6,16 +6,15 @@
                     <style>
 :root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
 .preview-top-bar { flex-direction: column; align-items: flex-start; gap: 8px; padding: 45px 25px 8px; }
-.view-mode-controls { position: absolute; top: 10px; right: 45px; z-index: 20; display: flex; gap: 5px; border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; background-color: rgb(240, 243, 245); }
 .view-mode-controls button { background-color: transparent; border: none; border-radius: 4px; padding: 4px 8px; font-size: 1.1em; cursor: pointer; opacity: 0.6; transition: 0.2s ease-in-out; }
 .view-mode-controls button:hover { opacity: 1; background-color: rgb(255, 255, 255); }
 .view-mode-controls button.active { opacity: 1; background-color: var(--primary-color); color: white; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px; }
 .view-mode-controls { position: absolute; top: 20px; right: 45px; z-index: 20; display: flex; gap: 5px; border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; background-color: rgb(240, 243, 245); }
-#editor-tab-bar { position: sticky; top: 0px; z-index: 10; }
 .editor-column, .preview-column { transition: 0.3s ease-in-out; }
 .container.view-mode-editor .preview-column { display: none; }
 .container.view-mode-preview .editor-column { display: none; }
 .container.view-mode-editor #editor-tab-bar { border-top: 3px solid var(--primary-color); border-bottom: 1px solid var(--border-color); }
+.container.view-mode-editor .editor-column, .container.view-mode-preview .preview-column { max-width: 1100px; margin: 0px auto; }
 .container.view-mode-preview #preview-tab-bar { border-top: 3px solid var(--hover-color); }
 body { font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background-color: rgb(244, 247, 249); margin: 0px; padding: 20px; line-height: 1.7; }
 body.resizing { cursor: ns-resize; user-select: none; }
@@ -147,6 +146,60 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .flowchart-editor-row .drag-handle { cursor: grab; padding-right: 8px; opacity: 0.5; }
 .flowchart-editor-row .drag-handle:active { cursor: grabbing; }
 .flowchart-editor-row.dragging { opacity: 0.5; background-color: rgb(226, 230, 234); pointer-events: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list { list-style: none; margin: 0px; padding-left: 30px; position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root { padding-left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list::before { content: ""; position: absolute; left: 15px; top: 0px; width: 1px; height: 100%; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item { position: relative; padding: 4px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item::before { content: ""; position: absolute; top: 16px; left: -15px; width: 15px; height: 1px; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item:last-child::after { content: ""; position: absolute; top: 17px; left: -15px; width: 1px; height: 100%; background: rgb(255, 255, 255); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-node { font-weight: normal; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > .mindmap-node, #preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > details > summary > .mindmap-node { font-weight: bold; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary { list-style: none; cursor: pointer; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary::-webkit-details-marker { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary > .mindmap-node::before { content: "▼"; font-size: 0.6em; margin-right: 6px; display: inline-block; color: rgb(134, 142, 150); transition: transform 0.2s; vertical-align: middle; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) details:not([open]) > summary > .mindmap-node::before { content: "▶"; transform: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart { text-align: center; padding: 20px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart ul, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart li { list-style: none; margin: 0px; padding: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list { display: flex; justify-content: center; position: relative; padding-top: 40px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list { padding-top: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item { display: flex; flex-direction: column; align-items: center; position: relative; padding-left: 10px; padding-right: 10px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:not(:has(.orgchart-list)) .orgchart-node-container::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::before { content: ""; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::after { content: ""; position: absolute; top: -20px; left: 0px; width: 100%; height: 1px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::before, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:first-child::after { width: 50%; left: 50%; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:last-child::after { width: 50%; left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:only-child::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container { position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node { padding: 8px 15px; border-radius: 6px; display: inline-block; min-width: 80px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list .orgchart-list .orgchart-node { background-color: rgb(249, 250, 251); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item > .orgchart-node-container > .orgchart-node { background-color: var(--primary-color); color: white; border: 2px solid rgb(30, 64, 175); font-weight: bold; font-size: 1.05em; border-radius: 8px; }
+.block[data-type="mindmap"] .mindmap-editor-container { border: 1px solid rgb(204, 204, 204); padding: 10px 15px; border-radius: 5px; background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container ul, .block[data-type="mindmap"] .mindmap-editor-container li { list-style: none; margin: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-item { position: relative; }
+.block[data-type="mindmap"] .mindmap-node-wrapper { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; transition: background-color 0.2s; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover { background-color: rgb(240, 243, 245); }
+.block[data-type="mindmap"] .mindmap-node { flex-grow: 1; }
+.block[data-type="mindmap"] .mindmap-node .editable { background-color: transparent; border: none; padding: 3px 5px; outline: none; width: 100%; }
+.block[data-type="mindmap"] .mindmap-node .editable:focus { background-color: white; box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-node-actions { visibility: hidden; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover .mindmap-node-actions { visibility: visible; }
+.block[data-type="mindmap"] .mindmap-add-child, .block[data-type="mindmap"] .mindmap-delete-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-child:hover { color: var(--correct-color); }
+.block[data-type="mindmap"] .mindmap-delete-node:hover { color: var(--incorrect-color); }
+.block[data-type="mindmap"] .mindmap-add-sibling-node, .block[data-type="mindmap"] .mindmap-indent-node, .block[data-type="mindmap"] .mindmap-outdent-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-sibling-node:hover, .block[data-type="mindmap"] .mindmap-indent-node:hover, .block[data-type="mindmap"] .mindmap-outdent-node:hover { color: var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-children-list { position: relative; padding-left: 35px; }
+.block[data-type="mindmap"] .mindmap-children-list::before { content: ""; position: absolute; left: 10px; top: 0px; width: 1px; height: 100%; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item::before { content: ""; position: absolute; top: 22px; left: 10px; width: 15px; height: 1px; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item:last-child::after { content: ""; position: absolute; left: 10px; top: 23px; width: 1px; height: calc(100% - 22px); background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list { padding-left: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart details .orgchart-node { border: none; background-color: rgb(249, 250, 251); }
+.mindmap-shortcut-guide { font-size: 0.8em; color: rgb(108, 117, 125); margin: -10px 0px 15px 5px; }
 .delete-line-quiz-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: auto; }
 .delete-line-quiz-item:hover { color: var(--incorrect-color); }
 .delete-fill-in-item { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
@@ -175,6 +228,7 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .delete-drag-drop-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
 .delete-drag-drop-item:hover { color: var(--incorrect-color); }
 .block[data-type="ordering"] .block-title { background-color: rgb(255, 218, 185); }
+.block[data-type="classification"] .block-title { background-color: rgb(255, 236, 179); }
 .ordering-preview-container { padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
 .ordering-target-container, .ordering-source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px dashed rgb(173, 181, 189); border-radius: 4px; min-height: 50px; align-content: flex-start; }
 .ordering-source-container { background-color: rgb(248, 249, 250); border-style: solid; }
@@ -187,6 +241,15 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
 .ordering-drop-indicator { width: 4px; height: 30px; background-color: var(--hover-color); border-radius: 2px; align-self: center; }
 .ordering-item.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item-editor { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.ordering-item-editor .editable { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.delete-ordering-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-ordering-item:hover { color: var(--incorrect-color); }
+.ordering-preview-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgb(238, 238, 238); }
+.ordering-preview-item:last-child { border-bottom: none; margin-bottom: 0px; }
+.ordering-item-title { font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; }
+.ordering-item-feedback { margin-left: 8px; font-size: 1.2em; }
+.ordering-source-container { border-style: none; background-color: transparent; padding: 15px 0px 0px; justify-content: flex-start; }
 .block-title-container { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .block-title-container .block-title { margin-bottom: 0px; }
 .math-guide-link { font-size: 0.85em; color: var(--primary-color); text-decoration: none; border-bottom: 1px dashed var(--primary-color); padding-bottom: 1px; transition: 0.2s; }
@@ -228,7 +291,8 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .text-highlight-yellow { background-color: rgb(255, 253, 231); border: 2px solid rgb(255, 241, 118); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-blue { background-color: rgb(227, 242, 253); border: 2px solid rgb(144, 202, 249); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-green { background-color: rgb(232, 245, 233); border: 2px solid rgb(165, 214, 167); padding: 1px 3px; border-radius: 3px; }
-#preview .explainable { border-bottom: none; cursor: pointer; font-weight: bold; color: var(--primary-color) !important; }
+#preview .explainable { color: rgb(84, 110, 122); border-bottom: 1px dotted rgb(120, 144, 156); cursor: pointer; font-weight: bold; transition: 0.2s ease-in-out; }
+#preview .explainable:hover { color: var(--primary-color); border-bottom: 1px solid var(--primary-color); }
 .ox-question-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
 .ox-question-row .question-text { flex-grow: 1; padding-left: 1.8em; text-indent: -1.8em; }
 .ox-answer-selector-editor { display: inline-flex; gap: 8px; margin-left: 10px; vertical-align: middle; }
@@ -317,6 +381,19 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .explanation-popup::after { content: ""; position: absolute; bottom: 100%; left: 21px; border-width: 8px; border-style: solid; border-color: transparent transparent rgb(255, 251, 230); border-image: initial; }
 .popup-close-btn { position: absolute; top: 2px; right: 5px; background: transparent; border: none; font-size: 1.5em; line-height: 1; color: rgb(192, 192, 192); cursor: pointer; transition: color 0.2s; }
 .popup-close-btn:hover { color: rgb(93, 64, 55); }
+.mcq-answer-stepper { display: inline-flex; align-items: center; vertical-align: middle; border: 1px solid rgb(204, 204, 204); border-radius: 4px; overflow: hidden; }
+.mcq-answer-btn { background-color: rgb(248, 249, 250); border: none; cursor: pointer; font-size: 1.2em; font-weight: bold; width: 32px; height: 32px; line-height: 32px; text-align: center; color: rgb(73, 80, 87); }
+.mcq-answer-btn:hover { background-color: rgb(233, 236, 239); }
+.mcq-answer-display { width: 40px; height: 32px; line-height: 32px; text-align: center; font-weight: bold; border-left: 1px solid rgb(204, 204, 204); border-right: 1px solid rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
+#preview .mcq-preview-option.selected { font-weight: bold; }
+#preview .mcq-preview-option.selected.correct { background-color: rgb(232, 245, 233); border: 1px solid var(--correct-color); }
+#preview .mcq-preview-option.selected.incorrect { background-color: rgb(255, 235, 238); border: 1px solid var(--incorrect-color); }
+.daily-quiz-editor { display: flex; align-items: center; gap: 10px; padding: 10px; background-color: rgb(245, 245, 245); border-radius: 4px; }
+.daily-quiz-preview { background-color: rgb(255, 250, 240); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(240, 230, 140) rgb(240, 230, 140) rgb(240, 230, 140) rgb(216, 191, 216); border-image: initial; border-radius: 8px; padding: 15px 20px; }
+.daily-quiz-preview .quiz-title-preview { font-size: 1.1em; color: rgb(93, 64, 55); }
+.daily-quiz-preview .mcq-options-preview { margin-left: 0px; }
+.daily-quiz-preview .mcq-preview-option { border: 1px solid rgb(224, 224, 224); margin-bottom: 8px; background-color: rgb(255, 255, 255); }
+.new-proverb-btn { margin-left: auto; background-color: rgb(240, 230, 140); border: 1px solid rgb(216, 191, 216); color: rgb(93, 64, 55); font-weight: bold; }
 .toolbar-btn-group { display: inline-flex; vertical-align: middle; margin: 2px; }
 .toolbar-btn-group button { margin: 0px; border-radius: 0px; border-right-width: 0px; }
 .toolbar-btn-group button:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
@@ -361,6 +438,24 @@ body.resizing { cursor: ns-resize; user-select: none; }
 #scrollToTopBtn.show { opacity: 0.8; visibility: visible; pointer-events: auto; }
 #scrollToTopBtn:hover { opacity: 1; transform: translateY(-3px); box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 12px; }
 #scrollToTopBtn:active { transform: translateY(0px); box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; }
+.classification-editor-container hr { border: 0px; height: 1px; background-color: var(--border-color); }
+.classification-category-editor-row, .classification-item-editor-row { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.classification-category-editor-row input, .classification-item-editor-row .item-text-input { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.classification-item-editor-row .item-category-select { flex-basis: 150px; padding: 5px; border: 1px solid rgb(204, 204, 204); border-radius: 3px; background-color: rgb(248, 249, 250); }
+.delete-classification-category, .delete-classification-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-classification-category:hover, .delete-classification-item:hover { color: var(--incorrect-color); }
+.classification-preview-container { margin-top: 15px; }
+.classification-categories-preview { display: flex; gap: 15px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
+.classification-category-bin { flex: 1 0 180px; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); }
+.classification-category-bin .category-title { font-weight: bold; text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color); background-color: rgb(240, 243, 245); }
+.category-drop-zone { min-height: 80px; padding: 10px; flex-grow: 1; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; transition: background-color 0.2s; }
+.category-drop-zone.drag-over { background-color: rgb(224, 242, 241); }
+.classification-items-source { min-height: 50px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; }
+.classification-item-card { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; transition: 0.2s; }
+.classification-item-card:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.classification-item-card.dragging { opacity: 0.5; }
+.classification-item-card.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.classification-item-card.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
 .CtxtMenu_InfoClose { top: 0.2em; right: 0.2em; }
 .CtxtMenu_InfoContent { overflow: auto; text-align: left; font-size: 80%; padding: 0.4em 0.6em; border: 1px inset; margin: 1em 0px; max-height: 20em; max-width: 30em; background-color: rgb(238, 238, 238); white-space: normal; }
 .CtxtMenu_Info.CtxtMenu_MousePost { outline: none; }
@@ -438,15 +533,21 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                     <h1 id="preview-main-title">아홉 켤레의 구두로 남은 사내</h1>
                 </div>
                 <div id="preview-tab-bar" class="tab-bar preview-tabs">
-                    <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1758687846810">앞부분 줄거리</button><button class="tab-btn " data-tab-id="tab-1758688191920">위기1</button><button class="tab-btn " data-tab-id="tab-1758774467370">위기2</button><button class="tab-btn " data-tab-id="tab-1758796416773">위기3</button><button class="tab-btn " data-tab-id="tab-1758796487050">위기4</button><button class="tab-btn " data-tab-id="tab-1758688224391">절정1</button><button class="tab-btn " data-tab-id="tab-1759060396811">절정2</button><button class="tab-btn " data-tab-id="tab-1758688240869">결말</button><button class="tab-btn " data-tab-id="tab-1759225369542">낱말퀴즈</button></div>
+                    <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1759235004184">배경지식</button><button class="tab-btn " data-tab-id="tab-1758687846810">앞부분 줄거리</button><button class="tab-btn " data-tab-id="tab-1758688191920">위기1</button><button class="tab-btn " data-tab-id="tab-1758774467370">위기2</button><button class="tab-btn " data-tab-id="tab-1758796416773">위기3</button><button class="tab-btn " data-tab-id="tab-1758796487050">위기4</button><button class="tab-btn " data-tab-id="tab-1758688224391">절정1</button><button class="tab-btn " data-tab-id="tab-1759060396811">절정2</button><button class="tab-btn " data-tab-id="tab-1758688240869">결말</button><button class="tab-btn " data-tab-id="tab-1759225369542">문제풀기</button></div>
                 </div>
-                <div id="preview"><div class="tab-content active" data-tab-content-id="tab-1758687846810"><h2 style="display:none;">앞부분 줄거리</h2><div class="block" data-type="text"><details class="text-preview-container" open="">
+                <div id="preview"><div class="tab-content active" data-tab-content-id="tab-1759235004184"><h2 style="display:none;">배경지식</h2><div class="block" data-type="youtube"><div class="block-title youtube-preview-title">
+                                        <span class="pill">🎬 </span>
+                                        <span>아홉 켤레의 구두로 남은 사내(윤흥길)</span>
+                                    </div><div class="youtube-placeholder" data-video-id="Ylgrz4VhMgo">
+                                🎬
+                                <div class="youtube-placeholder-text">클릭하여 영상 보기</div>
+                            </div></div><div class="block no-title-block" data-type="daily-quiz" data-quiz-type="proverbs"></div></div><div class="tab-content " data-tab-content-id="tab-1758687846810"><h2 style="display:none;">앞부분 줄거리</h2><div class="block" data-type="text"><details class="text-preview-container" open="">
                                     <summary class="text-preview-summary">
                                         <span class="text-preview-title-pill">📝 앞부분 줄거리</span>
                                         <span class="text-preview-toggle-icon">▼</span>
                                     </summary>
                                     <div class="text-preview-content-wrapper">
-                                        <div class="text-preview-content"><div><br></div><div><b>앞부분 줄거리</b></div><div>&nbsp; 교사인 <span class="text-border-violet">‘나’</span>는 성남에 집을 장만하고 문간방에 세를 놓는다. 세를 놓은 방에 임신한 아내와 어린 남매를 데리고 <span class="text-border-violet">권 씨</span>가 이사를 온다. 힘든 살림 속에서도 권 씨는 <span style="background-color: rgb(255, 250, 205);">여러 켤레의 구두를 소중히 여긴다</span>. 한편 ‘나’는 권 씨의 동태를 살펴 달라는 <span class="explainable" data-explanation="권 씨에게 시위 주동자와 전과자로서의 이력이 있기 때문에 '나'에게 권 씨 동태를 살펴 달라고고 부탁한 것임.&lt;div&gt;1970년대는 사회의 안정과 질서를 유지한다는 명목으로 정당한 권리를 주장하는 사람들까지도 사회 불안 세력으로 지정하고 감시하던 시대였다.&lt;/div&gt;"><span class="text-border-violet">이 순경</span>의 부탁</span>​​을 받는다. 어느 날 ‘나’는 우연히 공사장에서 일하는 권 씨를 ​만나고, 권 씨는 그날 밤 ‘나’를 찾아온다. 그는 성남이 재개발된다는 소문을 듣고 집을 사기 위해 무리해서 철거민 입주권을 샀지만, <span class="explainable" data-explanation="&lt;div&gt;💬현실을 고발하는 세태 소설.&amp;nbsp;&lt;/div&gt;&lt;div&gt;💬 입주 전매권: 다른 사람이 산 입주 권리를 다시 산 사람.&lt;/div&gt;">입주 전매자의 권리를 인정해 주지 않는 행정 당국에 항의하다 시위의 주동자로 몰려 감옥에 다녀온 자신의 과거를 ‘나’에게 털어놓는다.​ </span>​권 씨는 계속해서 직장을 구하지 못하고, 권 씨의 부인은 해산의 날이 되어 진통을 겪게 된다.</div><div><br></div><div><br></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div>📍<b> 학습 내용을 점검해 봅시다.</b></div></div><div><div>🔸 이 소설은 서술자인 '나'가 '권 씨'를 관찰하는&nbsp; <span class="revealable-cloze" data-answer="MSVFQyU5RCVCOCVFQyVCOSVBRCUyMCVFQSVCNCU4MCVFQyVCMCVCMCVFQyU5RSU5MA==" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□ □□□</span> 시점이다.</div></div><div>🔸이 작품은 1970년대&nbsp; <span class="revealable-cloze" data-answer="JUVDJTgyJUIwJUVDJTk3JTg1JUVEJTk5JTk0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>&nbsp; 과정에서&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJTk5JUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 된&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJThGJTg0JUVDJThCJTlDJTIwJUVCJUI5JTg4JUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>의 삶을 <span class="revealable-cloze" data-answer="JUVDJTgyJUFDJUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 그리고 있다.</div><div>🔸권 씨는&nbsp; <span class="revealable-cloze" data-answer="JUVBJUI1JUFDJUVCJTkxJTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 를 소중히 여긴다.</div><div>🔸이 소설은 '권 씨'가 처한 상황은 <span class="revealable-cloze" data-answer="JUVBJUIwJTlDJUVDJTlEJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 적 문제 뿐만 아니라, <span class="revealable-cloze" data-answer="JUVCJThCJUI5JUVCJThDJTgwJTIwJUVDJTgyJUFDJUVEJTlBJThD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>의 모순에서 비롯되었다는 점을 이야기하며&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTgyJUIwJUVDJTk3JTg1JUVEJTk5JTk0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span> 라는 국가 발전의 이면에서&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJTk5JUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 된 사람들에게 가해진 사회 폭력을 <span class="revealable-cloze" data-answer="JUVBJUIzJUEwJUVCJUIwJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 하고 있습니다.</div><div>🔸권 씨가 시위 주동자로 몰려 전과자가 된 것은 사회 현실 때문이다. 그러므로 이 부분에 나타난 갈등의 유형은 무엇인지 고르시오.&nbsp;&nbsp;</div><div><span class="interactive-cloze-container" data-answer="JUVDJTlEJUI4JUVCJUFDJUJDJTIwdnMlMjAlRUMlODIlQUMlRUQlOUElOEM="><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">인물 vs 자연</span><span class="cloze-choice">내적 갈등</span><span class="cloze-choice">인물 vs 인물</span><span class="cloze-choice">인물 vs 운명</span><span class="cloze-choice">인물 vs 사회</span></span></span></div></blockquote><div><br></div></div>
+                                        <div class="text-preview-content"><div><br></div><div><b>앞부분 줄거리</b></div><div>&nbsp; 교사인 <span class="text-border-violet">‘나’</span>는 성남에 집을 장만하고 문간방에 세를 놓는다. 세를 놓은 방에 임신한 아내와 어린 남매를 데리고 <span class="text-border-violet">권 씨</span>가 이사를 온다. 힘든 살림 속에서도 권 씨는 <span style="background-color: rgb(255, 250, 205);">여러 켤레의 구두를 소중히 여긴다</span>. 한편 ‘나’는 권 씨의 동태를 살펴 달라는 <span class="explainable" data-explanation="권 씨에게 시위 주동자와 전과자로서의 이력이 있기 때문에 '나'에게 권 씨 동태를 살펴 달라고고 부탁한 것임.&lt;div&gt;1970년대는 사회의 안정과 질서를 유지한다는 명목으로 정당한 권리를 주장하는 사람들까지도 사회 불안 세력으로 지정하고 감시하던 시대였다.&lt;/div&gt;"><span class="text-border-violet">이 순경</span>의 부탁</span>​​을 받는다. 어느 날 ‘나’는 우연히 공사장에서 일하는 권 씨를 ​만나고, 권 씨는 그날 밤 ‘나’를 찾아온다. 그는 성남이 재개발된다는 소문을 듣고 집을 사기 위해 무리해서 철거민 입주권을 샀지만, <span class="explainable" data-explanation="&lt;div&gt;💬현실을 고발하는 세태 소설.&amp;nbsp;&lt;/div&gt;&lt;div&gt;💬 입주 전매권: 다른 사람이 산 입주 권리를 다시 산 사람.&lt;/div&gt;">입주 전매자의 권리를 인정해 주지 않는 행정 당국에 항의하다 시위의 주동자로 몰려 감옥에 다녀온 자신의 과거를 ‘나’에게 털어놓는다.​ </span>​권 씨는 계속해서 직장을 구하지 못하고, 권 씨의 부인은 해산의 날이 되어 진통을 겪게 된다.</div><div><br></div><div><br></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div>📍<b> 학습 내용을 점검해 봅시다.</b></div></div><div><div>🔸 이 소설은 서술자인 '나'가 '권 씨'를 관찰하는&nbsp; <span class="revealable-cloze" data-answer="MSVFQyU5RCVCOCVFQyVCOSVBRCUyMCVFQSVCNCU4MCVFQyVCMCVCMCVFQyU5RSU5MA==" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□ □□□</span> 시점이다.</div></div><div>🔸이 작품은 1970년대&nbsp; <span class="revealable-cloze" data-answer="JUVDJTgyJUIwJUVDJTk3JTg1JUVEJTk5JTk0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>&nbsp; 과정에서&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJTk5JUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 된&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJThGJTg0JUVDJThCJTlDJTIwJUVCJUI5JTg4JUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>의 삶을 <span class="revealable-cloze" data-answer="JUVDJTgyJUFDJUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 그리고 있다.</div><div>🔸권 씨는&nbsp; <span class="revealable-cloze" data-answer="JUVBJUI1JUFDJUVCJTkxJTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 를 소중히 여긴다.</div><div>🔸이 소설은 '권 씨'가 처한 상황은 <span class="revealable-cloze" data-answer="JUVBJUIwJTlDJUVDJTlEJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 적 문제 뿐만 아니라, <span class="revealable-cloze" data-answer="JUVCJThCJUI5JUVCJThDJTgwJTIwJUVDJTgyJUFDJUVEJTlBJThD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>의 모순에서 비롯되었다는 점을 이야기하며&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTgyJUIwJUVDJTk3JTg1JUVEJTk5JTk0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span> 라는 국가 발전의 이면에서&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJTk5JUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 된 사람들에게 가해진 사회 폭력을 <span class="revealable-cloze" data-answer="JUVBJUIzJUEwJUVCJUIwJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 하고 있습니다.</div><div>🔸권 씨가 시위 주동자로 몰려 전과자가 된 것은 사회 현실 때문이다. 그러므로 이 부분에 나타난 갈등의 유형은 무엇인지 고르시오.&nbsp;&nbsp;</div><div><span class="interactive-cloze-container" data-answer="JUVDJTlEJUI4JUVCJUFDJUJDJTIwdnMlMjAlRUMlODIlQUMlRUQlOUElOEM="><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">인물 vs 사회</span><span class="cloze-choice">인물 vs 운명</span><span class="cloze-choice">인물 vs 자연</span><span class="cloze-choice">인물 vs 인물</span><span class="cloze-choice">내적 갈등</span></span></span></div></blockquote><div><br></div></div>
                                     </div>
                                 </details></div><div class="block no-title-block" data-type="summary"><details class="summary-preview-container">
                             <summary class="summary-preview-summary">
@@ -469,7 +570,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">나 (교사)</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">권 씨</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">이 순경</span><span class="dot" data-id="2"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">권 씨를 '요주의 인물'로 보고 감시하라고 부탁했지. 사회의 질서를 지키는 것이 내 임무니까.</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가난 속에서도 반짝이는 구두처럼 마지막 자존심을 지키려 했지만, 결국 아내의 수술비 때문에 어설픈 강도가 되고 말았어.</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text"><div><br></div><div><p>세입자인 권 씨를 지켜보며 안타까움을 느끼는 서술자야. 그의 딱한 사정을 알면서도 선뜻 도와주지 못해 미안함과 부끄러움을 느껴.</p></div></span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">권 씨를 '요주의 인물'로 보고 감시하라고 부탁했지. 사회의 질서를 지키는 것이 내 임무니까.</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text"><div><br></div><div><p>세입자인 권 씨를 지켜보며 안타까움을 느끼는 서술자야. 그의 딱한 사정을 알면서도 선뜻 도와주지 못해 미안함과 부끄러움을 느껴.</p></div></span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가난 속에서도 반짝이는 구두처럼 마지막 자존심을 지키려 했지만, 결국 아내의 수술비 때문에 어설픈 강도가 되고 말았어.</span></div></div>
                                 </div>
                                 <div class="quiz-controls">
                                     <button class="check-line-quiz-btn">정답 확인</button>
@@ -673,7 +774,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                             <div class="summary-preview-content">
                                 <ul><li><strong>▪️빌려만 주신다면 무슨 짓을, 정말 무슨 짓을 해서라도 반드시 갚겠습니다.</strong> : 권 씨의 절박함이 드러남.</li><li><strong>▪️마치 성경책 위에다 오른손을 얹고 말하듯이</strong> : 절박한 마음+진심을 담은 말</li><li><strong>▪️책임이 따르는 동정은 피하는 게 상책</strong> : 권 씨가 돈을 갚지 못하면 자신이 피해를 보기 때문에. ➡️ '나'의 이해타산적인 면모</li><li><strong>▪️기왕 피할 바엔 저쪽에서 감히 두말을 못 하도록 야멸차게 굴 필요가 있었다</strong> : 💬'나'의 태도: 계산적이고 냉정한 태도<div>💡<b>야멸차게 굴어야 한다고 생각한 까닭은?</b> : 권 씨에게 돈을 빌려줬다가 돌려받지 못할 수 있으므로 미리 차단해야 한다는 생각이 들었기 때문에</div></li><li><strong>▪️달리 변통할 구멍이 없으시다면 그렇게 해 보세요.</strong> : 권 씨의 부탁을 우회적으로 거절함.</li><li><strong>▪️어리석은 사람</strong> : 자신의 이득은 신경 쓰지 않고 상대를 위해 주는 사람</li><li><strong>▪️얼굴에 흐르는 진땀</strong> : <span style="color: rgb(51, 65, 85); font-family: Inter, sans-serif; font-size: 14px; background-color: rgb(248, 250, 252);">자존심이 상하여 곤혹스러움</span></li><li><strong>▪️썰면</strong> : '나'와 함께 근무하는 교사의 별명. 입술이 두툼하여 썰면 한 접시는 되겠다는 의미이다.</li><li><strong>▪️이를테면, 오 선생 너무하다든가 잘 먹고 잘 살라든가 하는 말이 날아와 내 이마에 탁 눌어붙는 순간에 대비하고 있었는지도 모른다.</strong> : 권 씨의 부탁을 거절한 행동에 대해 죄책감을 느끼는 '나'</li><li><strong>▪️오 선생, 이래 봬도 나 대학 나온 사람이오.</strong> : ⭐ 상처받은 <b>자존심을 회복</b>하기 위해 권 씨가 한 말. → 자신의 무능력한 현실과 대조되어 권 씨의 모습을 <b>비참</b>하게 함.<div>💬 자신의 힘으로 아내의 수술비조차 빌릴 수 없는 현실에 대해 무력감과 절망감을 감추기 위한 말.&nbsp;</div><div>💬 자신의 마지막 자존심을 지키기 위해 학벌을 말한 것임.</div></li><li><strong>▪️별로 휘청거릴 것도 없는 작달막한 체구를 연방 휘청거리면서 내딛는 한 걸음 한 걸음마다 땅을 저주하고 하늘을 저주하는 동작으로 내 눈에 그는 비쳤다</strong> : 권 씨의 절박한 마음을 알아챔.</li><li><strong>▪️고팽이</strong> : 굽은 길의 모퉁이</li><li><strong>▪️나는 뛰어가서 그를 부르고 싶은 충동을 느꼈다</strong> : 연민을 느낌.</li><li><strong>▪️돌팔매질을 하다 말고 뒤집혀진 삼륜차로 달려들어 아귀아귀 참외를 깨물어 먹는 군중을 목격했을 당시의 권 씨처럼, 이건 완전히 나체구나 하는 느낌이 팍 들었다.</strong> : 💬권 씨가 '나'에게 이야기했던 과거 시위 장면과 관련됨.<div>💬권 씨는 과거 시위 도중 참외를 실은 차가 엎어진 장면을 목격했는데, 군중들은 경찰과 대치하다가 갑자기 그 차로 달려가 참외를 몽땅 주워 먹었음.</div><div>➡️ '나'는 하층민의 비참한 삶에 연민을 느끼면서도 자신의 이익을 생각하는 소시민적 지식인의 허위 의식을 보여 줌.</div></li></ul>
                             </div>
-                        </details></div><div class="block" data-type="flowchart"><div class="block-title">➔ '나'에 대한 작가의 비판 의식 2️⃣</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node">'나'는 권 씨에게 <span class="revealable-cloze" data-answer="JUVDJTk3JUIwJUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>을 느끼지만 정작 수술비를 빌려 달라는 부탁을 <span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVDJUEwJTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>함.</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node">'나'는 <span class="interactive-cloze-container" data-answer="JUVEJTk1JTk4JUVDJUI4JUI1JUVCJUFGJUJD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">중산층</span><span class="cloze-choice">상류층</span><span class="cloze-choice">하층민</span></span></span>의 비참한 삶에 연민을 느끼면서도 자신의 이익을 생각하는 <span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJThCJTlDJUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>적 <span class="interactive-cloze-container" data-answer="JUVDJUE3JTgwJUVDJThCJTlEJUVDJTlEJUI4"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">지식인</span><span class="cloze-choice">관리자</span><span class="cloze-choice">노동자</span></span></span>의 <span class="revealable-cloze" data-answer="JUVEJTk3JTg4JUVDJTlDJTg0JTIwJUVDJTlEJTk4JUVDJThCJTlE" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>을 보여 줌.</div></div></div></div><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview">이 부분에 대한 이해를 바탕으로 다음 문제를 풀어 보세요.</div><div class="ox-preview-item">
+                        </details></div><div class="block" data-type="flowchart"><div class="block-title">➔ '나'에 대한 작가의 비판 의식 2️⃣</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node">'나'는 권 씨에게 <span class="revealable-cloze" data-answer="JUVDJTk3JUIwJUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>을 느끼지만 정작 수술비를 빌려 달라는 부탁을 <span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVDJUEwJTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>함.</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node">'나'는 <span class="interactive-cloze-container" data-answer="JUVEJTk1JTk4JUVDJUI4JUI1JUVCJUFGJUJD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">중산층</span><span class="cloze-choice">상류층</span><span class="cloze-choice">하층민</span></span></span>의 비참한 삶에 연민을 느끼면서도 자신의 이익을 생각하는 <span class="revealable-cloze" data-answer="JUVDJTg2JThDJUVDJThCJTlDJUVCJUFGJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>적 <span class="interactive-cloze-container" data-answer="JUVDJUE3JTgwJUVDJThCJTlEJUVDJTlEJUI4"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">관리자</span><span class="cloze-choice">노동자</span><span class="cloze-choice">지식인</span></span></span>의 <span class="revealable-cloze" data-answer="JUVEJTk3JTg4JUVDJTlDJTg0JTIwJUVDJTlEJTk4JUVDJThCJTlE" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span>을 보여 줌.</div></div></div></div><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview">이 부분에 대한 이해를 바탕으로 다음 문제를 풀어 보세요.</div><div class="ox-preview-item">
                                         <div class="ox-question-row">
                                         <div class="question-text"><strong>Q1.</strong> 권 씨는 '나'에게 돈을 빌려달라고 간청하며, 성경책에 손을 얹고 맹세하는 듯한 엄숙한 표정을 지었다.</div>
                                         <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
@@ -768,7 +869,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">'나' (서술자)</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">&nbsp;'권 씨'</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">&nbsp;"책임이 따르는 동정은 피하는 게 상책"</span><span class="dot" data-id="2"></span></div><div class="line-quiz-item" data-id="3"><span class="text">구두를 바짓가랑이에 문지르는 행동</span><span class="dot" data-id="3"></span></div><div class="line-quiz-item" data-id="4"><span class="text">"이래 봬도 나 대학 나온 사람이오."</span><span class="dot" data-id="4"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">이웃의 불행을 외면하기 위해 스스로를 합리화하는 이기적인 생각</span></div><div class="line-quiz-item" data-id="3"><span class="dot" data-id="3"></span><span class="text">거절당한 상황에서 무너진 자존심을 회복하려는 무의식적 몸짓</span></div><div class="line-quiz-item" data-id="4"><span class="dot" data-id="4"></span><span class="text">경제적 무능으로 상처받은 자존심을 지키려는 마지막 외침</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">&nbsp;이성적 판단을 앞세워 자신의 안위를 우선시하는 소시민적 지식인</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가난 속에서도 지식인으로서의 자존심만큼은 지키고 싶어 하는 인물</span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="3"><span class="dot" data-id="3"></span><span class="text">거절당한 상황에서 무너진 자존심을 회복하려는 무의식적 몸짓</span></div><div class="line-quiz-item" data-id="4"><span class="dot" data-id="4"></span><span class="text">경제적 무능으로 상처받은 자존심을 지키려는 마지막 외침</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">이웃의 불행을 외면하기 위해 스스로를 합리화하는 이기적인 생각</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가난 속에서도 지식인으로서의 자존심만큼은 지키고 싶어 하는 인물</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">&nbsp;이성적 판단을 앞세워 자신의 안위를 우선시하는 소시민적 지식인</span></div></div>
                                 </div>
                                 <div class="quiz-controls">
                                     <button class="check-line-quiz-btn">정답 확인</button>
@@ -803,7 +904,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             을/를 지키기 위해 '대학 나온 사람'이라는 말을 남기고 떠나간다.
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">이해 타산적</span><span class="drag-source" draggable="true">우회적 거절</span><span class="drag-source" draggable="true">자존심</span><span class="drag-source" draggable="true">자기 합리화</span><span class="drag-source" draggable="true">절박함</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">자기 합리화</span><span class="drag-source" draggable="true">자존심</span><span class="drag-source" draggable="true">우회적 거절</span><span class="drag-source" draggable="true">절박함</span><span class="drag-source" draggable="true">이해 타산적</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -896,7 +997,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">생명보다 돈을 중시하는 물질 만능주의적이고 비인간적인 세태를 상징하는 인물.</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">권 씨의 경제적 무능을 비난하며 인간에 대한 존중 없이 모든 것을 물질적 가치로 판단하는 태도.</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">&nbsp;수술을 기다리는 초조함과 긴장감, 그리고 권 씨 가족의 일에 깊이 동화되어 걱정하는 심리를 간접적으로 드러냄.</span><span class="dot" data-id="2"></span></div><div class="line-quiz-item" data-id="3"><span class="text"><div>&nbsp;타인의 고통에 공감하고 인간적 연대감을 실천하며 따뜻한 내면을 지닌 인물.</div><div><br></div></span><span class="dot" data-id="3"></span></div><div class="line-quiz-item" data-id="4"><span class="text">어렵고 힘든 현실 속에서도 꺾이지 않는 강인한 생명력을 상징하며, '나'에게 탄생의 감격을 일깨우는 계기.</span><span class="dot" data-id="4"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="4"><span class="dot" data-id="4"></span><span class="text">갓난아이의 우렁찬 울음소리</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">원장</span></div><div class="line-quiz-item" data-id="3"><span class="dot" data-id="3"></span><span class="text">'나'</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">줄담배질</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">"아버지가 되는 방법도... 여러 질이군요."</span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">원장</span></div><div class="line-quiz-item" data-id="4"><span class="dot" data-id="4"></span><span class="text">갓난아이의 우렁찬 울음소리</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">"아버지가 되는 방법도... 여러 질이군요."</span></div><div class="line-quiz-item" data-id="3"><span class="dot" data-id="3"></span><span class="text">'나'</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">줄담배질</span></div></div>
                                 </div>
                                 <div class="quiz-controls">
                                     <button class="check-line-quiz-btn">정답 확인</button>
@@ -996,7 +1097,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             (을)를 완전히 장악하고 강도를 이끌어간다.
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">주도권</span><span class="drag-source" draggable="true">냉철한 관찰</span><span class="drag-source" draggable="true">정체</span><span class="drag-source" draggable="true">연민</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">주도권</span><span class="drag-source" draggable="true">연민</span><span class="drag-source" draggable="true">정체</span><span class="drag-source" draggable="true">냉철한 관찰</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1014,7 +1115,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <span class="text-preview-toggle-icon">▼</span>
                                     </summary>
                                     <div class="text-preview-content-wrapper">
-                                        <div class="text-preview-content"><div><br></div><div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">12</span></b></div><div>&nbsp; 한 차례 길게 심호흡을 뽑은 다음 강도는 마침내 결심을 했다는 듯이 이부자리를 돌아 화장대 쪽으로 향했다. 얌전히 <span class="explainable" data-explanation="강도의 어설픈 행동">구두까지 벗고 양말 바람으로 들어온 강도의 발</span>​을 나는 그때 비로소 볼 수 있었다. <span class="explainable" data-explanation="아이가 깰까 봐 노심초사하는 강도의 행동">내가 그렇게 염려를 했는데도 강도는 와들와들 떨리는 다리를 옮기다가 그만 부주의하게 동준이의 발을 밟은 모양이었다.</span>​ 동준이가 갑자기 칭얼거리자 그는 질겁을하고 엎드리더니 녀석의 어깨를 토닥거리는 것이었다. 녀석이 도로 잠들기를 기다려 그는 복면 위로 칙칙하게 땀이 밴 얼굴을 들고 일어나서 내 위치를 흘끔 확인한 다음 본격적인 작업에 들어갔다. 터지려는 웃음을 꾹 참은 채 강도의 <span class="text-border-blue">애교스러운 행각</span>을 시종 주목하고 있던 나는 살그머니 상체를 움직여 동준이를 잠재울 때 <span class="explainable" data-explanation="강도의 부주의한 행동">이부자리 위에 떨어뜨린 식칼</span>​을 집어 들었다.</div><div><br></div><div>&nbsp; “연장을 이렇게 함부로 굴리는 걸 보니 당신 경력이 얼마나 되는지 알 만합니다.”</div><div>&nbsp; 내가 내미는 칼을 보고 그는 기절할 만큼 놀랐다. 나는 사람 좋게 웃어 보이면서 칼을 받아 가라는 눈짓을 보냈다. 그는 겁에 질려 잠시 망설이다가 내 재촉을 받고 후닥닥 달려들어 칼자루를 낚아채 가지고는 다시 내 멱을 겨누었다. <span class="explainable" data-explanation="권 씨의 성품을 직접적으로 제시">그가 고의로 사람을 찌를 만한 위인이 못 되는 줄 일찍이 간파했기 때문에</span>​ 나는 칼을 되돌려준 걸 조금도 후회하지 않았다. 아니나 다를까, <span class="explainable" data-explanation="'나'의 지나친 배려에 강도의 자존심이 상하게 됨.">그는 식칼을 옆구리 쪽 허리띠에 차더니만 몹시 자존심이 상한 표정이 되었다.</span>​</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지: 강도의 어설픈 행동 ②</span></div><div><br></div><div><br></div><div><br></div><div><br></div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">13</span></b></div><div>&nbsp; “<span class="explainable" data-explanation="강도는 '나'가 자신을 비웃는다고 생각함.">도둑맞을 물건 하나 제대로 없는 주제에 이죽거리긴!</span>​”</div><div>&nbsp; “그래서 <span class="explainable" data-explanation="강도질을 많이 해 본 사람들.">경험 많은 친구들</span>​은 우리 집을 거들떠도 안 보고 그냥 지나치죠.”</div><div>&nbsp; “누군 뭐 들어오고 싶어서 들어왔나? <span class="explainable" data-explanation="아내의 수술비 마련">피치 못할 사정 땜</span>​에 어쩔 수 없이…….”</div><div>&nbsp; <span class="explainable" data-explanation="'나'의 의도">나는 강도를 안심시켜 편안한 맘으로 돌아가게 만들 절호의 기회라고 판단했다.</span>​</div><div>&nbsp; “<span class="explainable" data-explanation="'나'는 권 씨의 아내를 염두에 두고 말함. → 강도가 권 씨임을 알아냄.">그 피치 못할 사정이란 게 대개 그렇습디다. 가령 식구 중에 누군가가 몹시 아프다든가 빚에 몰려서…….</span>​”</div><div><br></div><div>&nbsp; <span class="explainable" data-explanation="권 씨는 자신의 정체를 '나'가 알고 있다는 사실을 눈치챔.">그 순간 강도의 눈이 의심의 빛으로 가득 찼다</span>​. <span class="text-border-red"><b>분개</b></span>한 나머지 이가 딱딱 마주칠 정도로 떨면서 그는 대청마루를 향해 나갔다. 내 옆을 지나쳐 갈 때 그의 몸에서는 역겨울 만큼 술 냄새가 확 풍겼다. 그가 허둥지둥 끌어안고 나가는 건 틀림없이 <span class="text-border-red"><b>갈기갈기 찢어진 한 줌의 자존심</b></span>일 것이었다. <span class="explainable" data-explanation="강도를 안심시켜서 다시는 이런 일을 하지 못하게 훈계하는 것">애당초 의도했던 바</span>​와는 달리 <b><span class="text-border-blue">내 방법</span></b>이 결국 <span class="explainable" data-explanation="권 씨의 자존심을 상하게 함.">그를 편안케 하긴커녕 외려 더욱더 낭패케 만들었음을 깨닫고</span>​ 나는 그의 등을 향해 말했다.</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp; 정체가 탄로났음을 눈치챈 권 씨의 <span class="revealable-cloze" data-answer="JUVCJUI2JTg0JUVBJUIwJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>.&nbsp; (<span class="revealable-cloze" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>에 상처를 입음)</span></div><div><div><br></div></div></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div><div>📝<b> 음성상징어를 사용한 효과</b></div></div></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>- 의태어: <span class="revealable-cloze" data-answer="JUVDJTk5JTgwJUVCJTkzJUE0JUVDJTk5JTgwJUVCJTkzJUE0" data-hint="JUVDJTk5JTgwJUUyJTk2JUExJUVDJTk5JTgwJUUyJTk2JUEx">와□와□</span>, <span class="revealable-cloze" data-answer="JUVEJTk3JTg4JUVCJTkxJUE1JUVDJUE3JTgwJUVCJTkxJUE1" data-hint="JUUyJTk2JUExJUVCJTkxJUE1JUUyJTk2JUExJUVCJTkxJUE1">□둥□둥</span>, <span class="revealable-cloze" data-answer="JUVBJUIwJTg4JUVBJUI4JUIwJUVBJUIwJTg4JUVBJUI4JUIw" data-hint="JUVBJUIwJTg4JUUyJTk2JUExJUVBJUIwJTg4JUUyJTk2JUEx">갈□갈□</span></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>- 의성어:&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJTk0JUIxJUVCJTk0JUIx" data-hint="JUVCJTk0JUIxJUUyJTk2JUEx">딱□</span></div></blockquote></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div><div>💡효과: 음성 상징어를 적절히 사용하여 <b>권 씨의 심리</b>를 더욱 효과적으로 드러냄.</div></div></div><div><br></div></blockquote>📝<b>&nbsp;권 씨는 '나'에게 자신의 정체를 들킨 것을 깨닫고,&nbsp;</b></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><b>&nbsp; &nbsp; &nbsp;<span class="interactive-cloze-container" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">자존심</span><span class="cloze-choice">자립심</span><span class="cloze-choice">자만심</span></span></span>이 상해 완전히 무너진 모습을 보임.</b><br><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><br></div><div><br></div><div><br></div></blockquote></blockquote><div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">14</span></b></div><div>&nbsp; “어렵다고 꼭 외로우란 법은 없어요. 혹 누가 압니까, <span class="explainable" data-explanation="'나'가 뒤늦게 권 씨 아내의 수술비를 지불했기때문에 권 씨를 위로해 주려고 함.">당신도 모르는 사이에 당신을 아끼는 어떤 이웃이 당신의 어려움을 덜어 주었을지?</span>​”</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨는 사람에 대한 불신을 드러내며 배신감과 절망감을 표현하고 있음">개수작 마! 그따위 이웃은 없다는 걸 난 똑똑히 봤어! 난 이제 아무도 안 믿어!</span>​”</div><div>&nbsp; 그는 현관에 벗어 놓은 구두를 신고 있었다. 그 구두를 보기 위해 전등을 켜고 싶은 충동이 불현듯 일었으나 나는 꾹 눌러 참았다. 현관문을 열고 마당으로 내려선 다음 <span class="explainable" data-explanation="권 씨는 자신이 강도라는 사실을 잊고 자신의 집으로 들어가려고 함.">부주의하게도 그는 식칼을 들고 왔던 자기 본분을 망각하고 엉겁결에 문간방으로 들어가려 했다. </span>​그의 실수를 지적하는 일은 훗날을 위해 나로서는 부득이한 조처였다.</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨의 자존심을 지켜 주기 위한 '나'의 배려이지만 권 씨는 '나'가 자신의 정체를 알고 있음을 확인하게 되고 자존심에 큰 상처를 입음.">대문은 저쪽입니다.</span>​”</div><div>&nbsp; 문간방 부엌 앞에서 한동안 망연해 있다가 이윽고 그는 대문 쪽을 향해 <span style="background-color: rgb(255, 250, 205);">느릿느릿</span> 걷기 시작했다. <span style="background-color: rgb(255, 250, 205);">비틀비틀</span> 걷기 시작했다. 대문에 다다르자 그는 상체를 뒤틀어 이쪽을 보았다.</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨는 자신의 정체가 탄로 난 것을 알고 마지막 자존심을 지키고자 함.">이래 봬도 나 대학까지 나온 사람이오.</span>​”</div><div>누가 뭐라고 그랬나. 느닷없이 그는 자기 학력을 밝히더니만 대문을 열고는 보안등 하나 없는 칠흑의 어둠 저편으로 자진해서 삼켜져 버렸다.</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp;&nbsp;자신의 정체를 들킨 것을 알고 <span class="revealable-cloze" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>에 상처를 입은 권 씨</span></div><div><br></div><div><br></div><div><br></div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">15</span></b></div><div>&nbsp; <span class="explainable" data-explanation="권 씨가 돌아오기를 기다리는 '나'">나는 대문을 잠그지 않았다.</span>​ 그냥 <span class="explainable" data-explanation="지치다: 문을 잠그지 않고 닫아만 두다.">지쳐</span>​ 놓기만 하고 들어오면서 문간방에 들러 권 씨가 아직도 귀가하지 않았음과 깜깜한 방 안에 어미 아비 없이 오뉘만이 새우 잠을 자고 있음을 아울러 확인하고 나왔다. 아내는 <font color="#0000ff">잠옷 바람으로 팔짱을 끼고 현관 앞에 서 있었다.</font></div><div>&nbsp; “무슨 일이라도 있었나요?”</div><div>&nbsp; “아무것도 아냐.”</div><div>&nbsp; 잃은 물건이 하나도 없다. 돼지 저금통도 화장대 위에 그대로 있다. 아무것도 아닐 수밖에. 다시 잠이 들기 전에 나는 아내에게 수술 보증금을 대납해 준 사실을 비로소 이야기했다. <span class="explainable" data-explanation="못마땅하게 생각함.">한참 말이 없다가 <font color="#0000ff">아내는 벽 쪽으로 슬그머니 돌아누웠다.</font></span><font color="#0000ff">​</font></div><div>&nbsp; “뗄 염려는 없어, 전셋돈이 있으니까.”</div><div>&nbsp; “무슨 일이 있었군요?”</div><div>&nbsp; 아내가 <font color="#0000ff">다시 이쪽으로 돌아누웠다.</font> 우리 집에 들어왔던 <span class="explainable" data-explanation="권 씨 가족이 어려움을 겪을 것을 방지하려 함.">한 어리숙한 강도에 관해서 나는 끝내 한마디도 내비치지 않았다.</span>​</div></div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp;아내에게 강도 사건에 대하여 함구하는 '나'</span></div><div><br></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>📝&nbsp;<b>아내의 행동과 심리</b></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸잠옷 바람으로 팔짱을 끼고 현관 앞에 서 있음. → 무슨 일인지 <span class="revealable-cloze" data-answer="JUVBJUI2JTgxJUVBJUI4JTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>해함.</div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸벽 쪽으로 슬그머니 돌아누움 → '나'가 수술비를 대납한 사실에 못마땅해 함.</div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸다시 이쪽으로 돌아누움 → 수술비를 대납했지만&nbsp; <span class="revealable-cloze" data-answer="JUVDJUEwJTg0JUVDJTg0JUI4JTIwJUVCJUIzJUI0JUVDJUE2JTlEJUVBJUI4JTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□ □□□</span>이 있으므로 떼일 염려는 없다는 말에 안도함.</div></blockquote></blockquote></div>
+                                        <div class="text-preview-content"><div><br></div><div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">12</span></b></div><div>&nbsp; 한 차례 길게 심호흡을 뽑은 다음 강도는 마침내 결심을 했다는 듯이 이부자리를 돌아 화장대 쪽으로 향했다. 얌전히 <span class="explainable" data-explanation="강도의 어설픈 행동">구두까지 벗고 양말 바람으로 들어온 강도의 발</span>​을 나는 그때 비로소 볼 수 있었다. <span class="explainable" data-explanation="아이가 깰까 봐 노심초사하는 강도의 행동">내가 그렇게 염려를 했는데도 강도는 와들와들 떨리는 다리를 옮기다가 그만 부주의하게 동준이의 발을 밟은 모양이었다.</span>​ 동준이가 갑자기 칭얼거리자 그는 질겁을하고 엎드리더니 녀석의 어깨를 토닥거리는 것이었다. 녀석이 도로 잠들기를 기다려 그는 복면 위로 칙칙하게 땀이 밴 얼굴을 들고 일어나서 내 위치를 흘끔 확인한 다음 본격적인 작업에 들어갔다. 터지려는 웃음을 꾹 참은 채 강도의 <span class="text-border-blue">애교스러운 행각</span>을 시종 주목하고 있던 나는 살그머니 상체를 움직여 동준이를 잠재울 때 <span class="explainable" data-explanation="강도의 부주의한 행동">이부자리 위에 떨어뜨린 식칼</span>​을 집어 들었다.</div><div><br></div><div>&nbsp; “연장을 이렇게 함부로 굴리는 걸 보니 당신 경력이 얼마나 되는지 알 만합니다.”</div><div>&nbsp; 내가 내미는 칼을 보고 그는 기절할 만큼 놀랐다. 나는 사람 좋게 웃어 보이면서 칼을 받아 가라는 눈짓을 보냈다. 그는 겁에 질려 잠시 망설이다가 내 재촉을 받고 후닥닥 달려들어 칼자루를 낚아채 가지고는 다시 내 멱을 겨누었다. <span class="explainable" data-explanation="권 씨의 성품을 직접적으로 제시">그가 고의로 사람을 찌를 만한 위인이 못 되는 줄 일찍이 간파했기 때문에</span>​ 나는 칼을 되돌려준 걸 조금도 후회하지 않았다. 아니나 다를까, <span class="explainable" data-explanation="'나'의 지나친 배려에 강도의 자존심이 상하게 됨.">그는 식칼을 옆구리 쪽 허리띠에 차더니만 몹시 자존심이 상한 표정이 되었다.</span>​</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지: 강도의 어설픈 행동 ②</span></div><div><br></div><div><br></div><div><br></div><div><br></div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">13</span></b></div><div>&nbsp; “<span class="explainable" data-explanation="강도는 '나'가 자신을 비웃는다고 생각함.">도둑맞을 물건 하나 제대로 없는 주제에 이죽거리긴!</span>​”</div><div>&nbsp; “그래서 <span class="explainable" data-explanation="강도질을 많이 해 본 사람들.">경험 많은 친구들</span>​은 우리 집을 거들떠도 안 보고 그냥 지나치죠.”</div><div>&nbsp; “누군 뭐 들어오고 싶어서 들어왔나? <span class="explainable" data-explanation="아내의 수술비 마련">피치 못할 사정 땜</span>​에 어쩔 수 없이…….”</div><div>&nbsp; <span class="explainable" data-explanation="'나'의 의도">나는 강도를 안심시켜 편안한 맘으로 돌아가게 만들 절호의 기회라고 판단했다.</span>​</div><div>&nbsp; “<span class="explainable" data-explanation="'나'는 권 씨의 아내를 염두에 두고 말함. → 강도가 권 씨임을 알아냄.">그 피치 못할 사정이란 게 대개 그렇습디다. 가령 식구 중에 누군가가 몹시 아프다든가 빚에 몰려서…….</span>​”</div><div><br></div><div>&nbsp; <span class="explainable" data-explanation="권 씨는 자신의 정체를 '나'가 알고 있다는 사실을 눈치챔.">그 순간 강도의 눈이 의심의 빛으로 가득 찼다</span>​. <span class="text-border-red"><b>분개</b></span>한 나머지 이가 딱딱 마주칠 정도로 떨면서 그는 대청마루를 향해 나갔다. 내 옆을 지나쳐 갈 때 그의 몸에서는 역겨울 만큼 술 냄새가 확 풍겼다. 그가 허둥지둥 끌어안고 나가는 건 틀림없이 <span class="text-border-red"><b>갈기갈기 찢어진 한 줌의 자존심</b></span>일 것이었다. <span class="explainable" data-explanation="강도를 안심시켜서 다시는 이런 일을 하지 못하게 훈계하는 것">애당초 의도했던 바</span>​와는 달리 <b><span class="text-border-blue">내 방법</span></b>이 결국 <span class="explainable" data-explanation="권 씨의 자존심을 상하게 함.">그를 편안케 하긴커녕 외려 더욱더 낭패케 만들었음을 깨닫고</span>​ 나는 그의 등을 향해 말했다.</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp; 정체가 탄로났음을 눈치챈 권 씨의 <span class="revealable-cloze" data-answer="JUVCJUI2JTg0JUVBJUIwJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>.&nbsp; (<span class="revealable-cloze" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>에 상처를 입음)</span></div><div><div><br></div></div></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div><div>📝<b> 음성상징어를 사용한 효과</b></div></div></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>- 의태어: <span class="revealable-cloze" data-answer="JUVDJTk5JTgwJUVCJTkzJUE0JUVDJTk5JTgwJUVCJTkzJUE0" data-hint="JUVDJTk5JTgwJUUyJTk2JUExJUVDJTk5JTgwJUUyJTk2JUEx">와□와□</span>, <span class="revealable-cloze" data-answer="JUVEJTk3JTg4JUVCJTkxJUE1JUVDJUE3JTgwJUVCJTkxJUE1" data-hint="JUUyJTk2JUExJUVCJTkxJUE1JUUyJTk2JUExJUVCJTkxJUE1">□둥□둥</span>, <span class="revealable-cloze" data-answer="JUVBJUIwJTg4JUVBJUI4JUIwJUVBJUIwJTg4JUVBJUI4JUIw" data-hint="JUVBJUIwJTg4JUUyJTk2JUExJUVBJUIwJTg4JUUyJTk2JUEx">갈□갈□</span></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>- 의성어:&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJTk0JUIxJUVCJTk0JUIx" data-hint="JUVCJTk0JUIxJUUyJTk2JUEx">딱□</span></div></blockquote></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div><div>💡효과: 음성 상징어를 적절히 사용하여 <b>권 씨의 심리</b>를 더욱 효과적으로 드러냄.</div></div></div><div><br></div></blockquote>📝<b>&nbsp;권 씨는 '나'에게 자신의 정체를 들킨 것을 깨닫고,&nbsp;</b></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><b>&nbsp; &nbsp; &nbsp;<span class="interactive-cloze-container" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">자립심</span><span class="cloze-choice">자존심</span><span class="cloze-choice">자만심</span></span></span>이 상해 완전히 무너진 모습을 보임.</b><br><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><br></div><div><br></div><div><br></div></blockquote></blockquote><div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">14</span></b></div><div>&nbsp; “어렵다고 꼭 외로우란 법은 없어요. 혹 누가 압니까, <span class="explainable" data-explanation="'나'가 뒤늦게 권 씨 아내의 수술비를 지불했기때문에 권 씨를 위로해 주려고 함.">당신도 모르는 사이에 당신을 아끼는 어떤 이웃이 당신의 어려움을 덜어 주었을지?</span>​”</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨는 사람에 대한 불신을 드러내며 배신감과 절망감을 표현하고 있음">개수작 마! 그따위 이웃은 없다는 걸 난 똑똑히 봤어! 난 이제 아무도 안 믿어!</span>​”</div><div>&nbsp; 그는 현관에 벗어 놓은 구두를 신고 있었다. 그 구두를 보기 위해 전등을 켜고 싶은 충동이 불현듯 일었으나 나는 꾹 눌러 참았다. 현관문을 열고 마당으로 내려선 다음 <span class="explainable" data-explanation="권 씨는 자신이 강도라는 사실을 잊고 자신의 집으로 들어가려고 함.">부주의하게도 그는 식칼을 들고 왔던 자기 본분을 망각하고 엉겁결에 문간방으로 들어가려 했다. </span>​그의 실수를 지적하는 일은 훗날을 위해 나로서는 부득이한 조처였다.</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨의 자존심을 지켜 주기 위한 '나'의 배려이지만 권 씨는 '나'가 자신의 정체를 알고 있음을 확인하게 되고 자존심에 큰 상처를 입음.">대문은 저쪽입니다.</span>​”</div><div>&nbsp; 문간방 부엌 앞에서 한동안 망연해 있다가 이윽고 그는 대문 쪽을 향해 <span style="background-color: rgb(255, 250, 205);">느릿느릿</span> 걷기 시작했다. <span style="background-color: rgb(255, 250, 205);">비틀비틀</span> 걷기 시작했다. 대문에 다다르자 그는 상체를 뒤틀어 이쪽을 보았다.</div><div>&nbsp; “<span class="explainable" data-explanation="권 씨는 자신의 정체가 탄로 난 것을 알고 마지막 자존심을 지키고자 함.">이래 봬도 나 대학까지 나온 사람이오.</span>​”</div><div>누가 뭐라고 그랬나. 느닷없이 그는 자기 학력을 밝히더니만 대문을 열고는 보안등 하나 없는 칠흑의 어둠 저편으로 자진해서 삼켜져 버렸다.</div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp;&nbsp;자신의 정체를 들킨 것을 알고 <span class="revealable-cloze" data-answer="JUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>에 상처를 입은 권 씨</span></div><div><br></div><div><br></div><div><br></div><div>&nbsp;&nbsp;<b><span class="text-highlight-red">15</span></b></div><div>&nbsp; <span class="explainable" data-explanation="권 씨가 돌아오기를 기다리는 '나'">나는 대문을 잠그지 않았다.</span>​ 그냥 <span class="explainable" data-explanation="지치다: 문을 잠그지 않고 닫아만 두다.">지쳐</span>​ 놓기만 하고 들어오면서 문간방에 들러 권 씨가 아직도 귀가하지 않았음과 깜깜한 방 안에 어미 아비 없이 오뉘만이 새우 잠을 자고 있음을 아울러 확인하고 나왔다. 아내는 <font color="#0000ff">잠옷 바람으로 팔짱을 끼고 현관 앞에 서 있었다.</font></div><div>&nbsp; “무슨 일이라도 있었나요?”</div><div>&nbsp; “아무것도 아냐.”</div><div>&nbsp; 잃은 물건이 하나도 없다. 돼지 저금통도 화장대 위에 그대로 있다. 아무것도 아닐 수밖에. 다시 잠이 들기 전에 나는 아내에게 수술 보증금을 대납해 준 사실을 비로소 이야기했다. <span class="explainable" data-explanation="못마땅하게 생각함.">한참 말이 없다가 <font color="#0000ff">아내는 벽 쪽으로 슬그머니 돌아누웠다.</font></span><font color="#0000ff">​</font></div><div>&nbsp; “뗄 염려는 없어, 전셋돈이 있으니까.”</div><div>&nbsp; “무슨 일이 있었군요?”</div><div>&nbsp; 아내가 <font color="#0000ff">다시 이쪽으로 돌아누웠다.</font> 우리 집에 들어왔던 <span class="explainable" data-explanation="권 씨 가족이 어려움을 겪을 것을 방지하려 함.">한 어리숙한 강도에 관해서 나는 끝내 한마디도 내비치지 않았다.</span>​</div></div><div><br></div><div>📍<span style="background-color: rgb(255, 250, 205);">내용 요지:&nbsp;아내에게 강도 사건에 대하여 함구하는 '나'</span></div><div><br></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>📝&nbsp;<b>아내의 행동과 심리</b></div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸잠옷 바람으로 팔짱을 끼고 현관 앞에 서 있음. → 무슨 일인지 <span class="revealable-cloze" data-answer="JUVBJUI2JTgxJUVBJUI4JTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>해함.</div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸벽 쪽으로 슬그머니 돌아누움 → '나'가 수술비를 대납한 사실에 못마땅해 함.</div></blockquote><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div>🔸다시 이쪽으로 돌아누움 → 수술비를 대납했지만&nbsp; <span class="revealable-cloze" data-answer="JUVDJUEwJTg0JUVDJTg0JUI4JTIwJUVCJUIzJUI0JUVDJUE2JTlEJUVBJUI4JTg4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□ □□□</span>이 있으므로 떼일 염려는 없다는 말에 안도함.</div></blockquote></blockquote></div>
                                     </div>
                                 </details></div><div class="block no-title-block" data-type="summary"><details class="summary-preview-container">
                             <summary class="summary-preview-summary">
@@ -1121,7 +1222,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             <div>의 비애와 사회 구조적 문제를 조명한다.</div><div><br></div>
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">지식인 계층</span><span class="drag-source" draggable="true">연민</span><span class="drag-source" draggable="true">절박한 처지</span><span class="drag-source" draggable="true">심리적 갈등</span><span class="drag-source" draggable="true">무의식</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">지식인 계층</span><span class="drag-source" draggable="true">무의식</span><span class="drag-source" draggable="true">심리적 갈등</span><span class="drag-source" draggable="true">절박한 처지</span><span class="drag-source" draggable="true">연민</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1215,7 +1316,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 <button class="retry-quiz-btn">다시 풀기</button>
                             </div>
                             <div class="explanation"></div>
-                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1759225369542"><h2 style="display:none;">낱말퀴즈</h2><div class="block" data-type="drag-drop"><div class="block-title">✋ 드래그 앤 드롭</div><div class="drag-drop-preview-container">
+                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1759225369542"><h2 style="display:none;">문제풀기</h2><div class="block" data-type="drag-drop"><div class="block-title">✋ 드래그 앤 드롭</div><div class="drag-drop-preview-container">
                                 <div class="quiz-title-preview"></div>
                                 <div class="sentences-container"><div class="sentence">
                                             <strong>1.</strong> 
@@ -1244,12 +1345,12 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div><div class="sentence">
                                             <strong>6.</strong> 
-                                            몹시 분하게 여 
+                                            몹시 분하게 여김. 
                                             <span class="drop-target" data-answer="분개(憤慨)"></span> 
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">북새</span><span class="drag-source" draggable="true">분개(憤慨)</span><span class="drag-source" draggable="true">조기 파수</span><span class="drag-source" draggable="true">통금</span><span class="drag-source" draggable="true">입주 전매자</span><span class="drag-source" draggable="true">경산</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">입주 전매자</span><span class="drag-source" draggable="true">통금</span><span class="drag-source" draggable="true">북새</span><span class="drag-source" draggable="true">경산</span><span class="drag-source" draggable="true">분개(憤慨)</span><span class="drag-source" draggable="true">조기 파수</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1289,7 +1390,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">전치태반</span><span class="drag-source" draggable="true">야멸차다</span><span class="drag-source" draggable="true">변통(變通)</span><span class="drag-source" draggable="true">적시(適時)</span><span class="drag-source" draggable="true">칠흑(漆黑)</span><span class="drag-source" draggable="true">고팽이</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">전치태반</span><span class="drag-source" draggable="true">변통(變通)</span><span class="drag-source" draggable="true">야멸차다</span><span class="drag-source" draggable="true">칠흑(漆黑)</span><span class="drag-source" draggable="true">고팽이</span><span class="drag-source" draggable="true">적시(適時)</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1329,7 +1430,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">세간</span><span class="drag-source" draggable="true">척분(戚分)</span><span class="drag-source" draggable="true">서슬</span><span class="drag-source" draggable="true">암만</span><span class="drag-source" draggable="true">눙치다</span><span class="drag-source" draggable="true">느물거리다</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">느물거리다</span><span class="drag-source" draggable="true">암만</span><span class="drag-source" draggable="true">눙치다</span><span class="drag-source" draggable="true">세간</span><span class="drag-source" draggable="true">서슬</span><span class="drag-source" draggable="true">척분(戚分)</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1364,7 +1465,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">이죽거리다</span><span class="drag-source" draggable="true">망연(茫然)하다</span><span class="drag-source" draggable="true">간파하다</span><span class="drag-source" draggable="true">졸렬(拙劣)하다</span><span class="drag-source" draggable="true">낭패</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">낭패</span><span class="drag-source" draggable="true">이죽거리다</span><span class="drag-source" draggable="true">망연(茫然)하다</span><span class="drag-source" draggable="true">간파하다</span><span class="drag-source" draggable="true">졸렬(拙劣)하다</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
@@ -1404,710 +1505,961 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">나우</span><span class="drag-source" draggable="true">함구(緘口)하다</span><span class="drag-source" draggable="true">암냥(押領)</span><span class="drag-source" draggable="true">멱</span><span class="drag-source" draggable="true">만단(萬端)</span><span class="drag-source" draggable="true">강보(襁褓)</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">함구(緘口)하다</span><span class="drag-source" draggable="true">나우</span><span class="drag-source" draggable="true">멱</span><span class="drag-source" draggable="true">만단(萬端)</span><span class="drag-source" draggable="true">암냥(押領)</span><span class="drag-source" draggable="true">강보(襁褓)</span></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                            </div></div></div></div>
+                            </div></div><div class="block" data-type="ordering"><div class="block-title">📊 순서 배열 퀴즈</div><div class="ordering-preview-container">
+                                    <div class="quiz-title-preview">작품의 핵심 사건을 시간 순서와 인과 관계에 따라 배열하며 전체 서사 구조를 이해한다.</div>
+                                    
+                            <div class="ordering-preview-item" data-answer="JUVBJUI2JThDJTIwJUVDJTk0JUE4JUVCJThBJTk0JTIwJUVEJTk1JTk5JUVBJUI1JTkwJUVCJUExJTlDJTIwJyVFQiU4MiU5OCclRUIlQTUlQkMlMjAlRUMlQjAlQkUlRUMlOTUlODQlRUMlOTklODAlMjAlRUMlOTUlODQlRUIlODIlQjQlRUMlOUQlOTglMjAlRUMlODglOTglRUMlODglQTAlRUIlQjklODQlMjAxMCVFQiVBNyU4QyUyMCVFQyU5QiU5MCVFQyU5RCU4NCUyMCVFQiVCOSU4QyVFQiVBMCVBNCVFQiU4QiVBQyVFQiU5RCVCQyVFQSVCMyVBMCUyMCVFQyVBMCU4OCVFQiVCMCU5NSVFRCU5NSU5OCVFQSVCMiU4QyUyMCVFQiVCNiU4MCVFRCU4MyU4MSVFRCU5NSU5OCVFQyVBNyU4MCVFQiVBNyU4QyUyQyUyMCclRUIlODIlOTgnJUVCJThBJTk0JTIwJUVDJUIxJTg1JUVDJTlFJTg0JUVDJUE3JTg4JTIwJUVDJTg4JTk4JTIwJUVDJTk3JTg2JUVCJThBJTk0JTIwJUVCJThGJTk5JUVDJUEwJTk1JUVDJTlEJUI0JUVCJTlEJUJDJTIwJUVDJTgzJTlEJUVBJUIwJTgxJUVEJTk1JTk4JUVCJUE5JUIwJTIwJUVBJUIxJUIwJUVDJUEwJTg4JUVEJTk1JTlDJUVCJThCJUE0LiUyMCUyRiUyRiUyMCclRUIlODIlOTgnJUVCJThBJTk0JTIwJUVCJTkyJUE0JUVCJThBJUE2JUVBJUIyJThDJTIwJUVDJUEzJTg0JUVDJUIxJTg1JUVBJUIwJTkwJUVDJTlEJTg0JTIwJUVCJThBJTkwJUVCJTgxJUJDJUVBJUIzJUEwJTIwJUVCJUIzJTkxJUVDJTlCJTkwJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVBJUIwJTgwJTIwJUVBJUI2JThDJTIwJUVDJTk0JUE4JTIwJUVCJUFBJUIwJUVCJTlFJTk4JTIwJUVDJTk1JTg0JUVCJTgyJUI0JUVDJTlEJTk4JTIwJUVDJTg4JTk4JUVDJTg4JUEwJTIwJUVCJUIzJUI0JUVDJUE2JTlEJUVBJUI4JTg4JUVDJTlEJTg0JTIwJUVCJThDJTgwJUVDJThCJUEwJTIwJUVDJUE3JTgwJUVCJUI2JTg4JUVEJTk1JTlDJUVCJThCJUE0LiUyMCUyRiUyRiUyMCVFQyU5NSU4NCVFQiU4MiVCNCVFQyU5RCU5OCUyMCVFQyU4OCU5OCVFQyU4OCVBMCVFQiVCOSU4NCUyMCVFQiVBNyU4OCVFQiVBMCVBOCVFQyU5NyU5MCUyMCVFQyU4QiVBNCVFRCU4QyVBOCVFRCU5NSU5QyUyMCVFQSVCNiU4QyUyMCVFQyU5NCVBOCVFQiU4QSU5NCUyMCVFQSVCNyVCOCVFQiU4MiVBMCUyMCVFQiVCMCVBNCUyQyUyMCVFQyU4OCVBMCVFQyU5NyU5MCUyMCVFQyVCNyVBOCVFRCU5NSVCNCUyMCVFQiVCMyVCNSVFQiVBOSVCNCVFQyU5RCU4NCUyMCVFQyU5MyVCMCVFQSVCMyVBMCUyMCclRUIlODIlOTgnJUVDJTlEJTk4JTIwJUVDJUE3JTkxJUVDJTk3JTkwJTIwJUVBJUIwJTk1JUVCJThGJTg0JUVCJUExJTlDJTIwJUVDJUI5JUE4JUVDJTlFJTg1JUVEJTk1JTlDJUVCJThCJUE0LiUyMCUyRiUyRiUyMCclRUIlODIlOTgnJUVCJThBJTk0JTIwJUVBJUIwJTk1JUVCJThGJTg0JUVBJUIwJTgwJTIwJUVDJTlFJTkwJUVDJThCJUEwJUVDJTlEJTk4JTIwJUVDJTg0JUI4JUVDJTlFJTg1JUVDJTlFJTkwJUVDJTlEJUI4JTIwJUVBJUI2JThDJTIwJUVDJTk0JUE4JUVDJTlFJTg0JUVDJTlEJTg0JTIwJUVDJTk1JThDJUVDJTk1JTg0JUVDJUIwJUE4JUVCJUE2JUFDJUVBJUIzJUEwJTJDJTIwJUVBJUI3JUI4JUVDJTlEJTk4JTIwJUVDJTlFJTkwJUVDJUExJUI0JUVDJThCJUFDJUVDJTlEJTg0JTIwJUVDJUE3JTgwJUVDJUJDJTlDJUVDJUEzJUJDJUVBJUI4JUIwJTIwJUVDJTlDJTg0JUVEJTk1JUI0JTIwJUVBJUIwJTk1JUVCJThGJTg0JUVCJUExJTlDJTIwJUVCJThDJTgwJUVDJTlBJUIwJUVEJTk1JTk4JUVCJUE5JUIwJTIwJUVDJTlEJUJDJUVCJUI2JTgwJUVCJTlGJUFDJTIwJUVCJThGJTg4JUVDJTlEJUI0JTIwJUVDJTlFJTg4JUVCJThBJTk0JTIwJUVBJUIzJUIzJUVDJTlEJTg0JTIwJUVDJTk1JThDJUVCJUEwJUE0JUVDJUE0JTgwJUVCJThCJUE0LiUyMCUyRiUyRiUyMCVFQSVCNiU4QyUyMCVFQyU5NCVBOCVFQSVCMCU4MCUyMCVFRCU5NiU4OSVFQiVCMCVBOSVFQiVCNiU4OCVFQiVBQSU4NSVFQiU5MCU5OCVFQSVCMyVBMCUyQyUyMCclRUIlODIlOTgnJUVCJThBJTk0JTIwJUVDJTk1JTg0JUVEJTk5JTg5JTIwJUVDJUJDJUE0JUVCJUEwJTg4JUVDJTlEJTk4JTIwJUVBJUI1JUFDJUVCJTkxJTkwJUVCJUE3JThDJTIwJUVCJTgyJUE4JUVDJTlEJTgwJTIwJUVBJUI3JUI4JUVDJTlEJTk4JTIwJUVCJUIwJUE5JUVDJTlEJTg0JTIwJUVCJUIzJUI0JUVCJUE5JUIwJTIwJUVDJTlFJTkwJUVDJThCJUEwJUVDJTlEJTk4JTIwJUVCJUIwJUIwJUVCJUEwJUE0JUVBJUIwJTgwJTIwJUVDJUExJUI4JUVCJUEwJUFDJUVEJTk2JTg4JUVDJTlEJThDJUVDJTlEJTg0JTIwJUVDJTlFJTkwJUVDJUIxJTg1JUVEJTk1JTlDJUVCJThCJUE0Lg==">
+                                <div class="ordering-item-title">
+                                    <span>Q1.</span>
+                                    <span class="ordering-item-feedback"></span>
+                                </div>
+                                <div class="ordering-target-container"></div>
+                                <div class="ordering-source-container"><span class="ordering-item" draggable="true">'나'는 강도가 자신의 세입자인 권 씨임을 알아차리고, 그의 자존심을 지켜주기 위해 강도로 대우하며 일부러 돈이 있는 곳을 알려준다.</span><span class="ordering-item" draggable="true">권 씨는 학교로 '나'를 찾아와 아내의 수술비 10만 원을 빌려달라고 절박하게 부탁하지만, '나'는 책임질 수 없는 동정이라 생각하며 거절한다.</span><span class="ordering-item" draggable="true">아내의 수술비 마련에 실패한 권 씨는 그날 밤, 술에 취해 복면을 쓰고 '나'의 집에 강도로 침입한다.</span><span class="ordering-item" draggable="true">'나'는 뒤늦게 죄책감을 느끼고 병원으로 가 권 씨 몰래 아내의 수술 보증금을 대신 지불한다.</span><span class="ordering-item" draggable="true">권 씨가 행방불명되고, '나'는 아홉 켤레의 구두만 남은 그의 방을 보며 자신의 배려가 졸렬했음을 자책한다.</span></div>
+                            </div>
+                                    <div class="quiz-controls">
+                                        <span class="feedback"></span>
+                                        <button class="check-ordering-btn">정답 확인</button>
+                                        <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    </div>
+                               </div></div></div></div>
                 <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
                 <div id="explanationPopup" class="explanation-popup"></div>
             
                     </div>
                     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const explanationPopup = document.getElementById('explanationPopup');
-            const previewContainer = document.getElementById('exported-container');
+            document.addEventListener('DOMContentLoaded', () => {
+                const explanationPopup = document.getElementById('explanationPopup');
+                const previewContainer = document.getElementById('exported-container');
+                let proverbDataCache = {}; // 퀴즈 데이터 캐시
 
-            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-            if (scrollToTopBtn) {
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 200) {
-                        scrollToTopBtn.classList.add('show');
-                    } else {
-                        scrollToTopBtn.classList.remove('show');
-                    }
-                });
-                scrollToTopBtn.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            const tabButtonsContainer = document.querySelector('#preview-tab-buttons');
-            if (tabButtonsContainer) {
-                tabButtonsContainer.addEventListener('click', e => {
-                    const tabButton = e.target.closest('.tab-btn');
-                    if (!tabButton) return;
-
-                    const tabId = tabButton.dataset.tabId;
-
-                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-                    tabButton.classList.add('active');
-                    const activeContent = document.querySelector('.tab-content[data-tab-content-id="' + tabId + '"]');
-                    if (activeContent) {
-                        activeContent.classList.add('active');
-                        adjustBlankInputWidths(activeContent);
-                        if (window.MathJax && window.MathJax.typesetPromise) {
-                            window.MathJax.typesetPromise([activeContent]);
+                const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+                if (scrollToTopBtn) {
+                    window.addEventListener('scroll', () => {
+                        if (window.scrollY > 200) {
+                            scrollToTopBtn.classList.add('show');
+                        } else {
+                            scrollToTopBtn.classList.remove('show');
                         }
-                    }
-
-                    if (previewContainer) {
-                        previewContainer.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            }
-
-            function adjustBlankInputWidths(container) {
-                const measureSpan = document.createElement('span');
-                measureSpan.style.visibility = 'hidden';
-                measureSpan.style.position = 'absolute';
-                measureSpan.style.fontFamily = 'inherit';
-                measureSpan.style.fontSize = '1em';
-                document.body.appendChild(measureSpan);
-
-                container.querySelectorAll('.blank-input-preview').forEach(input => {
-                    const encodedAnswer = input.dataset.answer;
-                    if (encodedAnswer) {
-                        try {
-                            const answer = decodeURIComponent(atob(encodedAnswer));
-                            measureSpan.textContent = answer || '____';
-                            const textWidth = measureSpan.offsetWidth;
-                            input.style.width = (textWidth + 10) + 'px';
-                        } catch (e) {}
-                    }
-                });
-                document.body.removeChild(measureSpan);
-            }
-
-            function initializeAllInteractiveBlocks() {
-                document.querySelectorAll('.line-quiz-preview').forEach(quizEl => {
-                    initializeLineQuiz(quizEl);
-                });
-            }
-
-            function shuffle(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-
-            function initializeLineQuiz(quizEl) {
-                if (quizEl.lineQuizInstance) {
-                    quizEl.lineQuizInstance.reset();
-                    return;
-                }
-                const canvas = quizEl.querySelector('.line-quiz-canvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                const allDots = quizEl.querySelectorAll('.dot');
-                let selectedDot = null;
-                let connections = [];
-
-                const matchItemHeights = () => {
-                    const leftItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item'));
-                    const rightItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:last-child .line-quiz-item'));
-                    const numItems = Math.min(leftItems.length, rightItems.length);
-                    for (let i = 0; i < numItems; i++) {
-                        leftItems[i].style.height = '';
-                        rightItems[i].style.height = '';
-                        const leftHeight = leftItems[i].offsetHeight;
-                        const rightHeight = rightItems[i].offsetHeight;
-                        const maxHeight = Math.max(leftHeight, rightHeight);
-                        if (maxHeight > 36) {
-                            leftItems[i].style.height = maxHeight + 'px';
-                            rightItems[i].style.height = maxHeight + 'px';
-                        }
-                    }
-                };
-
-                const resizeCanvas = () => {
-                    if (!quizEl.isConnected) return;
-                    canvas.width = quizEl.clientWidth;
-                    canvas.height = quizEl.clientHeight;
-                    matchItemHeights();
-                    redrawLines();
-                };
-
-                const getDotPosition = (dot) => {
-                    const dotRect = dot.getBoundingClientRect();
-                    const canvasRect = canvas.getBoundingClientRect();
-                    return {
-                        x: dotRect.left - canvasRect.left + dotRect.width / 2,
-                        y: dotRect.top - canvasRect.top + dotRect.height / 2
-                    };
-                };
-                const redrawLines = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    connections.forEach(conn => {
-                        const startDot = quizEl.querySelector('.line-quiz-column:first-child .dot[data-id="' + conn.leftId + '"]');
-                        const endDot = quizEl.querySelector('.line-quiz-column:last-child .dot[data-id="' + conn.rightId + '"]');
-                        if (!startDot || !endDot) return;
-                        const startPos = getDotPosition(startDot);
-                        const endPos = getDotPosition(endDot);
-                        ctx.beginPath();
-                        ctx.moveTo(startPos.x, startPos.y);
-                        ctx.lineTo(endPos.x, endPos.y);
-                        ctx.strokeStyle = conn.color || '#007bff';
-                        ctx.lineWidth = 3;
-                        ctx.stroke();
                     });
-                };
-                const handleDotClick = (e) => {
-                    const dot = e.target;
-                    if (!dot.classList.contains('dot') || dot.classList.contains('disabled')) return;
-                    if (!selectedDot) {
-                        selectedDot = dot;
-                        dot.classList.add('selected');
-                    } else {
-                        if (selectedDot.closest('.line-quiz-column') === dot.closest('.line-quiz-column')) {
-                            selectedDot.classList.remove('selected');
+                    scrollToTopBtn.addEventListener('click', () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+
+                const tabButtonsContainer = document.querySelector('#preview-tab-buttons');
+                if (tabButtonsContainer) {
+                    tabButtonsContainer.addEventListener('click', e => {
+                        const tabButton = e.target.closest('.tab-btn');
+                        if (!tabButton) return;
+
+                        const tabId = tabButton.dataset.tabId;
+
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                        tabButton.classList.add('active');
+                        const activeContent = document.querySelector('.tab-content[data-tab-content-id="' + tabId + '"]');
+                        if (activeContent) {
+                            activeContent.classList.add('active');
+                            adjustBlankInputWidths(activeContent);
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                window.MathJax.typesetPromise([activeContent]);
+                            }
+                        }
+
+                        if (previewContainer) {
+                            previewContainer.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                }
+                
+                function renderQuizContent(quizData, items, quizBlock) {
+                    const correctAnswer = quizData.proverb;
+                    const currentQuizIndex = items.findIndex(item => item.proverb === correctAnswer);
+                    
+                    let wrongAnswers = [];
+                    while(wrongAnswers.length < 3) {
+                        const randomIndex = Math.floor(Math.random() * items.length);
+                        if (randomIndex !== currentQuizIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
+                            wrongAnswers.push(items[randomIndex].proverb);
+                        }
+                    }
+
+                    const choices = shuffle([correctAnswer, ...wrongAnswers]);
+                    const answerIndex = choices.indexOf(correctAnswer) + 1;
+                    
+                    let choicesHtml = '';
+                    const numberChars = ['①', '②', '③', '④'];
+                    choices.forEach((choice, index) => {
+                        choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
+                    });
+
+                    const quizHtml = `
+                        <div class="daily-quiz-preview">
+                            <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="${btoa(encodeURIComponent(correctAnswer))}">
+                                <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
+                                <div class="mcq-passage-preview">${quizData.explanation.replace(/\n/g, '<br>')}</div>
+                                <div class="mcq-options-preview">${choicesHtml}</div>
+                                <div class="quiz-controls" style="display: none;">
+                                    <span class="feedback"></span>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    <button class="new-proverb-btn" style="display:none;">다른 속담 더 풀어보기</button>
+                                </div>
+                                <div class="explanation"></div>
+                            </div>
+                        </div>
+                    `;
+                    quizBlock.innerHTML = quizHtml;
+                }
+
+                async function renderDailyQuiz(quizBlock) {
+                    try {
+                        const quizType = quizBlock.dataset.quizType;
+                        if (!quizType) throw new Error('퀴즈 종류가 지정되지 않았습니다.');
+                        
+                        const fileName = `quiz_data_${quizType}.json`;
+                        
+                        // 데이터 캐시 확인
+                        if (!proverbDataCache[quizType]) {
+                            const response = await fetch(fileName); 
+                            if (!response.ok) throw new Error(`데이터 파일(${fileName})을 불러올 수 없습니다.`);
+                            proverbDataCache[quizType] = await response.json();
+                        }
+                        const items = proverbDataCache[quizType];
+
+                        const now = new Date();
+                        const start = new Date(now.getFullYear(), 0, 0);
+                        const diff = now - start;
+                        const oneDay = 1000 * 60 * 60 * 24;
+                        const dayOfYear = Math.floor(diff / oneDay);
+
+                        const todaysItemIndex = dayOfYear % items.length;
+                        const quizData = items[todaysItemIndex];
+                        
+                        renderQuizContent(quizData, items, quizBlock);
+
+                    } catch (error) {
+                        quizBlock.innerHTML = `<div class="daily-quiz-preview" style="color: var(--incorrect-color); text-align: center;">${error.message}</div>`;
+                    }
+                }
+
+                function adjustBlankInputWidths(container) {
+                    const measureSpan = document.createElement('span');
+                    measureSpan.style.visibility = 'hidden';
+                    measureSpan.style.position = 'absolute';
+                    measureSpan.style.fontFamily = 'inherit';
+                    measureSpan.style.fontSize = '1em';
+                    document.body.appendChild(measureSpan);
+
+                    container.querySelectorAll('.blank-input-preview').forEach(input => {
+                        const encodedAnswer = input.dataset.answer;
+                        if (encodedAnswer) {
+                            try {
+                                const answer = decodeURIComponent(atob(encodedAnswer));
+                                measureSpan.textContent = answer || '____';
+                                const textWidth = measureSpan.offsetWidth;
+                                input.style.width = (textWidth + 10) + 'px';
+                            } catch (e) {}
+                        }
+                    });
+                    document.body.removeChild(measureSpan);
+                }
+
+                function initializeAllInteractiveBlocks() {
+                    document.querySelectorAll('.line-quiz-preview').forEach(quizEl => {
+                        initializeLineQuiz(quizEl);
+                    });
+                    
+                    document.querySelectorAll('.block[data-type="daily-quiz"]').forEach(renderDailyQuiz);
+                }
+
+                function shuffle(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                }
+
+                function initializeLineQuiz(quizEl) {
+                    if (quizEl.lineQuizInstance) {
+                        quizEl.lineQuizInstance.reset();
+                        return;
+                    }
+                    const canvas = quizEl.querySelector('.line-quiz-canvas');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const allDots = quizEl.querySelectorAll('.dot');
+                    let selectedDot = null;
+                    let connections = [];
+
+                    const matchItemHeights = () => {
+                        const leftItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item'));
+                        const rightItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:last-child .line-quiz-item'));
+                        const numItems = Math.min(leftItems.length, rightItems.length);
+                        for (let i = 0; i < numItems; i++) {
+                            leftItems[i].style.height = '';
+                            rightItems[i].style.height = '';
+                            const leftHeight = leftItems[i].offsetHeight;
+                            const rightHeight = rightItems[i].offsetHeight;
+                            const maxHeight = Math.max(leftHeight, rightHeight);
+                            if (maxHeight > 36) {
+                                leftItems[i].style.height = maxHeight + 'px';
+                                rightItems[i].style.height = maxHeight + 'px';
+                            }
+                        }
+                    };
+
+                    const resizeCanvas = () => {
+                        if (!quizEl.isConnected) return;
+                        canvas.width = quizEl.clientWidth;
+                        canvas.height = quizEl.clientHeight;
+                        matchItemHeights();
+                        redrawLines();
+                    };
+
+                    const getDotPosition = (dot) => {
+                        const dotRect = dot.getBoundingClientRect();
+                        const canvasRect = canvas.getBoundingClientRect();
+                        return {
+                            x: dotRect.left - canvasRect.left + dotRect.width / 2,
+                            y: dotRect.top - canvasRect.top + dotRect.height / 2
+                        };
+                    };
+                    const redrawLines = () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        connections.forEach(conn => {
+                            const startDot = quizEl.querySelector('.line-quiz-column:first-child .dot[data-id="' + conn.leftId + '"]');
+                            const endDot = quizEl.querySelector('.line-quiz-column:last-child .dot[data-id="' + conn.rightId + '"]');
+                            if (!startDot || !endDot) return;
+                            const startPos = getDotPosition(startDot);
+                            const endPos = getDotPosition(endDot);
+                            ctx.beginPath();
+                            ctx.moveTo(startPos.x, startPos.y);
+                            ctx.lineTo(endPos.x, endPos.y);
+                            ctx.strokeStyle = conn.color || '#007bff';
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                        });
+                    };
+                    const handleDotClick = (e) => {
+                        const dot = e.target;
+                        if (!dot.classList.contains('dot') || dot.classList.contains('disabled')) return;
+                        if (!selectedDot) {
                             selectedDot = dot;
                             dot.classList.add('selected');
-                            return;
+                        } else {
+                            if (selectedDot.closest('.line-quiz-column') === dot.closest('.line-quiz-column')) {
+                                selectedDot.classList.remove('selected');
+                                selectedDot = dot;
+                                dot.classList.add('selected');
+                                return;
+                            }
+                            const leftDot = selectedDot.closest('.line-quiz-column:first-child') ? selectedDot : dot;
+                            const rightDot = selectedDot.closest('.line-quiz-column:last-child') ? selectedDot : dot;
+                            const leftId = leftDot.dataset.id;
+                            const rightId = rightDot.dataset.id;
+                            connections = connections.filter(c => c.leftId !== leftId);
+                            connections.push({ leftId, rightId });
+                            redrawLines();
+                            selectedDot.classList.remove('selected');
+                            selectedDot = null;
                         }
-                        const leftDot = selectedDot.closest('.line-quiz-column:first-child') ? selectedDot : dot;
-                        const rightDot = selectedDot.closest('.line-quiz-column:last-child') ? selectedDot : dot;
-                        const leftId = leftDot.dataset.id;
-                        const rightId = rightDot.dataset.id;
-                        connections = connections.filter(c => c.leftId !== leftId);
-                        connections.push({ leftId, rightId });
-                        redrawLines();
-                        selectedDot.classList.remove('selected');
-                        selectedDot = null;
-                    }
-                };
+                    };
 
-                const instance = {
-                    checkAnswers: () => {
-                        connections.forEach(conn => {
-                            conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
-                        });
-                        redrawLines();
-                        allDots.forEach(d => d.classList.add('disabled'));
-                    },
-                    reset: () => {
-                        connections = [];
-                        selectedDot = null;
-                        allDots.forEach(dot => dot.classList.remove('selected', 'disabled'));
-                        const rightColumnEl = quizEl.querySelector('.line-quiz-column:last-child');
-                        const rightItems = Array.from(rightColumnEl.querySelectorAll('.line-quiz-item'));
-                        shuffle(rightItems);
-                        rightColumnEl.innerHTML = '';
-                        rightItems.forEach(item => rightColumnEl.appendChild(item));
-                        redrawLines();
-                        setTimeout(resizeCanvas, 0);
-                    }
-                };
-                quizEl.lineQuizInstance = instance;
-                quizEl.addEventListener('click', handleDotClick);
-                const resizeObserver = new ResizeObserver(resizeCanvas);
-                resizeObserver.observe(quizEl);
-                instance.reset();
-            }
-
-            let currentDraggedItem = null;
-            let dropIndicator = null; 
-
-            function getDragAfterElementHorizontal(container, x) {
-                const draggableElements = [...container.querySelectorAll('.ordering-item:not(.dragging)')];
-                return draggableElements.reduce((closest, child) => {
-                    const box = child.getBoundingClientRect();
-                    const offset = x - box.left - box.width / 2;
-                    if (offset < 0 && offset > closest.offset) {
-                        return { offset: offset, element: child };
-                    } else {
-                        return closest;
-                    }
-                }, { offset: Number.NEGATIVE_INFINITY }).element;
-            }
-
-            previewContainer.addEventListener('dragstart', e => {
-                if (e.target.matches('.drag-source, .ordering-item')) {
-                    currentDraggedItem = e.target;
-                    setTimeout(() => e.target.classList.add('dragging'), 0);
-                    e.dataTransfer.setData('text/plain', e.target.textContent);
-                    if (e.target.matches('.ordering-item')) {
-                        dropIndicator = document.createElement('div');
-                        dropIndicator.className = 'ordering-drop-indicator';
-                    }
+                    const instance = {
+                        checkAnswers: () => {
+                            connections.forEach(conn => {
+                                conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
+                            });
+                            redrawLines();
+                            allDots.forEach(d => d.classList.add('disabled'));
+                        },
+                        reset: () => {
+                            connections = [];
+                            selectedDot = null;
+                            allDots.forEach(dot => dot.classList.remove('selected', 'disabled'));
+                            const rightColumnEl = quizEl.querySelector('.line-quiz-column:last-child');
+                            const rightItems = Array.from(rightColumnEl.querySelectorAll('.line-quiz-item'));
+                            shuffle(rightItems);
+                            rightColumnEl.innerHTML = '';
+                            rightItems.forEach(item => rightColumnEl.appendChild(item));
+                            redrawLines();
+                            setTimeout(resizeCanvas, 0);
+                        }
+                    };
+                    quizEl.lineQuizInstance = instance;
+                    quizEl.addEventListener('click', handleDotClick);
+                    const resizeObserver = new ResizeObserver(resizeCanvas);
+                    resizeObserver.observe(quizEl);
+                    instance.reset();
                 }
-            });
 
-            previewContainer.addEventListener('dragend', e => {
-                if (e.target.matches('.drag-source, .ordering-item')) {
-                    e.target.classList.remove('dragging');
-                    if (dropIndicator && dropIndicator.parentNode) {
+                let currentDraggedItem = null;
+                let dropIndicator = null; 
+
+                function getDragAfterElementHorizontal(container, x) {
+                    const draggableElements = [...container.querySelectorAll('.ordering-item:not(.dragging)')];
+                    return draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = x - box.left - box.width / 2;
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+                }
+
+                previewContainer.addEventListener('dragstart', e => {
+                    if (e.target.matches('.classification-item-card')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                    }
+                    if (e.target.matches('.drag-source, .ordering-item')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                        e.dataTransfer.setData('text/plain', e.target.textContent);
+                        if (e.target.matches('.ordering-item')) {
+                            dropIndicator = document.createElement('div');
+                            dropIndicator.className = 'ordering-drop-indicator';
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragend', e => {
+                    const droppedItem = e.target;
+
+                    if (droppedItem.matches('.ordering-item')) {
+                        setTimeout(() => {
+                            const targetContainer = droppedItem.closest('.ordering-target-container');
+                            
+                            if (targetContainer) {
+                                const item = targetContainer.closest('.ordering-preview-item');
+                                const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item'));
+                                const studentAnswer = studentItems.map(i => i.textContent.trim()).join(' // ');
+                                const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+                                const totalItemCount = correctAnswer.split('//').length;
+
+                                if (studentAnswer === correctAnswer) {
+                                    targetContainer.classList.remove('incorrect');
+                                    targetContainer.classList.add('correct');
+                                    if (feedbackIcon) feedbackIcon.textContent = '⭕';
+
+                                    const quizContainer = item.closest('.ordering-preview-container');
+                                    const allItems = quizContainer.querySelectorAll('.ordering-preview-item');
+                                    const allCorrect = Array.from(allItems).every(i => i.querySelector('.ordering-target-container.correct'));
+
+                                    if (allCorrect) {
+                                        const feedbackEl = quizContainer.querySelector('.feedback');
+                                        feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
+                                        feedbackEl.className = 'feedback show correct';
+                                        quizContainer.querySelector('.check-ordering-btn').style.display = 'none';
+                                        quizContainer.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                                    }
+                                } else if (studentItems.length === totalItemCount) {
+                                    targetContainer.classList.remove('correct');
+                                    targetContainer.classList.add('incorrect');
+                                    if (feedbackIcon) feedbackIcon.textContent = '❌';
+                                } else {
+                                    targetContainer.classList.remove('correct', 'incorrect');
+                                    if (feedbackIcon) feedbackIcon.textContent = '';
+                                }
+                            }
+                        }, 0);
+                    }
+
+                    if (currentDraggedItem) {
+                        currentDraggedItem.classList.remove('dragging');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.removeChild(dropIndicator);
+                        }
+                        dropIndicator = null;
+                        currentDraggedItem = null;
+                    }
+                });
+
+                previewContainer.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.classList.add('drag-over');
+                    }
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-target-container');
+
+                    if (dropTarget || (sourceContainer && currentDraggedItem?.parentElement.classList.contains('drop-target'))) {
+                        e.target.closest('.drop-target, .source-container').classList.add('drag-over');
+                    } else if (orderingContainer && currentDraggedItem?.matches('.ordering-item')) {
+                        orderingContainer.classList.add('drag-over');
+                        const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                        if (afterElement == null) {
+                            if (orderingContainer.lastChild !== dropIndicator) orderingContainer.appendChild(dropIndicator);
+                        } else {
+                            if (afterElement.previousSibling !== dropIndicator) orderingContainer.insertBefore(dropIndicator, afterElement);
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragleave', e => {
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone) {
+                        classificationDropZone.classList.remove('drag-over');
+                    }
+                    const relatedTarget = e.relatedTarget;
+                    const dropZone = e.target.closest('.drop-target, .source-container, .ordering-target-container');
+                    if (dropZone && !dropZone.contains(relatedTarget)) {
+                        dropZone.classList.remove('drag-over');
+                    }
+                    if(dropZone && dropIndicator && dropIndicator.parentNode) {
                         dropIndicator.parentNode.removeChild(dropIndicator);
                     }
-                    dropIndicator = null;
-                    currentDraggedItem = null;
-                }
-            });
+                });
 
-            previewContainer.addEventListener('dragover', e => {
-                e.preventDefault();
-                const dropTarget = e.target.closest('.drop-target');
-                const sourceContainer = e.target.closest('.source-container');
-                const orderingContainer = e.target.closest('.ordering-target-container');
+                previewContainer.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (!currentDraggedItem) return;
 
-                if (dropTarget || (sourceContainer && currentDraggedItem?.parentElement.classList.contains('drop-target'))) {
-                    e.target.closest('.drop-target, .source-container').classList.add('drag-over');
-                } else if (orderingContainer && currentDraggedItem?.matches('.ordering-item')) {
-                    orderingContainer.classList.add('drag-over');
-                    const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
-                    if (afterElement == null) {
-                        if (orderingContainer.lastChild !== dropIndicator) orderingContainer.appendChild(dropIndicator);
-                    } else {
-                        if (afterElement.previousSibling !== dropIndicator) orderingContainer.insertBefore(dropIndicator, afterElement);
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.appendChild(currentDraggedItem);
+                        classificationDropZone.classList.remove('drag-over');
+
+                        const quizContainer = classificationDropZone.closest('.classification-preview-container');
+                        const hasChecked = quizContainer.querySelector('.classification-item-card.correct, .classification-item-card.incorrect');
+                        
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.classification-item-card').forEach(card => {
+                                card.classList.remove('correct', 'incorrect');
+                            });
+                            quizContainer.querySelector('.retry-quiz-btn').style.display = 'none';
+                            quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            const feedbackEl = quizContainer.querySelector('.feedback');
+                            feedbackEl.className = 'feedback';
+                            feedbackEl.innerHTML = '';
+                        }
                     }
-                }
-            });
 
-            previewContainer.addEventListener('dragleave', e => {
-                const relatedTarget = e.relatedTarget;
-                const dropZone = e.target.closest('.drop-target, .source-container, .ordering-target-container');
-                if (dropZone && !dropZone.contains(relatedTarget)) {
-                    dropZone.classList.remove('drag-over');
-                }
-                 if(dropZone && dropIndicator && dropIndicator.parentNode) {
-                    dropIndicator.parentNode.removeChild(dropIndicator);
-                 }
-            });
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-source-container, .ordering-target-container');
 
-            previewContainer.addEventListener('drop', e => {
-                e.preventDefault();
-                if (!currentDraggedItem) return;
+                    if (dropTarget || (sourceContainer && currentDraggedItem.parentElement.classList.contains('drop-target'))) {
+                        const quizContainer = (dropTarget || sourceContainer).closest('.drag-drop-preview-container');
+                        const hasChecked = quizContainer.querySelector('.drop-target.correct, .drop-target.incorrect');
 
-                const dropTarget = e.target.closest('.drop-target');
-                const sourceContainer = e.target.closest('.source-container');
-                const orderingContainer = e.target.closest('.ordering-source-container, .ordering-target-container');
-
-                if (dropTarget) { // [개선] 드래그앤드롭: 정답 칸에 드롭
-                    dropTarget.classList.remove('drag-over');
-                    const existingItem = dropTarget.querySelector('.drag-source');
-                    const quizContainer = dropTarget.closest('.drag-drop-preview-container');
-                    const mainSourceContainer = quizContainer.querySelector('.source-container');
-
-                    if (existingItem) {
-                        mainSourceContainer.appendChild(existingItem);
-                    }
-                    dropTarget.appendChild(currentDraggedItem);
-
-                } else if (sourceContainer && currentDraggedItem.parentElement.classList.contains('drop-target')) { // [개선] 드래그앤드롭: 선택지 칸으로 되돌리기
-                    sourceContainer.classList.remove('drag-over');
-                    sourceContainer.appendChild(currentDraggedItem);
-                
-                } else if (orderingContainer) { // 순서배열 퀴즈 로직 (기존과 동일)
-                    orderingContainer.classList.remove('drag-over');
-                    if (dropIndicator && dropIndicator.parentNode) {
-                        dropIndicator.parentNode.replaceChild(currentDraggedItem, dropIndicator);
-                    } else {
-                        const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
-                        if (afterElement == null) orderingContainer.appendChild(currentDraggedItem);
-                        else orderingContainer.insertBefore(currentDraggedItem, afterElement);
-                    }
-                    const quizContainer = orderingContainer.closest('.ordering-preview-container');
-                    if (quizContainer && orderingContainer.classList.contains('ordering-target-container')) {
-                        if (orderingContainer.matches('.correct, .incorrect')) {
-                            orderingContainer.classList.remove('correct', 'incorrect');
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                target.classList.remove('correct', 'incorrect');
+                            });
                             const controls = quizContainer.querySelector('.quiz-controls');
                             if (controls) {
                                 controls.querySelector('.retry-quiz-btn').style.display = 'none';
-                                controls.querySelector('.check-ordering-btn').style.display = 'inline-block';
-                                controls.querySelector('.feedback').className = 'feedback';
+                                controls.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                                const feedbackEl = controls.querySelector('.feedback');
+                                feedbackEl.className = 'feedback';
+                                feedbackEl.innerHTML = '';
+                            }
+                        }
+
+                        if (dropTarget) {
+                            dropTarget.classList.remove('drag-over');
+                            const existingItem = dropTarget.querySelector('.drag-source');
+                            const mainSourceContainer = quizContainer.querySelector('.source-container');
+                            if (existingItem) {
+                                mainSourceContainer.appendChild(existingItem);
+                            }
+                            dropTarget.appendChild(currentDraggedItem);
+                        } else {
+                            sourceContainer.classList.remove('drag-over');
+                            sourceContainer.appendChild(currentDraggedItem);
+                        }
+                    } 
+                    else if (orderingContainer) {
+                        orderingContainer.classList.remove('drag-over');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.replaceChild(currentDraggedItem, dropIndicator);
+                        } else {
+                            const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                            if (afterElement == null) orderingContainer.appendChild(currentDraggedItem);
+                            else orderingContainer.insertBefore(currentDraggedItem, afterElement);
+                        }
+                        const quizContainer = orderingContainer.closest('.ordering-preview-container');
+                        if (quizContainer && orderingContainer.classList.contains('ordering-target-container')) {
+                            if (orderingContainer.matches('.correct, .incorrect')) {
+                                orderingContainer.classList.remove('correct', 'incorrect');
+                                const controls = quizContainer.querySelector('.quiz-controls');
+                                if (controls) {
+                                    controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                    controls.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                                    controls.querySelector('.feedback').className = 'feedback';
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            previewContainer.addEventListener('click', e => {
-                // ✨ [개선] 즉시 확인형 빈칸 퀴즈 로직 (오답 재시도, 정답 클릭 시 초기화)
-                const clozeChoice = e.target.closest('.cloze-choice');
-                if (clozeChoice) {
-                    const container = clozeChoice.closest('.interactive-cloze-container');
-                    if (container.classList.contains('answered') || clozeChoice.classList.contains('used')) return;
+                previewContainer.addEventListener('click', e => {
+                    const newProverbBtn = e.target.closest('.new-proverb-btn');
+                    if (newProverbBtn) {
+                        const quizItem = newProverbBtn.closest('.mcq-preview-item');
+                        const quizBlock = newProverbBtn.closest('.block');
+                        const quizType = quizBlock.dataset.quizType;
+                        const items = proverbDataCache[quizType];
+                        const currentProverb = decodeURIComponent(atob(quizItem.dataset.currentProverb));
 
-                    const blank = container.querySelector('.cloze-blank');
-                    const studentAnswer = clozeChoice.textContent.trim();
-                    const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
-
-                    blank.textContent = studentAnswer;
-                    blank.classList.add('filled');
-                    blank.classList.remove('incorrect');
-
-                    if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                        blank.classList.add('correct');
-                        container.classList.add('answered');
-                        container.querySelectorAll('.cloze-choice').forEach(choice => {
-                            choice.classList.add('used');
-                        });
-                    } else {
-                        blank.classList.add('incorrect');
-                        clozeChoice.classList.add('used');
+                        if (items && items.length > 1) {
+                            let newIndex;
+                            let newQuizData;
+                            do {
+                                newIndex = Math.floor(Math.random() * items.length);
+                                newQuizData = items[newIndex];
+                            } while (newQuizData.proverb === currentProverb);
+                            
+                            renderQuizContent(newQuizData, items, quizBlock);
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                const filledBlank = e.target.closest('.cloze-blank.filled');
-                if (filledBlank && filledBlank.classList.contains('correct')) {
-                    const container = filledBlank.closest('.interactive-cloze-container');
-                    container.classList.remove('answered');
-                    filledBlank.innerHTML = '&nbsp;';
-                    filledBlank.className = 'cloze-blank';
-                    container.querySelectorAll('.cloze-choice').forEach(choice => {
-                        choice.classList.remove('used');
-                    });
-                    return;
-                }
+                    const clozeChoice = e.target.closest('.cloze-choice');
+                    if (clozeChoice) {
+                        const container = clozeChoice.closest('.interactive-cloze-container');
+                        if (container.classList.contains('answered') || clozeChoice.classList.contains('used')) return;
 
-                const cloze = e.target.closest('.revealable-cloze');
-                const revealed = e.target.closest('.revealed-answer');
-                if (cloze) {
-                    const answer = decodeURIComponent(atob(cloze.dataset.answer));
-                    cloze.textContent = answer;
-                    cloze.className = 'revealed-answer';
-                    return;
-                }
-                if (revealed) {
-                    const hint = decodeURIComponent(atob(revealed.dataset.hint));
-                    revealed.textContent = hint;
-                    revealed.className = 'revealable-cloze';
-                    return;
-                }
-                const summary = e.target.closest('.frame-preview-summary, .summary-preview-summary, .text-preview-summary');
-                if (summary) {
-                    e.preventDefault();
-                    const details = summary.parentElement;
-                    details.open = !details.open;
-                    return;
-                }
-                const retryBtn = e.target.closest('.retry-quiz-btn');
-                const checkAnswerBtn = e.target.closest('.check-answer-btn');
-                const checkFillInBtn = e.target.closest('.check-fill-in-btn');
-                const checkLineQuizBtn = e.target.closest('.check-line-quiz-btn');
-                const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
-                const checkOrderingBtn = e.target.closest('.check-ordering-btn');
-                const youtubePlaceholder = e.target.closest('.youtube-placeholder');
+                        const blank = container.querySelector('.cloze-blank');
+                        const studentAnswer = clozeChoice.textContent.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
 
-                if (retryBtn) {
-                    const quizContainer = retryBtn.closest('.quiz-container, .mcq-preview-item, .descriptive-preview-item, .fill-in-container, .table-preview-container, .drag-drop-preview-container, .ordering-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
-                    if (quizContainer) {
-                        quizContainer.dataset.attempts = "0";
-                        const controls = quizContainer.querySelector('.quiz-controls');
-                        if (controls && controls.querySelector('.feedback')) {
-                            controls.querySelector('.feedback').className = 'feedback';
-                            controls.querySelector('.feedback').innerHTML = '';
-                        }
-                        quizContainer.querySelectorAll('.explanation').forEach(el => {
-                            el.className = 'explanation';
-                        });
-                        if (quizContainer.querySelector('.ox-preview-item')) {
-                            quizContainer.querySelectorAll('.ox-preview-item .feedback').forEach(fb => {
-                                fb.className = 'feedback';
-                                fb.innerHTML = '';
+                        blank.textContent = studentAnswer;
+                        blank.classList.add('filled');
+                        blank.classList.remove('incorrect');
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            blank.classList.add('correct');
+                            container.classList.add('answered');
+                            container.querySelectorAll('.cloze-choice').forEach(choice => {
+                                choice.classList.add('used');
                             });
+                        } else {
+                            blank.classList.add('incorrect');
+                            clozeChoice.classList.add('used');
                         }
-                        if (quizContainer.classList.contains('mcq-preview-item')) {
+                        return;
+                    }
+
+                    const filledBlank = e.target.closest('.cloze-blank.filled');
+                    if (filledBlank && filledBlank.classList.contains('correct')) {
+                        const container = filledBlank.closest('.interactive-cloze-container');
+                        container.classList.remove('answered');
+                        filledBlank.innerHTML = '&nbsp;';
+                        filledBlank.className = 'cloze-blank';
+                        container.querySelectorAll('.cloze-choice').forEach(choice => {
+                            choice.classList.remove('used');
+                        });
+                        return;
+                    }
+
+                    const cloze = e.target.closest('.revealable-cloze');
+                    const revealed = e.target.closest('.revealed-answer');
+                    if (cloze) {
+                        const answer = decodeURIComponent(atob(cloze.dataset.answer));
+                        cloze.textContent = answer;
+                        cloze.className = 'revealed-answer';
+                        return;
+                    }
+                    if (revealed) {
+                        const hint = decodeURIComponent(atob(revealed.dataset.hint));
+                        revealed.textContent = hint;
+                        revealed.className = 'revealable-cloze';
+                        return;
+                    }
+                    const summary = e.target.closest('.frame-preview-summary, .summary-preview-summary, .text-preview-summary');
+                    if (summary) {
+                        e.preventDefault();
+                        const details = summary.parentElement;
+                        details.open = !details.open;
+                        return;
+                    }
+                    const retryBtn = e.target.closest('.retry-quiz-btn');
+                    const checkAnswerBtn = e.target.closest('.check-answer-btn');
+                    const checkFillInBtn = e.target.closest('.check-fill-in-btn');
+                    const checkLineQuizBtn = e.target.closest('.check-line-quiz-btn');
+                    const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
+                    const checkOrderingBtn = e.target.closest('.check-ordering-btn');
+                    const checkClassificationBtn = e.target.closest('.check-classification-btn');
+                    const youtubePlaceholder = e.target.closest('.youtube-placeholder');
+
+                    if (retryBtn) {
+                        const quizContainer = retryBtn.closest('.quiz-container, .mcq-preview-item, .descriptive-preview-item, .fill-in-container, .table-preview-container, .drag-drop-preview-container, .ordering-preview-container, .classification-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        if (quizContainer) {
                             quizContainer.dataset.attempts = "0";
-                        }
-                        if (quizContainer.classList.contains('descriptive-preview-item')) {
-                            const studentAnswerEl = quizContainer.querySelector('.descriptive-student-answer');
-                            studentAnswerEl.value = '';
-                            studentAnswerEl.disabled = false;
-                            quizContainer.querySelector('.check-answer-btn').style.display = 'inline-block';
-                            retryBtn.style.display = 'none';
-                        }
-                        quizContainer.querySelectorAll('.blank-input-preview').forEach(input => {
-                            input.value = '';
-                            input.disabled = false;
-                            input.className = 'blank-input-preview';
-                        });
-                        quizContainer.querySelectorAll('.interactive-cloze-container').forEach(cloze => {
-                            cloze.classList.remove('answered');
-                            const blank = cloze.querySelector('.cloze-blank');
-                            blank.innerHTML = '&nbsp;';
-                            blank.className = 'cloze-blank';
-                            cloze.querySelectorAll('.cloze-choice').forEach(choice => {
-                                choice.classList.remove('used');
-                            });
-                        });
-                        const checkBtn = quizContainer.querySelector('.check-fill-in-btn');
-                        if (checkBtn) {
-                            checkBtn.style.display = 'inline-block';
-                        }
-                        if(retryBtn) retryBtn.style.display = 'none';
-                        const lineQuizPreview = quizContainer.querySelector('.line-quiz-preview');
-                        if (lineQuizPreview && lineQuizPreview.lineQuizInstance) {
-                            lineQuizPreview.lineQuizInstance.reset();
-                            retryBtn.style.display = 'none';
-                            quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
-                        }
-                        if (quizContainer.classList.contains('drag-drop-preview-container')) {
-                            const sourceContainer = quizContainer.querySelector('.source-container');
-                            const allWords = [];
-                            quizContainer.querySelectorAll('.drop-target').forEach(target => {
-                                if (target.textContent.trim()) {
-                                    allWords.push(target.textContent.trim());
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls && controls.querySelector('.feedback')) {
+                                controls.querySelector('.feedback').className = 'feedback';
+                                controls.querySelector('.feedback').innerHTML = '';
+                            }
+                            quizContainer.querySelectorAll('.explanation').forEach(el => { el.className = 'explanation'});
+                            
+                            if (quizContainer.querySelector('.ox-preview-item')) {
+                                quizContainer.querySelectorAll('.ox-preview-item .feedback').forEach(fb => {
+                                    fb.className = 'feedback';
+                                    fb.innerHTML = '';
+                                });
+                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => btn.classList.remove('selected'));
+                            }
+                            
+                            if(quizContainer.classList.contains('mcq-preview-item')) { 
+                                quizContainer.dataset.attempts = "0";
+                                quizContainer.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+                                retryBtn.style.display = 'none';
+                                if (controls) controls.style.display = 'none';
+                                const explanation = quizContainer.querySelector('.explanation');
+                                if (explanation) explanation.classList.remove('show');
+                            }
+                            if(quizContainer.classList.contains('descriptive-preview-item')) {
+                                const studentAnswerEl = quizContainer.querySelector('.descriptive-student-answer');
+                                studentAnswerEl.value = '';
+                                studentAnswerEl.disabled = false;
+                                quizContainer.querySelector('.check-answer-btn').style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+                            
+                            const blankInputs = quizContainer.querySelectorAll('.blank-input-preview');
+                            if (blankInputs.length > 0) {
+                                blankInputs.forEach(input => {
+                                    input.value = '';
+                                    input.disabled = false;
+                                    input.className = 'blank-input-preview';
+                                });
+                                const checkBtn = quizContainer.querySelector('.check-fill-in-btn');
+                                if (checkBtn) checkBtn.style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+
+                            const lineQuizPreview = quizContainer.querySelector('.line-quiz-preview');
+                            if(lineQuizPreview && lineQuizPreview.lineQuizInstance){
+                                lineQuizPreview.lineQuizInstance.reset();
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('drag-drop-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.source-container');
+                                const allWords = [];
+                                quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                    if (target.textContent.trim()) { allWords.push(target.textContent.trim()); }
+                                    target.textContent = '';
+                                    target.className = 'drop-target';
+                                });
+                                sourceContainer.querySelectorAll('.drag-source').forEach(source => { allWords.push(source.textContent.trim()); });
+                                const originalAnswers = Array.from(quizContainer.querySelectorAll('.drop-target')).map(t => t.dataset.answer);
+                                while(allWords.length < originalAnswers.length) {
+                                    const wordCount = allWords.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    const originalWordCount = originalAnswers.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    let missingWordFound = false;
+                                    for(const word in originalWordCount) {
+                                        if((wordCount[word] || 0) < originalWordCount[word]) {
+                                            allWords.push(word); missingWordFound = true; break;
+                                        }
+                                    }
+                                    if (!missingWordFound) break;
                                 }
-                                target.textContent = '';
-                                target.className = 'drop-target';
+                                sourceContainer.innerHTML = '';
+                                shuffle(allWords).forEach(word => {
+                                    const newSource = document.createElement('span');
+                                    newSource.className = 'drag-source'; newSource.draggable = true; newSource.textContent = word;
+                                    sourceContainer.appendChild(newSource);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('ordering-preview-container')) {
+                                quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                    const sourceContainer = item.querySelector('.ordering-source-container');
+                                    const targetContainer = item.querySelector('.ordering-target-container');
+                                    const allItemsForThisQuestion = Array.from(item.querySelectorAll('.ordering-item'));
+                                    shuffle(allItemsForThisQuestion).forEach(card => sourceContainer.appendChild(card));
+                                    targetContainer.className = 'ordering-target-container';
+                                    const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                                    if(feedbackIcon) feedbackIcon.textContent = '';
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('classification-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.classification-items-source');
+                                const allCards = Array.from(quizContainer.querySelectorAll('.classification-item-card'));
+                                allCards.forEach(card => {
+                                    card.classList.remove('correct', 'incorrect');
+                                });
+                                shuffle(allCards).forEach(card => {
+                                    sourceContainer.appendChild(card);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            }
+                        }
+                    } else if (checkAnswerBtn) {
+                        const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                        const studentAnswerEl = item.querySelector('.descriptive-student-answer');
+                        const studentAnswer = studentAnswerEl.value.trim();
+                        const feedbackEl = item.querySelector('.feedback');
+                        const retryBtnItem = item.querySelector('.retry-quiz-btn');
+                        const encodedAnswers = item.dataset.answers;
+                        const correctAnswers = JSON.parse(decodeURIComponent(atob(encodedAnswers)));
+                        if (!studentAnswer) { alert('답을 입력해주세요!'); return; }
+                        const isCorrect = correctAnswers.some(ans => ans.toLowerCase() === studentAnswer.toLowerCase());
+                        feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                        feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 훌륭해요! 👍' : '<strong>모범 정답:</strong> ' + correctAnswers.join(', ');
+                        studentAnswerEl.disabled = true;
+                        checkAnswerBtn.style.display = 'none';
+                        retryBtnItem.style.display = 'inline-block';
+                    } else if (checkFillInBtn) {
+                        const container = checkFillInBtn.closest('.fill-in-container, .table-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let attempts = parseInt(container.dataset.attempts || "0", 10);
+                        attempts++;
+                        container.dataset.attempts = attempts;
+                        let allCorrect = true;
+                        
+                        container.querySelectorAll('.blank-input-preview').forEach(inputEl => {
+                            const studentAnswer = inputEl.value.trim();
+                            const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
+                            if (studentAnswer && studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                inputEl.className = 'blank-input-preview correct';
+                            } else {
+                                inputEl.className = 'blank-input-preview incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            if (attempts < 2) {
+                                feedbackEl.textContent = '아쉬워요. 틀린 문제를 다시 풀어보세요!';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => input.value = '');
+                                return; 
+                            } else {
+                                feedbackEl.textContent = '정답을 확인하세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => {
+                                    input.value = decodeURIComponent(atob(input.dataset.answer));
+                                    input.disabled = true;
+                                });
+                            }
+                        }
+                        checkFillInBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkLineQuizBtn) {
+                        const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
+                        if (quizEl && quizEl.lineQuizInstance) {
+                            quizEl.lineQuizInstance.checkAnswers();
+                            checkLineQuizBtn.style.display = 'none';
+                            checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
+                        }
+                    } else if (checkOrderingBtn) {
+                        const container = checkOrderingBtn.closest('.ordering-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+
+                        container.querySelectorAll('.ordering-preview-item').forEach(item => {
+                            const targetContainer = item.querySelector('.ordering-target-container');
+                            const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                            const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                            const studentAnswer = studentItems.join(' // ');
+                            const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+
+                            if (studentAnswer === correctAnswer) {
+                                targetContainer.classList.remove('incorrect');
+                                targetContainer.classList.add('correct');
+                                if(feedbackIcon) feedbackIcon.textContent = '⭕';
+                            } else {
+                                targetContainer.classList.remove('correct');
+                                targetContainer.classList.add('incorrect');
+                                if(feedbackIcon) feedbackIcon.textContent = '❌';
+                                allCorrect = false;
+                            }
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. ❌ 표시된 문제를 다시 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+
+                        checkOrderingBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkDragDropBtn) {
+                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+                        container.querySelectorAll('.drop-target').forEach(target => {
+                            const studentAnswer = target.textContent.trim();
+                            const correctAnswer = target.dataset.answer;
+                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                target.className = 'drop-target correct';
+                            } else {
+                                target.className = 'drop-target incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkDragDropBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkClassificationBtn) {
+                        const container = checkClassificationBtn.closest('.classification-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true; 
+
+                        const sourceContainer = container.querySelector('.classification-items-source');
+                        if (sourceContainer.querySelector('.classification-item-card')) {
+                            allCorrect = false; 
+                        }
+
+                        container.querySelectorAll('.classification-category-bin').forEach(bin => {
+                            const categoryName = bin.querySelector('.category-drop-zone').dataset.categoryName;
+                            bin.querySelectorAll('.classification-item-card').forEach(card => {
+                                if (card.dataset.correctCategory.trim() === categoryName.trim()) {
+                                    card.classList.add('correct');
+                                    card.classList.remove('incorrect');
+                                } else {
+                                    card.classList.add('incorrect');
+                                    card.classList.remove('correct');
+                                    allCorrect = false; 
+                                }
                             });
-                            sourceContainer.querySelectorAll('.drag-source').forEach(source => {
-                                allWords.push(source.textContent.trim());
-                            });
-                            const originalAnswers = Array.from(quizContainer.querySelectorAll('.drop-target')).map(t => t.dataset.answer);
-                            while (allWords.length < originalAnswers.length) {
-                                const wordCount = allWords.reduce((acc, word) => {
-                                    acc[word] = (acc[word] || 0) + 1;
-                                    return acc;
-                                }, {});
-                                const originalWordCount = originalAnswers.reduce((acc, word) => {
-                                    acc[word] = (acc[word] || 0) + 1;
-                                    return acc;
-                                }, {});
-                                let missingWordFound = false;
-                                for (const word in originalWordCount) {
-                                    if ((wordCount[word] || 0) < originalWordCount[word]) {
-                                        allWords.push(word);
-                                        missingWordFound = true;
-                                        break;
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정확하게 분류했습니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 잘못 분류되었거나, 분류하지 않은 항목이 있습니다.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkClassificationBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (youtubePlaceholder) {
+                        const videoId = youtubePlaceholder.dataset.videoId;
+                        if(videoId) {
+                            const iframeWrapper = document.createElement('div');
+                            iframeWrapper.className = 'youtube-iframe-wrapper';
+                            iframeWrapper.dataset.videoId = videoId;
+                            iframeWrapper.innerHTML = '<button class="youtube-close-btn" title="영상 닫기">&times;</button><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                            youtubePlaceholder.replaceWith(iframeWrapper);
+                        }
+                    } else {
+                        const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
+                        if (youtubeCloseBtn) {
+                            const iframeWrapper = youtubeCloseBtn.parentElement;
+                            const videoId = iframeWrapper.dataset.videoId;
+                            if(videoId) {
+                                const placeholder = document.createElement('div');
+                                placeholder.className = 'youtube-placeholder';
+                                placeholder.dataset.videoId = videoId;
+                                placeholder.innerHTML = '🎬<div class="youtube-placeholder-text">클릭하여 영상 보기</div>';
+                                iframeWrapper.replaceWith(placeholder);
+                            }
+                        } else {
+                            const oxChoiceBtn = e.target.closest('.ox-choices button');
+                            const mcqOptionDiv = e.target.closest('.mcq-preview-option');
+                            const explainable = e.target.closest('.explainable');
+                            if (oxChoiceBtn) {
+                                const item = oxChoiceBtn.closest('.ox-preview-item');
+                                const choicesDiv = item.querySelector('.ox-choices');
+                                const choice = oxChoiceBtn.dataset.choice;
+                                const answer = choicesDiv.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
+                                feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+                            } else if (mcqOptionDiv) {
+                                const item = mcqOptionDiv.closest('.mcq-preview-item');
+                                const controls = item.querySelector('.quiz-controls');
+                                if (controls) controls.style.display = 'flex';
+                                
+                                let attempts = parseInt(item.dataset.attempts, 10);
+                                if (item.querySelector('.feedback').classList.contains('correct') || attempts >= 2) return;
+                                attempts++;
+                                item.dataset.attempts = attempts;
+                                const choice = mcqOptionDiv.dataset.choice;
+                                const answer = item.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                const explanationEl = item.querySelector('.explanation');
+                                const isCorrect = (choice === answer);
+
+                                if (isCorrect) {
+                                    feedbackEl.className = 'feedback show correct';
+                                    feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요, 💯';
+                                    item.dataset.attempts = 2;
+                                    if(explanationEl) explanationEl.className = 'explanation show';
+                                } else {
+                                    feedbackEl.className = 'feedback show incorrect';
+                                    if (attempts < 2) {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                    } else {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                        if(explanationEl) explanationEl.className = 'explanation show';
                                     }
                                 }
-                                if (!missingWordFound) break;
-                            }
-                            sourceContainer.innerHTML = '';
-                            const shuffledWords = shuffle(allWords);
-                            shuffledWords.forEach(word => {
-                                const newSource = document.createElement('span');
-                                newSource.className = 'drag-source';
-                                newSource.draggable = true;
-                                newSource.textContent = word;
-                                sourceContainer.appendChild(newSource);
-                            });
-                            retryBtn.style.display = 'none';
-                            quizContainer.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
-                        }
-                        if (quizContainer.classList.contains('ordering-preview-container')) {
-                            const sourceContainer = quizContainer.querySelector('.ordering-source-container');
-                            const targetContainer = quizContainer.querySelector('.ordering-target-container');
-                            const allItems = Array.from(quizContainer.querySelectorAll('.ordering-item'));
-                            shuffle(allItems).forEach(item => sourceContainer.appendChild(item));
-                            targetContainer.innerHTML = '';
-                            targetContainer.className = 'ordering-target-container';
-                            retryBtn.style.display = 'none';
-                            quizContainer.querySelector('.check-ordering-btn').style.display = 'inline-block';
-                        }
-                    }
-                } else if (checkAnswerBtn) {
-                    const item = checkAnswerBtn.closest('.descriptive-preview-item');
-                    const studentAnswerEl = item.querySelector('.descriptive-student-answer');
-                    const studentAnswer = studentAnswerEl.value.trim();
-                    const feedbackEl = item.querySelector('.feedback');
-                    const retryBtnItem = item.querySelector('.retry-quiz-btn');
-                    const encodedAnswers = item.dataset.answers;
-                    const correctAnswers = JSON.parse(decodeURIComponent(atob(encodedAnswers)));
-
-                    const isCorrect = studentAnswer && correctAnswers.some(ans => ans.toLowerCase() === studentAnswer.toLowerCase());
-
-                    if (isCorrect) {
-                        feedbackEl.className = 'feedback show correct';
-                        feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요! 👍';
-                    } else {
-                        feedbackEl.className = 'feedback show';
-                        feedbackEl.innerHTML = '<span class="feedback-answer-box">모범 정답: ' + correctAnswers.join(', ') + '</span>';
-                    }
-
-                    studentAnswerEl.disabled = true;
-                    checkAnswerBtn.style.display = 'none';
-                    retryBtnItem.style.display = 'inline-block';
-                } else if (checkFillInBtn) {
-                    const container = checkFillInBtn.closest('.fill-in-container, .table-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
-                    if (!container) return;
-                    const feedbackEl = container.querySelector('.feedback');
-                    let allCorrect = true;
-                    let attempts = parseInt(container.dataset.attempts || "0", 10);
-                    attempts++;
-                    container.dataset.attempts = attempts;
-                    container.querySelectorAll('.blank-input-preview').forEach(inputEl => {
-                        const studentAnswer = inputEl.value.trim();
-                        const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
-                        if (studentAnswer && studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                            inputEl.className = 'blank-input-preview correct';
-                        } else {
-                            inputEl.className = 'blank-input-preview incorrect';
-                            allCorrect = false;
-                        }
-                    });
-
-                    if (allCorrect) {
-                        feedbackEl.textContent = '모두 정답입니다!';
-                        feedbackEl.className = 'feedback show correct';
-                    } else {
-                        if (attempts < 2) {
-                            feedbackEl.textContent = '아쉬워요. 틀린 문제를 다시 풀어보세요!';
-                            feedbackEl.className = 'feedback show incorrect';
-                            container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => input.value = '');
-                            return;
-                        } else {
-                            feedbackEl.textContent = '정답을 확인하세요.';
-                            feedbackEl.className = 'feedback show incorrect';
-                            container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => {
-                                input.value = decodeURIComponent(atob(input.dataset.answer));
-                                input.disabled = true;
-                            });
-                        }
-                    }
-                    checkFillInBtn.style.display = 'none';
-                    container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                } else if (checkLineQuizBtn) {
-                    const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
-                    if (quizEl && quizEl.lineQuizInstance) {
-                        quizEl.lineQuizInstance.checkAnswers();
-                        checkLineQuizBtn.style.display = 'none';
-                        checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
-                    }
-                // --- START: 여기에 새 코드 추가 ---
-                } else if (checkDragDropBtn) {
-                    const container = checkDragDropBtn.closest('.drag-drop-preview-container');
-                    const feedbackEl = container.querySelector('.feedback');
-                    let allCorrect = true;
-                    container.querySelectorAll('.drop-target').forEach(target => {
-                        const studentAnswer = target.textContent.trim();
-                        const correctAnswer = target.dataset.answer;
-                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                            target.className = 'drop-target correct';
-                        } else {
-                            target.className = 'drop-target incorrect';
-                            allCorrect = false;
-                        }
-                    });
-                    if (allCorrect) {
-                        feedbackEl.textContent = '모두 정답입니다!';
-                        feedbackEl.className = 'feedback show correct';
-                    } else {
-                        feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
-                        feedbackEl.className = 'feedback show incorrect';
-                    }
-                    checkDragDropBtn.style.display = 'none';
-                    container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                // --- END: 여기까지 새 코드 추가 ---
-                } else if (checkOrderingBtn) {
-                    const container = checkOrderingBtn.closest('.ordering-preview-container');
-                    const targetContainer = container.querySelector('.ordering-target-container');
-                    const feedbackEl = container.querySelector('.feedback');
-                    const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(item => item.textContent.trim());
-                    const studentAnswer = studentItems.join(' // ');
-                    const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
-                    if (studentAnswer === correctAnswer) {
-                        targetContainer.classList.add('correct');
-                        feedbackEl.textContent = '정답입니다! 완벽해요! ✨';
-                        feedbackEl.className = 'feedback show correct';
-                    } else {
-                        targetContainer.classList.add('incorrect');
-                        feedbackEl.textContent = '아쉬워요. 순서를 다시 확인해보세요.';
-                        feedbackEl.className = 'feedback show incorrect';
-                    }
-                    checkOrderingBtn.style.display = 'none';
-                    container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                } else if (youtubePlaceholder) {
-                    const videoId = youtubePlaceholder.dataset.videoId;
-                    if (videoId) {
-                        const iframeWrapper = document.createElement('div');
-                        iframeWrapper.className = 'youtube-iframe-wrapper';
-                        iframeWrapper.dataset.videoId = videoId;
-                        iframeWrapper.innerHTML = '<button class="youtube-close-btn" title="영상 닫기">&times;</button><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-                        youtubePlaceholder.replaceWith(iframeWrapper);
-                    }
-                } else {
-                    const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
-                    if (youtubeCloseBtn) {
-                        const iframeWrapper = youtubeCloseBtn.parentElement;
-                        const videoId = iframeWrapper.dataset.videoId;
-                        if (videoId) {
-                            const placeholder = document.createElement('div');
-                            placeholder.className = 'youtube-placeholder';
-                            placeholder.dataset.videoId = videoId;
-                            placeholder.innerHTML = '🎬<div class="youtube-placeholder-text">클릭하여 영상 보기</div>';
-                            iframeWrapper.replaceWith(placeholder);
-                        }
-                    } else {
-                        const oxChoiceBtn = e.target.closest('.ox-choices button');
-                        const mcqOptionDiv = e.target.closest('.mcq-preview-option');
-                        const explainable = e.target.closest('.explainable');
-                        if (oxChoiceBtn) {
-                            const item = oxChoiceBtn.closest('.ox-preview-item');
-                            const choicesDiv = item.querySelector('.ox-choices');
-                            const choice = oxChoiceBtn.dataset.choice;
-                            const answer = choicesDiv.dataset.answer;
-                            const feedbackEl = item.querySelector('.feedback');
-                            feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
-                            feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
-                        } else if (mcqOptionDiv) {
-                            const item = mcqOptionDiv.closest('.mcq-preview-item');
-                            const controls = item.querySelector('.quiz-controls');
-                            if (controls) controls.style.display = 'flex';
-                            let attempts = parseInt(item.dataset.attempts, 10);
-                            if (item.querySelector('.feedback').classList.contains('correct') || attempts >= 2) return;
-                            attempts++;
-                            item.dataset.attempts = attempts;
-                            const choice = mcqOptionDiv.dataset.choice;
-                            const answer = item.dataset.answer;
-                            const feedbackEl = item.querySelector('.feedback');
-                            const explanationEl = item.querySelector('.explanation');
-                            if (choice === answer) {
-                                feedbackEl.className = 'feedback show correct';
-                                feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요, 💯';
-                                item.dataset.attempts = 2;
-                                if (explanationEl) explanationEl.className = 'explanation show';
-                            } else {
-                                feedbackEl.className = 'feedback show incorrect';
-                                if (attempts < 2) {
-                                    feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
-                                } else {
-                                    feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
-                                    if (explanationEl) explanationEl.className = 'explanation show';
+                                if(explanationEl.classList.contains('show')) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
+                                        if (decodedExplanation.trim()) explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                    } catch(err) {}
                                 }
+
+                                if (isCorrect || attempts >= 2) {
+                                    const retryButton = item.querySelector('.retry-quiz-btn');
+                                    if (retryButton) retryButton.style.display = 'inline-block';
+                                }
+                            } else if (explainable) {
+                                explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
+                                const rect = explainable.getBoundingClientRect();
+                                explanationPopup.style.top = (rect.bottom + window.scrollY + 12) + 'px';
+                                explanationPopup.style.left = (rect.left + window.scrollX) + 'px';
+                                explanationPopup.classList.add('show');
+                                e.stopPropagation();
                             }
-                            if (explanationEl.classList.contains('show')) {
-                                try {
-                                    const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
-                                    if (decodedExplanation.trim()) explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
-                                } catch (err) {}
-                            }
-                        } else if (explainable) {
-                            explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
-                            const rect = explainable.getBoundingClientRect();
-                            explanationPopup.style.top = (rect.bottom + window.scrollY + 12) + 'px';
-                            explanationPopup.style.left = (rect.left + window.scrollX) + 'px';
-                            explanationPopup.classList.add('show');
-                            e.stopPropagation();
                         }
                     }
+                });
+                document.addEventListener('click', e => { 
+                    if (!e.target.closest('.explainable') && !e.target.closest('.explanation-popup')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                explanationPopup.addEventListener('click', e => {
+                    if (e.target.classList.contains('popup-close-btn')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                
+                initializeAllInteractiveBlocks();
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise();
                 }
+                document.querySelectorAll('.tab-content').forEach(adjustBlankInputWidths);
             });
-            document.addEventListener('click', e => {
-                if (!e.target.closest('.explainable') && !e.target.closest('.explanation-popup')) {
-                    explanationPopup.classList.remove('show');
-                }
-            });
-            explanationPopup.addEventListener('click', e => {
-                if (e.target.classList.contains('popup-close-btn')) {
-                    explanationPopup.classList.remove('show');
-                }
-            });
-            initializeAllInteractiveBlocks();
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise();
-            }
-            document.querySelectorAll('.tab-content').forEach(adjustBlankInputWidths);
-        });
-    </script>
+            </script>
                 </body>
                 </html>
