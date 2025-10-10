@@ -1672,6 +1672,14 @@ align-self: center;
             background-color: #fff;
         }
         /* --- 오늘의 퀴즈 스타일 끝 --- */
+
+        .new-proverb-btn {
+            margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
+            background-color: #f0e68c;
+            border: 1px solid #d8bfd8;
+            color: #5d4037;
+            font-weight: bold;
+        }
         
         /* --- 글꼴 크기 및 색상 버튼 스타일 시작 --- */
         .toolbar-btn-group {
@@ -3834,12 +3842,51 @@ align-self: center;
                 previewBlock.dataset.quizType = quizType; // 내보내기를 위해 퀴즈 타입 저장
                 const fileName = `quiz_data_${quizType}.json`;
 
-                // 비동기 함수로 퀴즈를 로드하고 렌더링
+                // 퀴즈 콘텐츠를 렌더링하는 내부 함수
+                const renderQuizContent = (quizData, items) => {
+                    const correctAnswer = quizData.proverb;
+                    const currentQuizIndex = items.findIndex(item => item.proverb === correctAnswer);
+                    
+                    let wrongAnswers = [];
+                    while(wrongAnswers.length < 3) {
+                        const randomIndex = Math.floor(Math.random() * items.length);
+                        if (randomIndex !== currentQuizIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
+                            wrongAnswers.push(items[randomIndex].proverb);
+                        }
+                    }
+
+                    const choices = shuffle([correctAnswer, ...wrongAnswers]);
+                    const answerIndex = choices.indexOf(correctAnswer) + 1;
+                    
+                    let choicesHtml = '';
+                    const numberChars = ['①', '②', '③', '④'];
+                    choices.forEach((choice, index) => {
+                        choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
+                    });
+
+                    return `
+                        <div class="daily-quiz-preview">
+                            <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="${btoa(encodeURIComponent(correctAnswer))}">
+                                <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
+                                <div class="mcq-passage-preview">${quizData.explanation.replace(/\n/g, '<br>')}</div>
+                                <div class="mcq-options-preview">${choicesHtml}</div>
+                                <div class="quiz-controls" style="display: none;">
+                                    <span class="feedback"></span>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    <button class="new-proverb-btn" style="display:none;">다른 속담 더 풀어보기</button>
+                                </div>
+                                <div class="explanation"></div>
+                            </div>
+                        </div>
+                    `;
+                };
+
                 (async () => {
                     try {
                         const response = await fetch(fileName);
                         if (!response.ok) throw new Error(`데이터 파일(${fileName})을 불러올 수 없습니다.`);
-                        const items = await response.json();
+                        const proverbs = await response.json();
+                        previewBlock._proverbData = proverbs; // ✅ [중요] 데이터를 블록에 저장
 
                         const now = new Date();
                         const start = new Date(now.getFullYear(), 0, 0);
@@ -3847,42 +3894,10 @@ align-self: center;
                         const oneDay = 1000 * 60 * 60 * 24;
                         const dayOfYear = Math.floor(diff / oneDay);
 
-                        const todaysItemIndex = dayOfYear % items.length;
-                        const quizData = items[todaysItemIndex];
-                        const correctAnswer = quizData.proverb; // 'proverb'는 퀴즈의 정답이 되는 속성
+                        const todaysProverbIndex = dayOfYear % proverbs.length;
+                        const todaysQuizData = proverbs[todaysProverbIndex];
                         
-                        let wrongAnswers = [];
-                        while(wrongAnswers.length < 3) {
-                            const randomIndex = Math.floor(Math.random() * items.length);
-                            if (randomIndex !== todaysItemIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
-                                wrongAnswers.push(items[randomIndex].proverb);
-                            }
-                        }
-
-                        const choices = shuffle([correctAnswer, ...wrongAnswers]);
-                        const answerIndex = choices.indexOf(correctAnswer) + 1;
-                        
-                        let choicesHtml = '';
-                        const numberChars = ['①', '②', '③', '④'];
-                        choices.forEach((choice, index) => {
-                            choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
-                        });
-
-                        const quizHtml = `
-                            <div class="daily-quiz-preview">
-                                <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}">
-                                    <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
-                                    <div class="mcq-passage-preview">${quizData.explanation.replace(/\n/g, '<br>')}</div>
-                                    <div class="mcq-options-preview">${choicesHtml}</div>
-                                    <div class="quiz-controls">
-                                        <span class="feedback"></span>
-                                        <button class="retry-quiz-btn">다시 풀기</button>
-                                    </div>
-                                    <div class="explanation"></div>
-                                </div>
-                            </div>
-                        `;
-                        previewBlock.innerHTML = quizHtml;
+                        previewBlock.innerHTML = renderQuizContent(todaysQuizData, proverbs);
 
                     } catch (error) {
                         previewBlock.innerHTML = `<div class="daily-quiz-preview" style="color: var(--incorrect-color); text-align: center;">${error.message}</div>`;
@@ -5864,6 +5879,32 @@ align-self: center;
                     youtubePlaceholder.replaceWith(iframeWrapper);
                 }
             } else {
+                
+                // --- 오늘의 퀴즈 - 다른 문제 풀어보기 버튼 로직 ---
+                const newProverbBtn = e.target.closest('.new-proverb-btn');
+                if (newProverbBtn) {
+                    const quizItem = newProverbBtn.closest('.mcq-preview-item');
+                    const quizBlock = newProverbBtn.closest('.block');
+                    const proverbs = quizBlock._proverbData;
+                    const currentProverb = decodeURIComponent(atob(quizItem.dataset.currentProverb));
+
+                    if (proverbs && proverbs.length > 1) {
+                        let newIndex;
+                        let newQuizData;
+                        // 현재와 다른 퀴즈가 나올 때까지 반복
+                        do {
+                            newIndex = Math.floor(Math.random() * proverbs.length);
+                            newQuizData = proverbs[newIndex];
+                        } while (newQuizData.proverb === currentProverb);
+
+                        // 미리보기 렌더링 함수를 재활용하여 퀴즈 콘텐츠 재생성
+                        const newQuizHtml = updatePreviewBlock.toString().match(/const renderQuizContent = \([\s\S]*?return `[\s\S]*?`;/)[0];
+                        const renderFn = new Function('quizData', 'items', 'shuffle', newQuizHtml + '}; return renderQuizContent(quizData, items)');
+                        quizBlock.innerHTML = renderFn(newQuizData, proverbs, shuffle);
+                    }
+                    return;
+                }
+
                 const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
                 if (youtubeCloseBtn) {
                     const iframeWrapper = youtubeCloseBtn.parentElement;
@@ -6105,6 +6146,7 @@ align-self: center;
             document.addEventListener('DOMContentLoaded', () => {
                 const explanationPopup = document.getElementById('explanationPopup');
                 const previewContainer = document.getElementById('exported-container');
+                let proverbDataCache = {}; // 퀴즈 데이터 캐시
 
                 const scrollToTopBtn = document.getElementById('scrollToTopBtn');
                 if (scrollToTopBtn) {
@@ -6147,15 +6189,59 @@ align-self: center;
                     });
                 }
                 
+                function renderQuizContent(quizData, items, quizBlock) {
+                    const correctAnswer = quizData.proverb;
+                    const currentQuizIndex = items.findIndex(item => item.proverb === correctAnswer);
+                    
+                    let wrongAnswers = [];
+                    while(wrongAnswers.length < 3) {
+                        const randomIndex = Math.floor(Math.random() * items.length);
+                        if (randomIndex !== currentQuizIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
+                            wrongAnswers.push(items[randomIndex].proverb);
+                        }
+                    }
+
+                    const choices = shuffle([correctAnswer, ...wrongAnswers]);
+                    const answerIndex = choices.indexOf(correctAnswer) + 1;
+                    
+                    let choicesHtml = '';
+                    const numberChars = ['①', '②', '③', '④'];
+                    choices.forEach((choice, index) => {
+                        choicesHtml += \`<div class="mcq-preview-option" data-choice="\${index + 1}">\${numberChars[index]} \${choice}</div>\`;
+                    });
+
+                    const quizHtml = \`
+                        <div class="daily-quiz-preview">
+                            <div class="mcq-preview-item" data-attempts="0" data-answer="\${answerIndex}" data-explanation="\${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="\${btoa(encodeURIComponent(correctAnswer))}">
+                                <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
+                                <div class="mcq-passage-preview">\${quizData.explanation.replace(/\\n/g, '<br>')}</div>
+                                <div class="mcq-options-preview">\${choicesHtml}</div>
+                                <div class="quiz-controls" style="display: none;">
+                                    <span class="feedback"></span>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    <button class="new-proverb-btn" style="display:none;">다른 속담 더 풀어보기</button>
+                                </div>
+                                <div class="explanation"></div>
+                            </div>
+                        </div>
+                    \`;
+                    quizBlock.innerHTML = quizHtml;
+                }
+
                 async function renderDailyQuiz(quizBlock) {
                     try {
                         const quizType = quizBlock.dataset.quizType;
                         if (!quizType) throw new Error('퀴즈 종류가 지정되지 않았습니다.');
                         
                         const fileName = \`quiz_data_\${quizType}.json\`;
-                        const response = await fetch(fileName); 
-                        if (!response.ok) throw new Error(\`데이터 파일(\${fileName})을 불러올 수 없습니다.\`);
-                        const items = await response.json();
+                        
+                        // 데이터 캐시 확인
+                        if (!proverbDataCache[quizType]) {
+                            const response = await fetch(fileName); 
+                            if (!response.ok) throw new Error(\`데이터 파일(\${fileName})을 불러올 수 없습니다.\`);
+                            proverbDataCache[quizType] = await response.json();
+                        }
+                        const items = proverbDataCache[quizType];
 
                         const now = new Date();
                         const start = new Date(now.getFullYear(), 0, 0);
@@ -6165,40 +6251,8 @@ align-self: center;
 
                         const todaysItemIndex = dayOfYear % items.length;
                         const quizData = items[todaysItemIndex];
-                        const correctAnswer = quizData.proverb;
                         
-                        let wrongAnswers = [];
-                        while(wrongAnswers.length < 3) {
-                            const randomIndex = Math.floor(Math.random() * items.length);
-                            if (randomIndex !== todaysItemIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
-                                wrongAnswers.push(items[randomIndex].proverb);
-                            }
-                        }
-
-                        const choices = shuffle([correctAnswer, ...wrongAnswers]);
-                        const answerIndex = choices.indexOf(correctAnswer) + 1;
-                        
-                        let choicesHtml = '';
-                        const numberChars = ['①', '②', '③', '④'];
-                        choices.forEach((choice, index) => {
-                            choicesHtml += \`<div class="mcq-preview-option" data-choice="\${index + 1}">\${numberChars[index]} \${choice}</div>\`;
-                        });
-
-                        const quizHtml = \`
-                            <div class="daily-quiz-preview">
-                                <div class="mcq-preview-item" data-attempts="0" data-answer="\${answerIndex}" data-explanation="\${btoa(encodeURIComponent(quizData.example || ''))}">
-                                    <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
-                                    <div class="mcq-passage-preview">\${quizData.explanation.replace(/\\n/g, '<br>')}</div>
-                                    <div class="mcq-options-preview">\${choicesHtml}</div>
-                                    <div class="quiz-controls" style="display: none;">
-                                        <span class="feedback"></span>
-                                        <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
-                                    </div>
-                                    <div class="explanation"></div>
-                                </div>
-                            </div>
-                        \`;
-                        quizBlock.innerHTML = quizHtml;
+                        renderQuizContent(quizData, items, quizBlock);
 
                     } catch (error) {
                         quizBlock.innerHTML = \`<div class="daily-quiz-preview" style="color: var(--incorrect-color); text-align: center;">\${error.message}</div>\`;
@@ -6564,6 +6618,27 @@ align-self: center;
                 });
 
                 previewContainer.addEventListener('click', e => {
+                    const newProverbBtn = e.target.closest('.new-proverb-btn');
+                    if (newProverbBtn) {
+                        const quizItem = newProverbBtn.closest('.mcq-preview-item');
+                        const quizBlock = newProverbBtn.closest('.block');
+                        const quizType = quizBlock.dataset.quizType;
+                        const items = proverbDataCache[quizType];
+                        const currentProverb = decodeURIComponent(atob(quizItem.dataset.currentProverb));
+
+                        if (items && items.length > 1) {
+                            let newIndex;
+                            let newQuizData;
+                            do {
+                                newIndex = Math.floor(Math.random() * items.length);
+                                newQuizData = items[newIndex];
+                            } while (newQuizData.proverb === currentProverb);
+                            
+                            renderQuizContent(newQuizData, items, quizBlock);
+                        }
+                        return;
+                    }
+
                     const clozeChoice = e.target.closest('.cloze-choice');
                     if (clozeChoice) {
                         const container = clozeChoice.closest('.interactive-cloze-container');
