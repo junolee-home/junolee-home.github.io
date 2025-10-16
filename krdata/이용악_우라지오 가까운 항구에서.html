@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>이용악_우라지오 가까운 항구에서</title>
+                    <style>
+:root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
+.preview-top-bar { flex-direction: column; align-items: flex-start; gap: 8px; padding: 45px 25px 8px; }
+.view-mode-controls button { background-color: transparent; border: none; border-radius: 4px; padding: 4px 8px; font-size: 1.1em; cursor: pointer; opacity: 0.6; transition: 0.2s ease-in-out; }
+.view-mode-controls button:hover { opacity: 1; background-color: rgb(255, 255, 255); }
+.view-mode-controls button.active { opacity: 1; background-color: var(--primary-color); color: white; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px; }
+.view-mode-controls { position: absolute; top: 20px; right: 45px; z-index: 20; display: flex; gap: 5px; border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; background-color: rgb(240, 243, 245); }
+.editor-column, .preview-column { transition: 0.3s ease-in-out; }
+.container.view-mode-editor .preview-column { display: none; }
+.container.view-mode-preview .editor-column { display: none; }
+.container.view-mode-editor #editor-tab-bar { border-top: 3px solid var(--primary-color); border-bottom: 1px solid var(--border-color); }
+.container.view-mode-editor .editor-column, .container.view-mode-preview .preview-column { max-width: 1100px; margin: 0px auto; }
+.container.view-mode-preview #preview-tab-bar { border-top: 3px solid var(--hover-color); }
+body { font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background-color: rgb(244, 247, 249); margin: 0px; padding: 20px; line-height: 1.7; }
+body.resizing { cursor: ns-resize; user-select: none; }
+.container { display: flex; gap: 20px; position: relative; }
+.left-panel { width: 220px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; align-self: flex-start; height: calc(-40px + 100vh); overflow-y: auto; padding-bottom: 20px; box-sizing: border-box; padding-right: 2px; }
+.editor-column { flex: 1 1 0%; display: flex; flex-direction: column; gap: 10px; }
+.preview-column { flex: 1 1 0%; display: flex; flex-direction: column; background-color: white; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+#editor-title-input { font-size: 2em; font-weight: bold; padding: 10px 5px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 2px solid var(--border-color); outline: none; background: transparent; font-family: inherit; }
+#editor-title-input:focus { border-color: var(--primary-color); }
+.preview-top-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 15px 25px 8px; background-color: var(--background-light); border-radius: 8px 8px 0px 0px; }
+#preview-tab-bar { width: 100%; text-align: right; position: sticky; top: 0px; z-index: 10; background-color: var(--background-light); padding-bottom: 8px; padding-right: 25px; box-sizing: border-box; border-bottom: 1px solid var(--border-color); }
+#preview-main-title { font-size: 1.8em; font-weight: 600; margin: 0px; font-family: "Noto Sans KR"; }
+.tab-bar { background: white; padding: 10px; border-radius: 8px 8px 0px 0px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; border-bottom: 2px solid var(--primary-color); }
+.tab-bar.preview-tabs { padding: 0px; margin: 0px; box-shadow: none; border-bottom: none; background-color: transparent; }
+.tab-btn { padding: 8px 15px; border: 1px solid var(--border-color); background: rgb(255, 255, 255); border-radius: 5px; cursor: pointer; margin-right: 5px; font-size: 0.9em; }
+.preview-tabs .tab-btn { border-top: none; border-right: none; border-left: none; border-image: initial; background: transparent; border-radius: 0px; padding: 0px 12px; margin: 0px; font-size: 0.95em; color: rgb(85, 85, 85); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; line-height: 2.5; }
+.preview-tabs .tab-btn:hover { color: var(--hover-color); }
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: bold; }
+.preview-tabs .tab-btn.active { background: transparent; color: var(--hover-color); border-bottom: 2px solid var(--hover-color); font-weight: bold; }
+#add-tab-btn { background: var(--correct-color); color: white; border: none; }
+#editor { border-radius: 0px 0px 8px 8px; background-color: white; padding: 20px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; min-height: 80vh; margin-top: -8px; }
+#preview { padding: 20px; }
+#toolbar, #block-adder, #file-manager { background: white; padding: 15px; border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px; }
+#version-info { font-size: 0.8em; color: rgb(136, 136, 136); text-align: center; margin-top: 10px; }
+#toolbar h4, #block-adder h4, #file-manager h4 { margin: 0px 0px 10px; font-size: 1em; }
+.toolbar-group { margin-bottom: 15px; }
+.toolbar-group button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1.1em; vertical-align: middle; min-width: 32px; }
+.toolbar-group button:hover { background-color: rgb(226, 230, 234); }
+.toolbar-group button svg, .toolbar-group button img { pointer-events: none; }
+.color-swatch { width: 24px; height: 24px; }
+#emoji-palette { display: flex; flex-wrap: wrap; gap: 5px; }
+#emoji-palette span { cursor: pointer; font-size: 1.1em; padding: 2px; }
+#block-adder { }
+.icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.icon-grid button { border: 1px solid var(--border-color); background-color: var(--background-light); cursor: pointer; padding: 8px 4px; font-size: 1rem; aspect-ratio: 1 / 1; border-radius: 8px; min-width: 0px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+.icon-grid button:hover { background-color: rgb(226, 230, 234); }
+.icon-grid button img { width: 60%; height: auto; }
+#block-adder.disabled .icon-grid { opacity: 0.5; cursor: not-allowed; }
+#editor .block, #preview .block { line-height: 1.7; transition: box-shadow 0.2s; }
+#editor .block { position: relative; cursor: grab; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; border-radius: 8px; background-color: var(--background-light); transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+#editor .block.active { border-color: var(--primary-color); box-shadow: rgba(59, 130, 246, 0.4) 0px 0px 0px 2px; }
+#editor .block:hover { border-color: var(--primary-color); box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px; }
+#editor .block.dragging { opacity: 0.5; border-style: solid; }
+#editor .editable { cursor: text; background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); line-height: 1.8; padding: 5px 8px; }
+#editor .block[data-type="spacer"] { position: relative; min-height: 30px; padding: 5px 15px 10px; text-align: center; }
+.resize-handle { position: absolute; bottom: 0px; left: 0px; width: 100%; height: 10px; cursor: ns-resize; border-bottom: 3px solid rgba(0, 0, 0, 0.2); }
+.resize-handle:hover { border-bottom-color: var(--primary-color); }
+.block-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 4px; z-index: 5; }
+.toggle-default-btn, .copy-block-btn, .delete-block-btn { background: transparent; border: none; font-size: 1.2em; cursor: pointer; opacity: 0.5; padding: 2px; }
+.toggle-default-btn:hover { opacity: 1; color: rgb(255, 122, 0); }
+.copy-block-btn:hover { opacity: 1; color: var(--primary-color); }
+.delete-block-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.drag-handle { cursor: grab; touch-action: none; }
+.drag-handle:active { cursor: grabbing; }
+.block.copied { outline: 2px solid var(--primary-color); box-shadow: rgba(0, 123, 255, 0.5) 0px 0px 15px; }
+.block-title { display: inline-flex; align-items: center; font-weight: bold; font-size: 0.9em; color: rgb(73, 80, 87); background-color: rgb(233, 236, 239); padding: 4px 12px; border-radius: 15px; margin-bottom: 15px; }
+.text-content { margin-top: -10px; }
+.block-title-text { display: inline-block; min-width: 30px; border-radius: 3px; padding: 0px 5px; outline: none; }
+.block-title-text:focus { background-color: rgb(255, 255, 255); box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="text"] .block-title { background-color: rgb(255, 249, 196); }
+.block[data-type="ox"] .block-title { background-color: rgb(200, 230, 201); }
+.block[data-type="mcq"] .block-title { background-color: rgb(187, 222, 251); }
+.block[data-type="descriptive"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="fill-in"] .block-title { background-color: rgb(255, 204, 188); }
+.block[data-type="table"] .block-title { background-color: rgb(215, 204, 200); }
+.block[data-type="math"] .block-title { background-color: rgb(178, 223, 219); }
+.block[data-type="line-quiz"] .block-title { background-color: rgb(252, 228, 236); }
+.block[data-type="youtube"] .block-title { background-color: rgb(255, 205, 210); }
+.block[data-type="link"] .block-title { background-color: rgb(224, 247, 250); }
+.block[data-type="frame"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="summary"] .block-title { background-color: rgb(225, 245, 254); }
+#editor .block[data-type="summary"] { border-width: 1px 1px 4px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(173, 181, 189); border-image: initial; background-color: rgb(248, 249, 250); box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; }
+#editor .block[data-type="summary"] p { color: rgb(108, 117, 125); }
+.youtube-url-input { width: 100%; padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; box-sizing: border-box; }
+.youtube-placeholder { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background-color: rgb(240, 240, 240); border: 1px dashed rgb(204, 204, 204); border-radius: 8px; cursor: pointer; text-align: center; transition: background-color 0.2s; }
+.youtube-placeholder:hover { background-color: rgb(224, 224, 224); }
+.youtube-placeholder-icon { width: 50px; height: auto; margin-bottom: 10px; }
+.youtube-placeholder-text { font-weight: bold; color: rgb(51, 51, 51); }
+.youtube-iframe-wrapper { position: relative; overflow: hidden; width: 100%; max-width: 640px; margin: 0px auto; padding-top: 56.25%; }
+.youtube-iframe-wrapper iframe { position: absolute; inset: 0px; width: 100%; height: 100%; border: none; }
+.youtube-close-btn { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; background: black; color: white; border: 2px solid white; border-radius: 50%; cursor: pointer; font-size: 16px; font-weight: bold; line-height: 24px; text-align: center; z-index: 10; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px; }
+.link-editor-container, .frame-editor-container { display: flex; flex-direction: column; gap: 10px; }
+.link-editor-row, .frame-editor-row { display: flex; align-items: center; gap: 8px; }
+.link-editor-row > label:first-child, .frame-editor-row > label:first-child { font-weight: bold; flex-shrink: 0; width: 80px; }
+.link-editor-row input[type="text"], .link-editor-row input[type="url"], .frame-editor-row input[type="text"], .frame-editor-row input[type="url"] { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.link-target-options { display: flex; flex-wrap: wrap; gap: 5px 15px; align-items: center; }
+.link-target-options label { white-space: nowrap; }
+.preview-link-wrapper { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; padding: 5px; }
+.preview-link-label { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(224, 247, 250); padding: 6px 10px; border-radius: 15px; }
+.preview-link-title { padding: 6px 12px; background-color: rgb(227, 242, 253); border-radius: 4px; color: rgb(0, 86, 179); font-weight: bold; transition: background-color 0.2s; }
+.preview-link-wrapper:hover .preview-link-title { background-color: rgb(209, 231, 253); }
+.frame-preview-container { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background-color: rgb(255, 255, 255); }
+.frame-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px; cursor: pointer; list-style: none; }
+.frame-preview-summary::-webkit-details-marker { display: none; }
+.frame-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(209, 196, 233); padding: 4px 12px; border-radius: 15px; }
+.frame-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.frame-preview-container[open] .frame-preview-toggle-icon { transform: rotate(180deg); }
+.frame-preview-content { padding: 15px; border-top: 1px solid var(--border-color); }
+.frame-preview-content iframe { width: 100%; max-width: 100%; min-height: 450px; border: none; }
+.frame-preview-content img { display: block; margin: 0px auto; border-radius: 4px; max-width: 100%; max-height: 600px; }
+.frame-source-link { display: block; text-align: right; font-size: 0.8em; margin-top: 10px; color: rgb(108, 117, 125); }
+.summary-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.summary-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.summary-preview-summary::-webkit-details-marker { display: none; }
+.summary-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(225, 245, 254); padding: 4px 12px; border-radius: 15px; }
+.summary-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.summary-preview-container[open] .summary-preview-toggle-icon { transform: rotate(180deg); }
+.summary-preview-content { padding: 15px; color: rgb(108, 117, 125); }
+.summary-preview-content ul { list-style-type: none; padding-left: 0px; margin: 0px; }
+.summary-preview-content li { margin-bottom: 10px; }
+.summary-preview-content strong { color: rgb(73, 80, 87); }
+.block[data-type="flowchart"] .block-title { background-color: rgb(224, 224, 224); }
+.flowchart-editor-row { padding: 10px; margin-bottom: 5px; border: 1px dashed rgb(204, 204, 204); border-radius: 4px; background: rgb(253, 253, 253); position: relative; transition: 0.2s ease-in-out; }
+.flowchart-editor-row.focused { border-color: var(--primary-color); border-width: 1.5px; border-style: solid; box-shadow: rgba(59, 130, 246, 0.2) 0px 1px 4px; }
+.flowchart-row-controls { display: flex; align-items: center; gap: 5px; visibility: hidden; opacity: 0; height: 0px; overflow: hidden; transition: opacity 0.2s ease-in-out; }
+.flowchart-editor-row.focused .flowchart-row-controls { visibility: visible; opacity: 1; height: auto; margin-bottom: 8px; }
+.flowchart-row-controls button, .flowchart-row-controls .flowchart-toggle-label { padding: 2px 8px; font-size: 0.8em; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 4px; cursor: pointer; }
+.flowchart-row-controls .flowchart-toggle-label { display: inline-flex; align-items: center; gap: 4px; }
+.delete-flowchart-row-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; cursor: pointer; opacity: 0.5; }
+.delete-flowchart-row-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.flowchart-nodes-container { display: flex; gap: 10px; align-items: stretch; }
+.flowchart-node-editor { flex: 1 1 0%; min-height: 50px; }
+.flowchart-connector-editor { flex: 0 0 50px; text-align: center; border-left: 1px solid rgb(238, 238, 238); border-right: 1px solid rgb(238, 238, 238); display: flex; align-items: center; justify-content: center; }
+.flowchart-preview-container { margin-bottom: 15px; }
+.flowchart-preview-row { display: flex; justify-content: center; align-items: stretch; gap: 15px; }
+.flowchart-preview-node { flex: 1 1 0%; padding: 12px; border: 1px solid rgb(209, 213, 219); background-color: rgb(249, 250, 251); border-radius: 6px; }
+.flowchart-preview-connector { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.2em; color: rgb(107, 114, 128); padding: 0px 10px; }
+.flowchart-preview-arrow { text-align: center; font-size: 1.5em; color: rgb(156, 163, 175); margin: 8px 0px; }
+.flowchart-preview-row.layout-three .flowchart-preview-node { flex-basis: 30%; max-width: 32%; }
+.flowchart-editor-row .drag-handle { cursor: grab; padding-right: 8px; opacity: 0.5; }
+.flowchart-editor-row .drag-handle:active { cursor: grabbing; }
+.flowchart-editor-row.dragging { opacity: 0.5; background-color: rgb(226, 230, 234); pointer-events: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list { list-style: none; margin: 0px; padding-left: 30px; position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root { padding-left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list::before { content: ""; position: absolute; left: 15px; top: 0px; width: 1px; height: 100%; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item { position: relative; padding: 4px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item::before { content: ""; position: absolute; top: 16px; left: -15px; width: 15px; height: 1px; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item:last-child::after { content: ""; position: absolute; top: 17px; left: -15px; width: 1px; height: 100%; background: rgb(255, 255, 255); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-node { font-weight: normal; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > .mindmap-node, #preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > details > summary > .mindmap-node { font-weight: bold; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary { list-style: none; cursor: pointer; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary::-webkit-details-marker { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary > .mindmap-node::before { content: "▼"; font-size: 0.6em; margin-right: 6px; display: inline-block; color: rgb(134, 142, 150); transition: transform 0.2s; vertical-align: middle; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) details:not([open]) > summary > .mindmap-node::before { content: "▶"; transform: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart { text-align: center; padding: 20px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart ul, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart li { list-style: none; margin: 0px; padding: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list { display: flex; justify-content: center; position: relative; padding-top: 40px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list { padding-top: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item { display: flex; flex-direction: column; align-items: center; position: relative; padding-left: 10px; padding-right: 10px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:not(:has(.orgchart-list)) .orgchart-node-container::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::before { content: ""; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::after { content: ""; position: absolute; top: -20px; left: 0px; width: 100%; height: 1px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::before, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:first-child::after { width: 50%; left: 50%; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:last-child::after { width: 50%; left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:only-child::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container { position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node { padding: 8px 15px; border-radius: 6px; display: inline-block; min-width: 80px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list .orgchart-list .orgchart-node { background-color: rgb(249, 250, 251); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item > .orgchart-node-container > .orgchart-node { background-color: var(--primary-color); color: white; border: 2px solid rgb(30, 64, 175); font-weight: bold; font-size: 1.05em; border-radius: 8px; }
+.block[data-type="mindmap"] .mindmap-editor-container { border: 1px solid rgb(204, 204, 204); padding: 10px 15px; border-radius: 5px; background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container ul, .block[data-type="mindmap"] .mindmap-editor-container li { list-style: none; margin: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-item { position: relative; }
+.block[data-type="mindmap"] .mindmap-node-wrapper { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; transition: background-color 0.2s; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover { background-color: rgb(240, 243, 245); }
+.block[data-type="mindmap"] .mindmap-node { flex-grow: 1; }
+.block[data-type="mindmap"] .mindmap-node .editable { background-color: transparent; border: none; padding: 3px 5px; outline: none; width: 100%; }
+.block[data-type="mindmap"] .mindmap-node .editable:focus { background-color: white; box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-node-actions { visibility: hidden; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover .mindmap-node-actions { visibility: visible; }
+.block[data-type="mindmap"] .mindmap-add-child, .block[data-type="mindmap"] .mindmap-delete-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-child:hover { color: var(--correct-color); }
+.block[data-type="mindmap"] .mindmap-delete-node:hover { color: var(--incorrect-color); }
+.block[data-type="mindmap"] .mindmap-add-sibling-node, .block[data-type="mindmap"] .mindmap-indent-node, .block[data-type="mindmap"] .mindmap-outdent-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-sibling-node:hover, .block[data-type="mindmap"] .mindmap-indent-node:hover, .block[data-type="mindmap"] .mindmap-outdent-node:hover { color: var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-children-list { position: relative; padding-left: 35px; }
+.block[data-type="mindmap"] .mindmap-children-list::before { content: ""; position: absolute; left: 10px; top: 0px; width: 1px; height: 100%; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item::before { content: ""; position: absolute; top: 22px; left: 10px; width: 15px; height: 1px; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item:last-child::after { content: ""; position: absolute; left: 10px; top: 23px; width: 1px; height: calc(100% - 22px); background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list { padding-left: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart details .orgchart-node { border: none; background-color: rgb(249, 250, 251); }
+.mindmap-shortcut-guide { font-size: 0.8em; color: rgb(108, 117, 125); margin: -10px 0px 15px 5px; }
+.delete-line-quiz-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: auto; }
+.delete-line-quiz-item:hover { color: var(--incorrect-color); }
+.delete-fill-in-item { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
+.delete-fill-in-item:hover { color: var(--incorrect-color); }
+.flowchart-preview-row.first-col-narrow .flowchart-preview-node:first-child { flex: 0 0 17%; max-width: 180px; }
+.flowchart-first-col-narrow-toggle { font-size: 0.9em; cursor: pointer; display: none; }
+.youtube-title-editor { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.youtube-title-editor strong { flex-shrink: 0; }
+.youtube-title-editor input { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.youtube-preview-title { display: inline-flex; align-items: center; gap: 10px; }
+.youtube-preview-title .pill { background-color: rgb(255, 205, 210); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; font-weight: bold; }
+.block[data-type="drag-drop"] .block-title { background-color: rgb(197, 225, 165); }
+.drag-drop-item-editor { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; background-color: rgb(255, 255, 255); padding: 8px; border-radius: 4px; }
+.drag-drop-item-editor .editable { border: 1px solid rgb(224, 224, 224); padding: 5px; min-width: 50px; flex: 1 1 0%; }
+#editor .drag-drop-item-editor .drag-drop-answer { background-color: rgb(255, 253, 231); border: 1px dashed rgb(201, 188, 143); font-weight: bold; text-align: center; flex: 0 1 120px; }
+.drag-drop-preview-container .sentence { margin-bottom: 10px; line-height: 2.2; padding: 10px; background: rgb(250, 250, 250); border-radius: 4px; }
+.drag-drop-preview-container .drop-target { display: inline-flex; align-items: center; justify-content: center; min-width: 100px; max-width: 250px; height: 28px; border: 1px dashed rgb(173, 181, 189); background-color: rgb(233, 236, 239); vertical-align: middle; margin: 0px 5px; border-radius: 4px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0px 8px; box-sizing: border-box; }
+.drag-drop-preview-container .drop-target.drag-over { background-color: rgb(209, 196, 233); border-style: solid; }
+.drag-drop-preview-container .drop-target.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.drag-drop-preview-container .drop-target.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.drag-drop-preview-container .source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px solid rgb(224, 224, 224); background-color: rgb(248, 249, 250); border-radius: 4px; min-height: 40px; }
+.drag-drop-preview-container .drag-source { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.drag-drop-preview-container .drag-source:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.drag-drop-preview-container .drag-source.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.drag-drop-preview-container .drag-source.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.delete-drag-drop-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
+.delete-drag-drop-item:hover { color: var(--incorrect-color); }
+.block[data-type="ordering"] .block-title { background-color: rgb(255, 218, 185); }
+.block[data-type="classification"] .block-title { background-color: rgb(255, 236, 179); }
+.ordering-preview-container { padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+.ordering-target-container, .ordering-source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px dashed rgb(173, 181, 189); border-radius: 4px; min-height: 50px; align-content: flex-start; }
+.ordering-source-container { background-color: rgb(248, 249, 250); border-style: solid; }
+.ordering-target-container.drag-over { background-color: rgb(224, 242, 241); border-color: var(--primary-color); }
+.ordering-target-container.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.ordering-target-container.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
+.ordering-item { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.ordering-item:active { cursor: grabbing; }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-drop-indicator { width: 4px; height: 30px; background-color: var(--hover-color); border-radius: 2px; align-self: center; }
+.ordering-item.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item-editor { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.ordering-item-editor .editable { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.delete-ordering-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-ordering-item:hover { color: var(--incorrect-color); }
+.ordering-preview-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgb(238, 238, 238); }
+.ordering-preview-item:last-child { border-bottom: none; margin-bottom: 0px; }
+.ordering-item-title { font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; }
+.ordering-item-feedback { margin-left: 8px; font-size: 1.2em; }
+.ordering-source-container { border-style: none; background-color: transparent; padding: 15px 0px 0px; justify-content: flex-start; }
+.block-title-container { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.block-title-container .block-title { margin-bottom: 0px; }
+.math-guide-link { font-size: 0.85em; color: var(--primary-color); text-decoration: none; border-bottom: 1px dashed var(--primary-color); padding-bottom: 1px; transition: 0.2s; }
+.math-guide-link:hover { color: rgb(0, 86, 179); border-bottom-style: solid; }
+#preview .block[data-type="text"]:not(.no-title-block) { background-color: transparent; border-color: transparent; padding: 0px; box-shadow: none; }
+.text-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.text-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.text-preview-summary::-webkit-details-marker { display: none; }
+.text-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(255, 249, 196); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; }
+.text-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.text-preview-container:not([open]) .text-preview-toggle-icon { transform: rotate(-90deg); }
+.text-preview-content-wrapper { padding: 15px; background-color: transparent; border: none; }
+.text-preview-content { background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); padding: 10px 12px; border-radius: 4px; line-height: 2.3; }
+.passage-marker-in-editor { display: block; background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.passage-marker { display: block; position: relative; margin-left: 3.5em; padding-left: 1.5em; border-left: 3px solid var(--border-color); margin-top: 1em; margin-bottom: 1em; }
+.passage-marker::before { content: "[" attr(data-symbol) "]"; position: absolute; top: 50%; transform: translateY(-50%); right: 100%; margin-right: 1em; font-weight: bold; color: var(--hover-color); }
+.interactive-cloze-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cloze-blank { display: inline-block; min-width: 80px; padding: 0px 8px; height: 26px; line-height: 26px; vertical-align: bottom; border-bottom: 2px solid rgb(51, 51, 51); text-align: center; font-weight: bold; color: var(--primary-color); cursor: pointer; }
+.cloze-blank.filled.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); color: var(--correct-color); }
+.cloze-blank.filled.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); color: var(--incorrect-color); }
+.cloze-choices { display: inline-flex; gap: 6px; font-size: 0.9em; flex-wrap: wrap; }
+.cloze-choice { padding: 3px 10px; border: 1px solid rgb(204, 204, 204); background-color: rgb(248, 249, 250); border-radius: 15px; cursor: pointer; transition: background-color 0.2s; }
+.cloze-choice:hover { background-color: rgb(233, 236, 239); border-color: rgb(173, 181, 189); }
+.cloze-choice.used { opacity: 0.4; cursor: not-allowed; background-color: rgb(233, 236, 239); }
+.explainable-in-editor { background-color: rgb(227, 242, 253); color: rgb(13, 71, 161); border-bottom: 1px dashed rgb(144, 202, 249); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-link-from-text { background-color: rgb(227, 242, 253); border: 1px solid rgb(144, 202, 249); border-radius: 4px; padding: 2px 6px; text-decoration: none; color: rgb(13, 71, 161); transition: 0.2s; }
+.inline-link-from-text:hover { background-color: rgb(187, 222, 251); border-color: rgb(66, 165, 245); color: rgb(0, 0, 0); }
+.inline-image-from-text { max-width: 100%; max-height: 300px; border: 1px solid var(--border-color); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; vertical-align: middle; margin: 2px 4px; }
+#preview .block:not(.no-title-block) { background-color: rgb(255, 255, 255); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(233, 236, 239) rgb(187, 222, 251); border-image: initial; box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 6px; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+#preview .block:not(.no-title-block):hover { border-left-color: var(--primary-color); box-shadow: rgba(0, 0, 0, 0.08) 0px 5px 15px; transform: translateY(-2px); }
+#preview .block.no-title-block { border-color: transparent; padding: 0px; margin-bottom: 0px; background-color: transparent; box-shadow: none; }
+#preview .block-title { display: inline-flex; width: fit-content; }
+.text-border-black { border: 2px solid black; padding: 0px 2px; border-radius: 3px; }
+.text-border-gray { border: 2px solid gray; padding: 0px 2px; border-radius: 3px; }
+.text-border-red { border: 2px solid red; padding: 0px 2px; border-radius: 3px; }
+.text-border-violet { border: 2px solid violet; padding: 0px 2px; border-radius: 3px; }
+.text-border-blue { border: 2px solid blue; padding: 0px 2px; border-radius: 3px; }
+.text-border-green { border: 2px solid green; padding: 0px 2px; border-radius: 3px; }
+.text-border-circle-black, .text-border-circle-gray, .text-border-circle-red, .text-border-circle-violet, .text-border-circle-blue, .text-border-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-border-circle-black { border-color: black; }
+.text-border-circle-gray { border-color: gray; }
+.text-border-circle-red { border-color: red; }
+.text-border-circle-violet { border-color: violet; }
+.text-border-circle-blue { border-color: blue; }
+.text-border-circle-green { border-color: green; }
+.text-highlight-gray { background-color: rgb(238, 238, 238); border: 2px solid rgb(189, 189, 189); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-violet { background-color: rgb(243, 229, 245); border: 2px solid rgb(206, 147, 216); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-red { background-color: rgb(255, 235, 238); border: 2px solid rgb(229, 115, 115); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-yellow { background-color: rgb(255, 253, 231); border: 2px solid rgb(255, 241, 118); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-blue { background-color: rgb(227, 242, 253); border: 2px solid rgb(144, 202, 249); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-green { background-color: rgb(232, 245, 233); border: 2px solid rgb(165, 214, 167); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-circle-gray, .text-highlight-circle-violet, .text-highlight-circle-red, .text-highlight-circle-yellow, .text-highlight-circle-blue, .text-highlight-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-highlight-circle-gray { background-color: rgb(238, 238, 238); border-color: rgb(189, 189, 189); }
+.text-highlight-circle-violet { background-color: rgb(243, 229, 245); border-color: rgb(206, 147, 216); }
+.text-highlight-circle-red { background-color: rgb(255, 235, 238); border-color: rgb(229, 115, 115); }
+.text-highlight-circle-yellow { background-color: rgb(255, 253, 231); border-color: rgb(255, 241, 118); }
+.text-highlight-circle-blue { background-color: rgb(227, 242, 253); border-color: rgb(144, 202, 249); }
+.text-highlight-circle-green { background-color: rgb(232, 245, 233); border-color: rgb(165, 214, 167); }
+#preview .explainable { color: var(--correct-color); border-bottom: 1px dotted var(--correct-color); cursor: pointer; font-weight: bold; transition: 0.2s ease-in-out; }
+#preview .explainable:hover { color: var(--primary-color); border-bottom: 1px solid var(--primary-color); }
+.ox-question-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+.ox-question-row .question-text { flex-grow: 1; padding-left: 1.8em; text-indent: -1.8em; }
+.ox-answer-selector-editor { display: inline-flex; gap: 8px; margin-left: 10px; vertical-align: middle; }
+.ox-choice-btn-editor { display: inline-block; width: 32px; height: 32px; border: 1px solid rgb(204, 204, 204); border-radius: 50%; text-align: center; line-height: 30px; font-weight: bold; cursor: pointer; transition: 0.2s ease-in-out; background-color: rgb(248, 249, 250); }
+.ox-answer-selector-editor input[type="radio"]:checked + .ox-choice-btn-editor { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+#preview .ox-choices button { width: 40px; height: 40px; border: 2px solid var(--border-color); border-radius: 50%; background-color: transparent; font-size: 1.1em; font-weight: bold; color: rgb(136, 136, 136); cursor: pointer; transition: 0.2s ease-in-out; margin: 0px 4px; }
+#preview .ox-choices button:hover { border-color: var(--hover-color); color: var(--hover-color); }
+#preview .ox-choices button.selected { background-color: var(--primary-color); border-color: var(--primary-color); color: white; transform: scale(1.05); }
+.ox-preview-item { margin-bottom: 15px; }
+.ox-choices { flex-shrink: 0; }
+.quiz-title-container-editor, .ox-item-editor, .mcq-option-editor { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.delete-ox-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.2em; font-weight: bold; line-height: 1; margin-left: 8px; }
+.delete-ox-item:hover { color: var(--incorrect-color); }
+.quiz-title-container-editor .editable, .ox-item-editor .editable, .mcq-option-editor .editable { flex-grow: 1; }
+.ox-item-editor { border-top: 1px solid rgb(238, 238, 238); padding-top: 10px; }
+.ox-item-editor:first-child { border-top: none; padding-top: 0px; }
+.mcq-passage-container-editor { margin-bottom: 15px; }
+.mcq-passage-preview { background-color: var(--background-light); border: 1px solid var(--border-color); padding: 12px 15px; margin-bottom: 15px; border-radius: 6px; font-size: 0.95em; line-height: 1.8; }
+.mcq-option-editor { margin-bottom: 5px; }
+.descriptive-editor-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.descriptive-editor-row strong { flex-shrink: 0; }
+.descriptive-editor-row .editable { flex-grow: 1; }
+.quiz-title-preview { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
+.retry-quiz-btn { font-size: 0.8em; margin-left: 10px; cursor: pointer; color: rgb(108, 117, 125); background: rgb(241, 241, 241); border: 1px solid rgb(221, 221, 221); padding: 5px 10px; border-radius: 4px; }
+.mcq-options-preview { margin-left: 20px; }
+#preview .mcq-preview-option { transition: background-color 0.2s; cursor: pointer; padding: 8px 8px 8px 1.3em; border-radius: 4px; text-indent: -1.3em; }
+#preview .mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.quiz-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; }
+.quiz-controls .feedback { margin: 0px; padding: 4px 8px; text-align: left; flex-grow: 1; }
+.descriptive-student-answer { width: 100%; min-height: 60px; border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; margin-top: 10px; box-sizing: border-box; }
+.show-answer-btn, .hide-answer-btn, .check-fill-in-btn, .check-line-quiz-btn, .check-answer-btn { padding: 5px 10px; border: 1px solid var(--primary-color); background-color: var(--primary-color); color: white; border-radius: 4px; cursor: pointer; }
+.fill-in-item-editor { padding: 10px; margin-bottom: 5px; border-radius: 4px; background: rgb(255, 255, 255); }
+.fill-in-question-container { display: flex; align-items: center; gap: 8px; position: relative; }
+.fill-in-question.placeholder-active { color: rgb(136, 136, 136); }
+.fill-in-answers-container { margin-left: 2em; margin-top: 5px; font-size: 0.9em; color: rgb(85, 85, 85); }
+.fill-in-answer-wrapper { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.fill-in-answer-input { border: 1px solid rgb(204, 204, 204); border-radius: 3px; padding: 2px 4px; background-color: rgb(227, 242, 253); }
+.fill-in-preview-item { margin-bottom: 15px; }
+#editor .fill-in-question { padding-right: 30px; }
+.blank-input-preview { min-width: 50px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 1px solid rgb(51, 51, 51); text-align: center; font-family: inherit; font-size: 1em; color: rgb(22, 163, 74) !important; font-weight: bold !important; }
+.blank-input-preview.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.blank-input-preview.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.table-editor-container > div:not(.table-records-container) { margin-bottom: 15px; }
+.table-title-editor, .table-desc-editor { display: flex; gap: 8px; align-items: center; }
+.table-title-editor .editable, .table-desc-editor .editable { flex-grow: 1; }
+.fields-container { display: flex; gap: 5px; }
+.table-field { flex: 1 1 0%; font-weight: bold; text-align: center; }
+.table-record-row-wrapper { margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid rgb(238, 238, 238); }
+.table-record-row { display: flex; gap: 5px; }
+.table-record-cell { flex: 1 1 0%; }
+.add-table-row-btn { width: 100%; padding: 8px; margin-top: 10px; }
+.table-preview-container table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+.table-preview-container th, .table-preview-container td { border: 1px solid var(--border-color); padding: 8px; text-align: left; word-break: break-all; vertical-align: top; }
+.table-preview-container th:first-child, .table-preview-container td:first-child { width: 120px; }
+.table-preview-container thead { background-color: var(--background-light); }
+.table-preview-container h3 { margin-bottom: 5px; }
+.table-preview-container p { margin-top: 0px; font-size: 0.9em; color: rgb(102, 102, 102); }
+.math-editor-field { background-color: rgb(255, 255, 255); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; min-height: 40px; }
+.math-editor-field.mq-focused { border-color: var(--primary-color); box-shadow: 0 0 0 1px var(--primary-color); }
+.math-preview-field { padding: 10px; text-align: center; font-size: 1.2em; overflow-x: auto; }
+.line-quiz-item-editor { display: flex; align-items: stretch; gap: 10px; margin-bottom: 5px; }
+.line-quiz-item-editor .editable { flex: 1 1 0%; }
+.line-quiz-item-editor > * { display: flex; align-items: center; }
+.line-quiz-preview { position: relative; display: flex; justify-content: space-between; }
+.line-quiz-column { display: flex; flex-direction: column; gap: 10px; width: 45%; }
+.line-quiz-canvas { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; pointer-events: none; }
+.line-quiz-item { display: flex; align-items: center; padding: 8px; background-color: rgb(248, 249, 250); border: 1px solid rgb(222, 226, 230); border-radius: 5px; min-height: 36px; }
+.line-quiz-item .text { flex-grow: 1; }
+.line-quiz-item .dot { flex-shrink: 0; width: 16px; height: 16px; background-color: rgb(204, 204, 204); border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 3px; }
+.line-quiz-item .dot:hover { background-color: rgb(170, 170, 170); }
+.line-quiz-item .dot.selected { background-color: var(--primary-color); }
+.line-quiz-item .dot.disabled { cursor: default; }
+.feedback { margin-top: 5px; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; display: none; }
+.feedback.show { display: block; }
+.feedback-answer-box { display: inline-block; padding: 6px 12px; background-color: var(--correct-color); color: white; font-weight: bold; border-radius: 4px; }
+.feedback.correct { color: var(--correct-color); }
+.feedback.incorrect { color: var(--incorrect-color); }
+.feedback .correct-highlight { background-color: var(--correct-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.feedback .incorrect-highlight { background-color: var(--incorrect-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.explanation { background: rgb(255, 251, 230); border: 1px solid rgb(255, 229, 143); padding: 10px; margin-top: 10px; border-radius: 5px; display: none; }
+.explanation.show { display: block; }
+.explanation-popup { position: absolute; background-color: rgb(255, 251, 230); color: rgb(93, 64, 55); border: 1px solid rgb(255, 229, 143); border-radius: 8px; padding: 12px 30px 12px 18px; z-index: 1000; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 12px; max-width: 300px; font-size: 0.9em; white-space: pre-wrap; display: none; opacity: 0; transform: translateY(10px) scale(0.95); transition: opacity 0.2s, transform 0.2s; }
+.explanation-popup.show { display: block; opacity: 1; transform: translateY(0px) scale(1); }
+.explanation-popup::before { content: ""; position: absolute; bottom: 100%; left: 20px; border-width: 9px; border-style: solid; border-color: transparent transparent rgb(255, 229, 143); border-image: initial; }
+.explanation-popup::after { content: ""; position: absolute; bottom: 100%; left: 21px; border-width: 8px; border-style: solid; border-color: transparent transparent rgb(255, 251, 230); border-image: initial; }
+.popup-close-btn { position: absolute; top: 2px; right: 5px; background: transparent; border: none; font-size: 1.5em; line-height: 1; color: rgb(192, 192, 192); cursor: pointer; transition: color 0.2s; }
+.popup-close-btn:hover { color: rgb(93, 64, 55); }
+.explanation-popup.popup-align-right::before { left: auto; right: 20px; }
+.explanation-popup.popup-align-right::after { left: auto; right: 21px; }
+.mcq-answer-stepper { display: inline-flex; align-items: center; vertical-align: middle; border: 1px solid rgb(204, 204, 204); border-radius: 4px; overflow: hidden; }
+.mcq-answer-btn { background-color: rgb(248, 249, 250); border: none; cursor: pointer; font-size: 1.2em; font-weight: bold; width: 32px; height: 32px; line-height: 32px; text-align: center; color: rgb(73, 80, 87); }
+.mcq-answer-btn:hover { background-color: rgb(233, 236, 239); }
+.mcq-answer-display { width: 40px; height: 32px; line-height: 32px; text-align: center; font-weight: bold; border-left: 1px solid rgb(204, 204, 204); border-right: 1px solid rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
+#preview .mcq-preview-option.selected { font-weight: bold; }
+#preview .mcq-preview-option.selected.correct { background-color: rgb(232, 245, 233); border: 1px solid var(--correct-color); }
+#preview .mcq-preview-option.selected.incorrect { background-color: rgb(255, 235, 238); border: 1px solid var(--incorrect-color); }
+.daily-quiz-editor { display: flex; align-items: center; gap: 10px; padding: 10px; background-color: rgb(245, 245, 245); border-radius: 4px; }
+.daily-quiz-preview { background-color: rgb(255, 250, 240); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(240, 230, 140) rgb(240, 230, 140) rgb(240, 230, 140) rgb(216, 191, 216); border-image: initial; border-radius: 8px; padding: 15px 20px; }
+.daily-quiz-preview .quiz-title-preview { font-size: 1.1em; color: rgb(93, 64, 55); }
+.daily-quiz-preview .mcq-options-preview { margin-left: 0px; }
+.daily-quiz-preview .mcq-preview-option { border: 1px solid rgb(224, 224, 224); margin-bottom: 8px; background-color: rgb(255, 255, 255); }
+.new-proverb-btn { margin-left: auto; background-color: rgb(240, 230, 140); border: 1px solid rgb(216, 191, 216); color: rgb(93, 64, 55); font-weight: bold; }
+.toolbar-btn-group { display: inline-flex; vertical-align: middle; margin: 2px; }
+.toolbar-btn-group button { margin: 0px; border-radius: 0px; border-right-width: 0px; }
+.toolbar-btn-group button:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.toolbar-btn-group button:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-right-width: 1px; }
+.dropdown { position: relative; display: inline-block; vertical-align: middle; }
+.dropdown-toggle { display: flex; align-items: center; gap: 4px; }
+.color-indicator { display: inline-block; width: 14px; height: 4px; background-color: black; border-radius: 2px; }
+.dropdown-menu { display: none; position: absolute; top: 100%; left: 0px; z-index: 1001; background-color: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+.dropdown-menu.show { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.color-palette .color-swatch { width: 28px; height: 28px; margin: 0px; }
+.style-grid-mini { grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 5px; width: auto; }
+.dropdown-menu.style-grid-mini.show { display: grid; }
+.style-grid-mini button { width: 15px; height: 15px; min-width: 0px; margin: 0px; }
+.dropdown-menu-right { left: 50%; transform: translateX(-50%); }
+.explanation-modal-header { padding: 15px 25px; background-color: rgb(248, 249, 250); border-bottom: 1px solid rgb(238, 238, 238); border-radius: 8px 8px 0px 0px; }
+.explanation-modal-header .selected-text-display { color: rgb(108, 117, 125); font-weight: normal; }
+.mini-toolbar { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); }
+.mini-toolbar button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1em; vertical-align: middle; min-width: 32px; }
+.mini-toolbar button:hover { background-color: rgb(226, 230, 234); }
+#explanation-emoji-palette { padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); margin-bottom: 10px; }
+.modal-emoji { cursor: pointer; font-size: 1.4em; margin-right: 8px; opacity: 0.7; transition: opacity 0.2s; }
+.modal-emoji:hover { opacity: 1; }
+.editor-column .tab-btn { position: relative; padding-right: 28px; }
+.editor-column .tab-btn .delete-tab-btn { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); font-size: 1.1em; line-height: 1; opacity: 0.3; transition: opacity 0.2s; }
+.editor-column .tab-btn:hover .delete-tab-btn { opacity: 1; }
+.editor-column .tab-btn .delete-tab-btn:hover { color: var(--incorrect-color); font-weight: bold; }
+.editor-column .tab-btn.dragging { opacity: 0.5; background: rgb(226, 230, 234); }
+.exported-body .tab-content { display: none; }
+.exported-body .tab-content.active { display: block; }
+.left-panel::-webkit-scrollbar { display: none; }
+@media (max-width: 1024px) {
+  body { padding: 10px; }
+  .container { flex-direction: column; }
+  .left-panel { position: static; width: 100%; height: auto; overflow-y: visible; padding-right: 0px; }
+}
+.blank-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.blank-choices { font-size: 0.9em; color: rgb(108, 117, 125); background-color: rgb(248, 249, 250); padding: 2px 6px; border-radius: 4px; border: 1px solid rgb(233, 236, 239); }
+.revealable-cloze { border: 1px dashed var(--primary-color); color: var(--primary-color); padding: 1px 5px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+.revealable-cloze:hover { background-color: rgb(227, 242, 253); }
+.revealed-answer { font-weight: bold; color: var(--correct-color); padding: 1px 5px; cursor: pointer; }
+#scrollToTopBtn { position: sticky; bottom: 30px; align-self: flex-end; margin-right: 20px; margin-bottom: 20px; width: 50px; height: 50px; background-color: var(--primary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.5em; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; z-index: 1000; opacity: 0; visibility: hidden; pointer-events: none; transition: 0.2s ease-in-out; }
+#scrollToTopBtn.show { opacity: 0.8; visibility: visible; pointer-events: auto; }
+#scrollToTopBtn:hover { opacity: 1; transform: translateY(-3px); box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 12px; }
+#scrollToTopBtn:active { transform: translateY(0px); box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; }
+.classification-editor-container hr { border: 0px; height: 1px; background-color: var(--border-color); }
+.classification-category-editor-row, .classification-item-editor-row { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.classification-category-editor-row input, .classification-item-editor-row .item-text-input { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.classification-item-editor-row .item-category-select { flex-basis: 150px; padding: 5px; border: 1px solid rgb(204, 204, 204); border-radius: 3px; background-color: rgb(248, 249, 250); }
+.delete-classification-category, .delete-classification-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-classification-category:hover, .delete-classification-item:hover { color: var(--incorrect-color); }
+.block[data-type="timeline"] .block-title { background-color: rgb(178, 223, 219); }
+.block[data-type="timeline"] hr { border: none; height: 1px; background-color: var(--border-color); margin: 15px 0px; }
+.timeline-item-editor { background-color: transparent; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+.timeline-item-editor:last-child { border-bottom: none; }
+.timeline-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.9em; color: rgb(108, 117, 125); }
+.delete-timeline-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; }
+.delete-timeline-item:hover { color: var(--incorrect-color); }
+.timeline-item-body { display: flex; gap: 10px; }
+.timeline-date-editor { flex: 1 1 0%; padding: 8px; background-color: rgb(248, 249, 250); border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.timeline-content-editor { flex: 3 1 0%; padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.timeline-preview-container { position: relative; margin: 20px auto 0px; }
+.timeline-content p:first-child { margin-top: 0px; }
+.timeline-content p:last-child { margin-bottom: 0px; }
+.timeline-preview-container.layout-vertical { padding: 20px 0px; max-width: 700px; }
+.layout-vertical .timeline-line { position: absolute; left: 50%; top: 0px; bottom: 0px; width: 2px; background-image: linear-gradient(rgb(203, 213, 225) 60%, transparent 40%); background-size: 2px 10px; background-repeat: repeat-y; transform: translateX(-50%); z-index: 1; }
+.layout-vertical .timeline-preview-item { display: flex; align-items: center; width: 100%; margin-bottom: 20px; }
+.layout-vertical .timeline-centerpiece { flex-shrink: 0; width: 80px; position: relative; display: flex; justify-content: center; }
+.layout-vertical .timeline-dot { width: 20px; height: 20px; background-color: white; border-radius: 50%; z-index: 2; }
+.layout-vertical .timeline-side { flex: 1 1 0%; }
+.layout-vertical .timeline-side-left { text-align: right; }
+.layout-vertical .timeline-side-right { text-align: left; }
+.layout-vertical .timeline-date { font-size: 1.1em; font-weight: bold; padding: 0px 20px; }
+.layout-vertical .timeline-content { position: relative; display: inline-block; width: auto; max-width: 100%; text-align: left; padding: 12px 15px; color: rgb(51, 51, 51); border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; word-break: break-all; backdrop-filter: blur(2px); }
+.layout-vertical .timeline-content::before, .layout-vertical .timeline-content::after { content: ""; position: absolute; top: 50%; width: 0px; height: 0px; border-style: solid; }
+.timeline-preview-container.layout-horizontal { display: flex; overflow-x: auto; padding: 20px; min-height: 300px; }
+.layout-horizontal .timeline-line-horizontal { position: absolute; top: 50%; left: 0px; right: 0px; height: 2px; background-image: linear-gradient(to right, rgb(203, 213, 225) 60%, transparent 40%); background-size: 10px 2px; z-index: 1; }
+.layout-horizontal .timeline-horizontal-item { flex: 0 0 220px; position: relative; }
+.layout-horizontal .timeline-dot { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background-color: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; }
+.layout-horizontal .timeline-date, .layout-horizontal .timeline-content { position: absolute; left: 50%; transform: translateX(-50%); width: 90%; box-sizing: border-box; text-align: center; }
+.layout-horizontal .timeline-content { padding: 10px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px; background-color: white; }
+.layout-horizontal .timeline-content::before { content: ""; position: absolute; left: 50%; transform: translateX(-50%); width: 0px; height: 0px; border-style: solid; }
+.layout-horizontal .timeline-date { font-weight: bold; font-size: 1.1em; }
+.layout-date-left .timeline-date, .layout-horizontal .horizontal-item-bottom .timeline-date { color: var(--hover-color); }
+.layout-date-left .timeline-dot, .layout-horizontal .horizontal-item-bottom .timeline-dot { border: 4px solid var(--hover-color); }
+.layout-date-left .timeline-content, .layout-horizontal .horizontal-item-bottom .timeline-content { border: 1px solid var(--hover-color); background-color: rgba(245, 158, 11, 0.08); }
+.layout-date-left .timeline-content::before { right: 100%; border-width: 8px 8px 8px 0px; border-color: transparent var(--hover-color) transparent transparent; margin-top: -8px; }
+.layout-date-left .timeline-content::after { right: 100%; border-width: 7px 7px 7px 0px; border-color: transparent rgba(245, 158, 11, 0.08) transparent transparent; margin-top: -7px; }
+.layout-horizontal .horizontal-item-bottom .timeline-content::before { bottom: 100%; border-width: 0px 8px 8px; border-color: transparent transparent var(--hover-color) transparent; }
+.layout-content-left .timeline-date, .layout-horizontal .horizontal-item-top .timeline-date { color: var(--primary-color); }
+.layout-content-left .timeline-dot, .layout-horizontal .horizontal-item-top .timeline-dot { border: 4px solid var(--primary-color); }
+.layout-content-left .timeline-content, .layout-horizontal .horizontal-item-top .timeline-content { border: 1px solid var(--primary-color); background-color: rgba(59, 130, 246, 0.08); }
+.layout-content-left .timeline-content::before { left: 100%; border-width: 8px 0px 8px 8px; border-color: transparent transparent transparent var(--primary-color); margin-top: -8px; }
+.layout-content-left .timeline-content::after { left: 100%; border-width: 7px 0px 7px 7px; border-color: transparent transparent transparent rgba(59, 130, 246, 0.08); margin-top: -7px; }
+.layout-horizontal .horizontal-item-top .timeline-content::before { top: 100%; border-width: 8px 8px 0px; border-color: var(--primary-color) transparent transparent transparent; }
+.layout-horizontal .horizontal-item-top .timeline-date { top: 50%; margin-top: 20px; }
+.layout-horizontal .horizontal-item-top .timeline-content { bottom: 50%; margin-bottom: 40px; }
+.layout-horizontal .horizontal-item-bottom .timeline-date { bottom: 50%; margin-bottom: 20px; }
+.layout-horizontal .horizontal-item-bottom .timeline-content { top: 50%; margin-top: 40px; }
+.classification-preview-container { margin-top: 15px; }
+.classification-categories-preview { display: flex; gap: 15px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
+.classification-category-bin { flex: 1 0 180px; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); }
+.classification-category-bin .category-title { font-weight: bold; text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color); background-color: rgb(240, 243, 245); }
+.category-drop-zone { min-height: 80px; padding: 10px; flex-grow: 1; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; transition: background-color 0.2s; }
+.category-drop-zone.drag-over { background-color: rgb(224, 242, 241); }
+.classification-items-source { min-height: 50px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; }
+.classification-item-card { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; transition: 0.2s; }
+.classification-item-card:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.classification-item-card.dragging { opacity: 0.5; }
+.classification-item-card.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.classification-item-card.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
+.passage-marker-in-editor { background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.CtxtMenu_InfoClose { top: 0.2em; right: 0.2em; }
+.CtxtMenu_InfoContent { overflow: auto; text-align: left; font-size: 80%; padding: 0.4em 0.6em; border: 1px inset; margin: 1em 0px; max-height: 20em; max-width: 30em; background-color: rgb(238, 238, 238); white-space: normal; }
+.CtxtMenu_Info.CtxtMenu_MousePost { outline: none; }
+.CtxtMenu_Info { position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: rgb(221, 221, 221); color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuClose { position: absolute; cursor: pointer; display: inline-block; border: 2px solid rgb(170, 170, 170); border-radius: 18px; font-family: "Courier New", Courier; font-size: 24px; color: rgb(240, 240, 240); }
+.CtxtMenu_MenuClose span { display: block; background-color: rgb(170, 170, 170); border: 1.5px solid; border-radius: 18px; line-height: 0; padding: 8px 0px 6px; }
+.CtxtMenu_MenuClose:hover { color: white !important; border: 2px solid rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover span { background-color: rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover:focus { outline: none; }
+.CtxtMenu_Menu { position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid rgb(204, 204, 204); margin: 0px; cursor: default; font-style: ; font-variant: normal; font-weight: ; font-stretch: ; font-size: ; font-family: ; font-optical-sizing: ; font-size-adjust: ; font-kerning: ; font-feature-settings: ; font-variation-settings: ; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuItem { padding: 1px 2em; background: transparent; }
+.CtxtMenu_MenuArrow { position: absolute; right: 0.5em; padding-top: 0.25em; color: rgb(102, 102, 102); font-family: null; font-size: 0.75em; }
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow { color: white; }
+.CtxtMenu_MenuArrow.CtxtMenu_RTL { left: 0.5em; right: auto; }
+.CtxtMenu_MenuCheck { position: absolute; left: 0.7em; font-family: null; }
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuRadioCheck { position: absolute; left: 0.7em; }
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuInputBox { padding-left: 1em; right: 0.5em; color: rgb(102, 102, 102); font-family: null; }
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL { left: 0.1em; }
+.CtxtMenu_MenuComboBox { left: 0.1em; padding-bottom: 0.5em; }
+.CtxtMenu_MenuSlider { left: 0.1em; }
+.CtxtMenu_SliderValue { position: absolute; right: 0.1em; padding-top: 0.25em; color: rgb(51, 51, 51); font-size: 0.75em; }
+.CtxtMenu_SliderBar { outline: none; background: rgb(211, 211, 211); }
+.CtxtMenu_MenuLabel { padding: 1px 2em 3px 1.33em; font-style: italic; }
+.CtxtMenu_MenuRule { border-top: 1px solid rgb(221, 221, 221); margin: 4px 3px; }
+.CtxtMenu_MenuDisabled { color: graytext; }
+.CtxtMenu_MenuActive { background-color: rgb(96, 104, 114); color: white; }
+.CtxtMenu_MenuDisabled:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_MenuLabel:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_ContextMenu:focus { outline: none; }
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus { outline: none; }
+.CtxtMenu_SelectionMenu { position: relative; float: left; border-bottom: none; box-shadow: none; border-radius: 0px; }
+.CtxtMenu_SelectionItem { padding-right: 1em; }
+.CtxtMenu_Selection { right: 40%; width: 50%; }
+.CtxtMenu_SelectionBox { padding: 0em; max-height: 20em; max-width: none; background-color: rgb(255, 255, 255); }
+.CtxtMenu_SelectionDivider { clear: both; border-top: 2px solid rgb(0, 0, 0); }
+.CtxtMenu_Menu .CtxtMenu_MenuClose { top: -10px; left: -10px; }
+mjx-container[jax="SVG"] { direction: ltr; }
+mjx-container[jax="SVG"] > svg { overflow: visible; min-height: 1px; min-width: 1px; }
+mjx-container[jax="SVG"] > svg a { fill: blue; stroke: blue; }
+mjx-assistive-mml { top: 0px; left: 0px; clip: rect(1px, 1px, 1px, 1px); user-select: none; position: absolute !important; padding: 1px 0px 0px !important; border: 0px !important; display: block !important; width: auto !important; overflow: hidden !important; }
+mjx-assistive-mml[display="block"] { width: 100% !important; }
+mjx-container[jax="SVG"][display="true"] { display: block; text-align: center; margin: 1em 0px; }
+mjx-container[jax="SVG"][display="true"][width="full"] { display: flex; }
+mjx-container[jax="SVG"][justify="left"] { text-align: left; }
+mjx-container[jax="SVG"][justify="right"] { text-align: right; }
+g[data-mml-node="merror"] > g { fill: red; stroke: red; }
+g[data-mml-node="merror"] > rect[data-background] { fill: yellow; stroke: none; }
+g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed { stroke-dasharray: 140; }
+g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted { stroke-linecap: round; stroke-dasharray: 0, 140; }
+g[data-mml-node="mtable"] > g > svg { overflow: visible; }
+[jax="SVG"] mjx-tool { display: inline-block; position: relative; width: 0px; height: 0px; }
+[jax="SVG"] mjx-tool > mjx-tip { position: absolute; top: 0px; left: 0px; }
+mjx-tool > mjx-tip { display: inline-block; padding: 0.2em; border: 1px solid rgb(136, 136, 136); font-size: 70%; background-color: rgb(248, 248, 248); color: black; box-shadow: rgb(170, 170, 170) 2px 2px 5px; }
+g[data-mml-node="maction"][data-toggle] { cursor: pointer; }
+mjx-status { display: block; position: fixed; left: 1em; bottom: 1em; min-width: 25%; padding: 0.2em 0.4em; border: 1px solid rgb(136, 136, 136); font-size: 90%; background-color: rgb(248, 248, 248); color: black; }
+foreignobject[data-mjx-xml] { font-family: initial; line-height: normal; overflow: visible; }
+mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { stroke-width: 3; }</style>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js"></script>
+                    <script>
+                        window.MathJax = {
+                          tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+                          svg: { fontCache: 'global' }
+                        };
+                    </script>
+                    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+                </head>
+                <body class="exported-body" style="background-color: #f4f7f9; font-family: 'Malgun Gothic', sans-serif;">
+                    <div id="exported-container" style="position: relative; width: 90%; max-width: 1100px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        
+                <div class="preview-top-bar">
+                    <h1 id="preview-main-title">이용악_우라지오 가까운 항구에서</h1>
+                </div>
+                <div id="preview-tab-bar" class="tab-bar preview-tabs">
+                    <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1760513124794">감상의 길잡이</button><button class="tab-btn " data-tab-id="tab-1760528477077">시 본문</button><button class="tab-btn " data-tab-id="tab-1760594188973">핵심정리</button><button class="tab-btn " data-tab-id="tab-1760595657072">퀴즈</button></div>
+                </div>
+                <div id="preview"><div class="tab-content active" data-tab-content-id="tab-1760513124794"><h2 style="display:none;">감상의 길잡이</h2><div class="block active" data-type="text"><details class="text-preview-container" open="">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 감상의 길잡이</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div>&nbsp; 「우라지오 가까운 항구에서」는 <b style="background-color: rgb(255, 218, 185);">일제강점기 유랑민의 비애와 향수</b>를 노래한 이용악의 대표작입니다. 이 시의 핵심 내용은 <b><font color="#ff0000">혹독한 현실 속에서 고향과 가족을 향한 간절한 그리움을 품고 있지만, 현실의 장애물 때문에 결국 돌아가지 못하는 비극적 운명</font></b>에 대한 탄식입니다.</div><div><br></div><div>&nbsp; 시간의 흐름은 '<b><font color="#0000ff">현재(절망)</font>에서 <font color="#0000ff">과거(행복한 회상)</font>로, 다시 <font color="#0000ff">현재(절망 재인식)</font></b>'로 전개됩니다. '눈보라에 얼어붙은 섣달 그믐 밤'이라는 암울한 배경에서 화자는 자신이 치열하게 살아온 삶에 후회는 없다고 하면서도, 고향에 대한 '불타는 소원'을 안고 부두에 서 있습니다.</div><div><br></div><div>&nbsp; 흔히 이용악은 <span style="background-color: rgb(255, 250, 205);">고향을 노래하는 시인</span>, 또는 고향인 <span style="background-color: rgb(255, 250, 205);">함경북도 경성군을 비롯한 북방지역 일대의 고유한 의식과 감정을 시적으로 형상화한 시인</span>으로 평가된다. 지금의 <u>러시아 블라디보스토크에 머물면서 고향에 대한 그리움을 담고 있는</u> &lt;우라지오 가까운 항구에서&gt;는 작가의 이러한 경향을 대표하는 작품이라고 할 수 있다.</div><div><br></div><div>전체 6연으로 구성되어 있는 이 시는 <span style="background-color: rgb(255, 218, 185);">일제강점기 강제 이주 정책으로 인해 고향을 떠나 이국땅인 연해주</span>에 머물러야 했던 우리민족의 수난의 역사가 배경이 되고 있는 작품이다. 눈보라가 치는 섣달그믐의 밤, 화자는 불타는 소원에 이끌려 부두로 향한다.</div><div><br></div><div>어깨에 하얀 눈이 쌓이는 것도 연연해하지 않고 화자는 어린 시절, 철없는 <span class="text-border-gray">누이</span>의 고수머리와 우라지오의 이야기를 들려주시던 <span class="text-border-gray">어머니</span>를 떠올린다.</div><div><br></div><div>무지개처럼 어질던 어머니의 입김과 어린 시절의 기억을 살뜰히 담은 화자는 드나드는 배 한 척 없는 지금, 머리에 어슴푸레 그려지는 고향으로 새가 되어 날아가고 싶어 한다. 그러나 우라지오의 바다는 두꺼운 얼음이 얼어 있고 나는 가지고 오지도 못하는 우라지오의 항구에 서서 끝없이 고향을 그리고만 있다.</div><div><br></div><div>시를 통해 드러나듯이 화자는 현재 고향을 떠나 우라지오에 홀로 머물고 있다. 화자는 서투른 어머니의 마우재 말을 고수머리 누이와 함께 듣던 그 시절의 고향에 대한 그리움으로 가득하다. 그러나 화자가 처한 현실은 두꺼운 얼음과 눈보라가 매섭게 치는 척박한 땅의 부두를 홀로 서성일 뿐이다.</div><div><br></div><div>우라지오의 부두를 서성이고 있는 현재의 상황에서 과거를 회상하고 있는 이 작품은 현재-과거-현재의 순으로 시상을 전개하고 있으며 특히 과거를 회상하는 3연 전체를 들여쓰기 함으로써 고향에 대한 그리움을 더욱 강조하는 효과를 거두고 있다.</div><div><br></div><div>또한 이 시는 비유적 표현이 두드러지는데, 멧비둘기가 되어 고향으로 날아가고 싶어 한다거나 귀향할 수 없는 현실을 두껍게 얼어붙은 우라지오의 바다에 빗대어 표현하고 있는 것이 그 예이다. 또한 북방지역의 토속어를 활용해 북방지역 특유의 정서와 그곳에 대한 그리움을 더욱 절실하게 드러내는 효과를 거두고 있다고 할 수 있다.&nbsp; &nbsp;📒<span style="color: rgb(128, 0, 128);">출처: 나무위키</span></div><div><br></div></div>
+                                    </div>
+                                </details></div><div class="block active" data-type="text"><details class="text-preview-container" open="">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 '우라지오'는 어디인가?</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div>시의 제목에 등장하는 '우라지오(浦鹽)'는 러시아어 '블라디보스토크(Владивосток)'의 일본식 발음인 '우라지오스토쿠(ウラジオストク)'에서 유래한 표현입니다. 당시 일제강점기라는 시대적 배경 속에서 러시아 지명이 일본식으로 불리던 흔적을 엿볼 수 있습니다.</div><div><br></div><div>'우라지오 가까운 항구에서'는 고향을 떠나 낯선 항구에서 느끼는 상실감과 고향에 대한 그리움을 애절하게 노래한 작품입니다. 시 속에서<span style="background-color: rgb(255, 214, 214);"> '우라지오'는 화자가 가고 싶어 하지만 갈 수 없는 동경의 공간이자, 암담한 현실과 대비되는 이상향으로 그려지고 있습니다.</span></div></div>
+                                    </div>
+                                </details></div></div><div class="tab-content " data-tab-content-id="tab-1760528477077"><h2 style="display:none;">시 본문</h2><div class="block active" data-type="text"><details class="text-preview-container" open="">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 시 해석</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div style="text-align: center;"><b><span style="font-size: 20px;">우리지오 가까운 항구에서 <font color="#0000ff">｜</font><span class="explainable" data-explanation="- &lt;b&gt;함경북도 경성&lt;/b&gt; 출생.&lt;div&gt;- &lt;b&gt;두만강 인근&lt;/b&gt;:&amp;nbsp;&amp;nbsp;그의 출생지는 두만강과 접한 북방 지역으로, 이는 그의 시에 나타나는 북방 정서와 깊은 관련이 있습니다.&lt;/div&gt;">백석</span></span></b></div><div><br></div><div><br></div><div>1️⃣</div><div><span class="explainable" data-explanation="- 청각적 이미지&lt;div&gt;- 삽살개: 고향을 떠올리게 함.&lt;/div&gt;">삽살개 짖는 소리</span></div><div><span class="explainable" data-explanation="힘든 환경"><span class="text-border-blue">눈보라</span></span>에 얼어붙은 <span class="explainable" data-explanation="시간적 배경"><span class="text-border-blue">섣달 그믐</span></span></div><div><span class="explainable" data-explanation="시간적 배경, 힘든 현실"><span class="text-border-blue">밤</span></span>이</div><div><span class="explainable" data-explanation="시간상으로 밤이 깊어감을 표현.&amp;nbsp;&lt;div&gt;💡관념의 시각화, 의인화&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;">얄궂은 손을 하도 곱게 흔들길래</span></div><div>술을 마시어<span class="explainable" data-explanation="고향에 대한 그리움"><span class="text-border-red"> 불타는 소원</span></span>이 <span class="explainable" data-explanation="- 공간적 배경.&lt;div&gt;- 우라지오의 항구. (우라지오 가까운 항구)&lt;/div&gt;">이 부두</span>로 왔다.</div><div><br></div><div><font color="#0000ff">📍1연: 고향에 대한 그리움으로 부두르 찾은 '나'&nbsp;</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span></span></span></font></div><div><font color="#0000ff">🔸요약: 눈보라 치는 추운 <span class="revealable-cloze" data-answer="JUVCJUIwJUE0" data-hint="JUUzJTg1JTgy">ㅂ</span>에 화자는 <span class="revealable-cloze" data-answer="JUVCJUI2JTg4JUVEJTgzJTgwJUVCJThBJTk0JTIwJUVDJTg2JThDJUVDJTlCJTkwKCVFRCU5NiVBNSVFQyU4OCU5OCk=" data-hint="JUUzJTg1JTgyJUUzJTg1JThDJUUzJTg0JUI0JTIwJUUzJTg1JTg1JUUzJTg1JTg3">ㅂㅌㄴ ㅅㅇ</span> 때문에 술을 마시러 이 부두로 왔다.</font></div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;불타는 소원 = 고향에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span> (향수)</div><div><br></div><div><br></div><div>2️⃣</div><div>​<span class="explainable" data-explanation="삶의 여정, 과거의 삶(회고) ➡️ 화자가 살아온 고달픈 인생을 함축">걸어온 길가</span>에 <span class="explainable" data-explanation="아름다운 존재, 조그마한 행복, 적은 위안">찔레꽃 한 송이</span> 없었대도</div><div><span style="background-color: rgb(255, 250, 205);"><span class="text-highlight-red">나</span>의 <span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 살아온 자신을 비유&lt;/div&gt;"><span class="text-highlight-red">아롱범</span></span></span><span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 헤쳐 온 자기 자신에 대한 비유&lt;/div&gt;"></span>은</div><div><span class="explainable" data-explanation="&lt;div&gt;- 반성, 후회 ❌. 당당함.&lt;/div&gt;- 자신이 살아온 삶에 대해 후회 없음, 당당함의 표현&lt;div&gt;💡자옥: 발자국. 자신이 걸어온 삶의 발자취&lt;/div&gt;">자옥 자옥을 뉘우칠 줄 모른다</span>.</div><div>어깨에 쌓여도 <span class="explainable" data-explanation="삶의 무게"><span class="text-border-blue">하얀 눈</span></span>이 <span class="explainable" data-explanation="의연함">무겁지 않고나</span>.</div><div>​</div><div><div><font color="#0000ff">📍2연: 살아온 삶에 대한 당당함. 고달픈 현실에 의연히 대처하며 후회 없이 살아온 삶</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></font></div></div><div><br></div><div><br></div><div><br></div><div>3️⃣</div><div>​철없는 <span class="text-border-green">누나</span> <span class="explainable" data-explanation="곱슬머리를">고수머릴</span>랑 어루만지며</div><div><span class="explainable" data-explanation="&lt;div&gt;- 어린 시절&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;화자의 동경의 공간&lt;/span&gt;. 이국(안 가 본 이국에 대한 동경의 공간)&lt;/div&gt;- 어린 시절 고향에서 말로만 들었던 우리지오.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">우라지오</span>의 이야길 캐고 싶던 밤이면</div><div><span class="text-border-green">울어머닌</span></div><div>​서투른 <span class="explainable" data-explanation="&lt;div&gt;&lt;span style=&quot;font-size: 1em;&quot;&gt;▪️러시아 사람.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡 당시 함경도 등 우리나라 북부 지방에서 러시아 사람들을 가리켜 부르던 방언으로, 약간 낮추어 부르는 뉘앙스를 가지고 있습니다.&lt;span style=&quot;font-size: 1em;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡그 어원은 중국어 '마오즈(毛子, máozi)'에서 온 것으로 알려져 있습니다. '털(毛)이 많은 사람'이라는 뜻으로, 서양인의 신체적 특징을 묘사한 말입니다.&lt;/div&gt;">마우재</span> 말도 들려주셨지.</div><div><span class="explainable" data-explanation="졸듯졸듯 하면서 이야기를 들으려 했던">졸음졸음 귀 밝히는</span> 누이 잠들 <font color="#800080">때꺼정</font></div><div><span class="explainable" data-explanation="- 시간의 경과.&amp;nbsp;&lt;div&gt;- 밤이 깊어질 때까지(늦은 밤까지)&lt;/div&gt;&lt;div&gt;- 활유법&lt;/div&gt;&lt;div&gt;- 깜빡: 음성상징어&lt;/div&gt;">등불이 깜박 저절로 눈감을 <font color="#800080">때꺼정</font>​</span><br><br></div><div><br></div><div><font color="#0000ff">📍</font><span style="color: rgb(0, 0, 255);">3연: (동경, 호기심의 공간이었던) 우라지오 이야기에 귀 기울이던 어린 시절의 밤.</span></div><div><div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span></span></span></span></div></div><div><span style="color: rgb(0, 0, 255);">🔸요약: <span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE4JUI4JUVCJThCJTg4" data-hint="JUUzJTg1JTg3JUUzJTg1JTgxJUUzJTg0JUI0">ㅇㅁㄴ</span>가 우라지오에 대해 동경하던&nbsp; <span class="revealable-cloze" data-answer="JUVCJTg4JTg0JUVCJTgyJTk4" data-hint="JUUzJTg0JUI0JUUzJTg0JUI0">ㄴㄴ</span>에게 우라지오에 대해 <span class="revealable-cloze" data-answer="JUVDJTlEJUI0JUVDJTk1JUJDJUVBJUI4JUIw" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3JUUzJTg0JUIx">ㅇㅇㄱ</span>를 들려주시는 장면</span></div><div><span style="color: rgb(0, 0, 255);">🔸문장 구조 반복(~ 때꺼정) → 운율&nbsp;</span></div></div><div>​<span style="color: rgb(0, 0, 255);">🔸어린 시절(회상, 가족공동체 모습) ↔️ 현재(혼자)</span></div><div><br></div><div><br></div><div><br></div><div>​4️⃣</div><div>​다시 내게로 <span class="explainable" data-explanation="헤치고 들어오는">헤여드는</span></div><div>어머니의 입김이 <span class="explainable" data-explanation="아름답게 떠오르는 과거의 기억">무지개</span>처럼<span class="explainable" data-explanation="어머니의 다정함과 따스한 사랑"> 어질다</span></div><div>나는 <span class="explainable" data-explanation="어머니가 들려주던 이야기">그 모두</span>를 살뜰히 담았으니</div><div><span class="explainable" data-explanation="🔸새 = 어린 시절 우라지오를 동경하던 화자의 기억들.">어린 기억의 새</span>야 <span class="explainable" data-explanation="수수하면서도 마음을 끄는 맛이 있다. (긍정적 의미임)">귀성스럽다</span></div><div><span class="explainable" data-explanation="✨적극적으로 과거 회상('털라'가 주는 동적 이미지 → 적극적 의미)&lt;div&gt;💡 7연과 연결해서 해석할 것.&lt;div&gt;💡가만히 있지 말고 어린 시절 우라지오에 대한 상상의 날개를 펴던 것처럼 고향으로 날아갈 수 있게 날개를 펼쳐라.&lt;/div&gt;&lt;div&gt;💡감각적(시각적)인 표현&lt;/div&gt;&lt;div&gt;📍다음과 같이 해석해서 이해해 보세요.&lt;br&gt;&quot;더 이상 무기력하게 상황이 나아지기만을 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;기다리지 마세요.&lt;/span&gt; &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;당신 마음속 깊은 곳에 아직 남아있는, 비록 연약하고 작을지라도(=마음의 은줄)&lt;/span&gt; 소중한 희망과 가능성을 스스로 일깨우세요. &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;거창한 시작이 아니어도 괜찮습니다. 그 작은 희망의 날개(작은 날개)&lt;/span&gt;를 &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;툭툭 털어보는 아주 작은 시도(새는 날기 전에 날개부터 텁니다)&lt;/span&gt;부터 지금 바로 시작하세요.&quot;&lt;/div&gt;&lt;/div&gt;">기다리지 말고 마음의 은줄에 작은 날개를 털라.</span></div><div><br></div><div><div><font color="#0000ff">📍4연: 어린 시절 추억을 회상하는 즐거움</font></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></span></div></div><div><br></div><div><br></div><div><br></div><div>5️⃣</div><div><span class="explainable" data-explanation="- 우라지오 가까운 항구에 서 있는 현재의 상황&lt;div&gt;✨ (부정적) 현실 인식&lt;/div&gt;">드나드는 배 하나 없는 <span class="text-border-blue">지금</span></span></div><div>부두에 호젓 선 나는 <span class="explainable" data-explanation="&lt;div&gt;- 『멧비둘기(자유로움) ↔ 화자』의 대비.&lt;/div&gt;- 자유롭게 고향으로 가고 싶은 화자의 마음을 담아낸 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;객관적 상관물&lt;/span&gt;.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">멧비둘기</span> 아니건만</div><div><span class="explainable" data-explanation="반복 ➡️ 그리움 심화">날고 싶어 날고 싶어.</span></div><div><span class="explainable" data-explanation="기억 속에서조차 가물가물한 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;고향&lt;/span&gt;.&lt;div&gt;고향을 떠난 지 오래되었음을 암시.&lt;/div&gt;">머리에 어슴푸레 그리어진 <span class="text-highlight-red">그곳</span></span></div><div><span class="explainable" data-explanation="📍 고향으로 갈 수 없는 자신의 처지에 대한 상황 인식. ➡️ &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;돌아갈 수 ❌&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;절망감,&amp;nbsp;&lt;/span&gt;&lt;div&gt;📍 얼음이 두껍다 ➡️ 배가 출항할 수&amp;nbsp;❌&amp;nbsp;➡️ 고향으로 돌아갈 수&amp;nbsp;❌ ➡️ 절망&lt;/div&gt;">우라지오의 바다는 얼음이 두껍다.</span></div><div><br></div><div><span style="color: rgb(0, 0, 255);">📍5연: 귀향에 대한 소망과 절망</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div>6️⃣</div><div><span class="explainable" data-explanation="📍등대: 한 자리에 고정. 이동❌, = 화자의 처지 투영된 대상&lt;div&gt;📍고향을 그리지만 갈 수 없는 화자 자신의 감정이 이입된 존재. 객관적 상관물&lt;/div&gt;&lt;div&gt;📍등대(한 자리에 고정) ↔️ 멧비둘기(자유로움)&lt;/div&gt;">등대</span>와 나와</div><div>서로 속삭일 수 없는 생각에 잠기고</div><div><span class="explainable" data-explanation="💡'밤'의 기능: 고향에 돌아가고 싶은 마음을 더욱 떠올리게 하는 시간">밤</span>은 <span class="explainable" data-explanation="고향에 돌아가고 싶은 화자의 꿈과 소망">얄팍한 꿈</span>을 끝없이 꾀인다.</div><div><span class="explainable" data-explanation="돌아갈 수 ❌">가도오도</span> 못할 <span class="explainable" data-explanation="명사 종결 ➡️ 시적 여운, 안타까움 강조">우라지오​.</span></div><div><br></div><div>​<span style="color: rgb(0, 0, 255);">📍6연:고향에 그리움과 갈 수 없다는 절망감</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div>&nbsp; &nbsp; &nbsp; &nbsp;</div></div>
+                                    </div>
+                                </details></div><div class="block active" data-type="text"><details class="text-preview-container" open="" data-attempts="0">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 내용 이해하기</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div><b><span style="font-size: 17px;">📍화자의 현재 상황</span></b></div>🔸 공간적 배경: 러시아 블라디보스토크( <span class="interactive-cloze-container" data-answer="JUVDJTlBJUIwJUVCJTlEJUJDJUVDJUE3JTgwJUVDJTk4JUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">우라지오</span><span class="cloze-choice">아우라지</span></span></span> ) 근처의 항구 <span class="revealable-cloze" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>에 <span class="revealable-cloze" data-answer="JUVEJTk5JTgwJUVCJUExJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 서 있음.<br>🔸 시간적 배경: 눈보라가 몰아치는 <span class="interactive-cloze-container" data-answer="JUVDJTg0JUEzJUVCJThCJUFDJTIwJUVBJUI3JUI4JUVCJUFGJTkwJUVCJUIwJUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">섣달 그믐밤</span><span class="cloze-choice">동지 보름</span><span class="cloze-choice">새해 아침</span></span></span><br>🔸 정서: 고향과 가족에 대한 깊은 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 함께, 현재 처한 <span class="revealable-cloze" data-answer="JUVBJUIzJUEwJUVCJUE2JUJE" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5">ㄱㄹ</span>되고 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실에 대한 안타까움.<br>🔸 처지: 드나드는 배 한 척 없는 얼어붙은 바다처럼, 고향으로 돌아갈 수도, 이곳에서 벗어날 수도 없는 '<span class="revealable-cloze" data-answer="JUVBJUIwJTgwJUVCJThGJTg0JUVDJTk4JUE0JUVCJThGJTg0" data-hint="JUUzJTg0JUIxJUUzJTg0JUI3JUUzJTg1JTg3JUUzJTg0JUI3">ㄱㄷㅇㄷ</span> 못할' 막막한 상황에 놓여 있음.<br>🔸 태도: 지난 삶에 대한 후회 없이 묵묵히 살아온 자신의 강인함을 드러내지만, 어린 시절의 따뜻했던 추억을 <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVDJTgzJTgx" data-hint="JUUzJTg1JThFJUUzJTg1JTg1">ㅎㅅ</span>하며 고향에 대한 소망을 간절히 품고 있음.<br><div><div><br></div><div>📍<b>과거 회상 (어린 시절의 고향)</b></div></div><div><div><div>🔸화자: 어린 시절, 철없는 누이와 함께 어머니가 들려주는 '우라지오 이야기'와 '마우재 말(러시아 말)'을 들으며 보냈던 따뜻한 밤을 회상함.</div><div>🔸정서: 어머니의 다정했던 입김, 어린 시절의 기억들이 무지개처럼 어질고 소중하게 남아 있음.</div><div>🔸의미: 이 기억들은 현재의 고립되고 힘겨운 현실 속에서 화자에게 유일한 위로이자 고향에 대한 그리움을 더욱 깊게 하는 매개체 역할을 함.</div></div><div><br></div><div><div>📍<b>시적 상징 및 표현</b></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUE5JUE3JUVCJUI5JTg0JUVCJTkxJTk4JUVBJUI4JUIw">: 자유롭게 날아다니는 멧비둘기와 달리, 배가 없어 갈 수 없는 화자의 처지를 부각하며 고향으로 날아가고 싶은 소망을 드러내는 객관적 상관물.</div><div>🔸<b>얼어붙은 우라지오 바다</b>: 고향으로 돌아갈 수 없는 화자의 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실과 고립감을 상징.</div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw">: 화자가 현재 서 있는 공간이자, 고향으로 가기 위한 수단인 '배'가 있어야 하는 장소. 배가 없다는 것은 고향으로 갈 수 없는 현실을 강조.</div></div></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUIwJUE0">: 어린 시절의 따뜻했던 밤과 현재의 고립되고 절망적인 밤으로 대비되며, 과거 회상의 매개체 역할.&nbsp;&nbsp;</div></div>
+                                    </div>
+                        <div class="quiz-controls" style="text-align: right; margin-top: 10px; padding: 0 15px 15px;">
+                            <span class="feedback"></span>
+                            <button class="check-fill-in-btn">정답 확인</button>
+                            <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                        </div>
+                                </details></div><div class="block active" data-type="flowchart"><div class="block-title">➔ 시상 전개</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style=""><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span></span></span></div></div><div class="flowchart-preview-node">겨울밤, 우라지오 가까운 부두</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span></div></div><div class="flowchart-preview-node">어린 시절 회상</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span></div></div><div class="flowchart-preview-node">절망적. 귀향❌</div></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1760594188973"><h2 style="display:none;">핵심정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td>갈래</td><td>자유시, 서정시</td></tr><tr><td>성격</td><td><span class="revealable-cloze" data-answer="JUVDJTk1JUEwJUVDJTgzJTgx" data-hint="JUUzJTg1JTg3JUUzJTg1JTg1">ㅇㅅ</span>적, <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVBJUIzJUEw" data-hint="JUUzJTg1JThFJUUzJTg0JUIx">ㅎㄱ</span>적, 서정적</td></tr><tr><td>제재</td><td><span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE2JUIwJTIwJUVDJThCJTlDJUVDJUEwJTg4" data-hint="JUUzJTg1JTg3JUUzJTg0JUI5JTIwJUUzJTg1JTg1JUUzJTg1JTg4">ㅇㄹ ㅅㅈ</span>의 추억과 <span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span> 타향에서의 삶</td></tr><tr><td>주제</td><td>고향과 가족에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlEJUVBJUIwJTkw" data-hint="JUUzJTg1JTg4JUUzJTg1JTgxJUUzJTg0JUIx">ㅈㅁㄱ</span></td></tr><tr><td>특징</td><td>1️⃣ 동일한 시구인 ‘때꺼정’을 <span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUzJTg1JTgyJUUzJTg1JTgy">ㅂㅂ</span>하여 <span class="revealable-cloze" data-answer="JUVDJTlEJThDJUVDJTk1JTg1" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3">ㅇㅇ</span>적 효과를 보임.<div>2️⃣ ‘<span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span>-과거(회상)-현재’의 시상 전개를 통해 주제를 강조함.</div><div>3️⃣ 다양한 비유와 상징을 통해 화자의 삶을 효과적으로 드러냄.</div></td></tr></tbody></table></div></div><div class="block active" data-type="drag-drop"><div class="block-title">✋ 드래그 앤 드롭</div><div class="drag-drop-preview-container">
+                                <div class="quiz-title-preview">시어의 의미</div>
+                                <div class="sentences-container"><div class="sentence">
+                                            <strong>1.</strong> 
+                                            • 화자가 어린 시절 어머니에게 말로만 듣던 이국의 땅,&nbsp; • 가난에서 벗어나기 위해 선택한 공간 
+                                            <span class="drop-target" data-answer="우라지오"></span> 
+                                            
+                                        </div><div class="sentence">
+                                            <strong>2.</strong> 
+                                            화자의 소망이 투영된 존재로 고향으로 가고 싶은 간절함을 심화시키는 기능을 함. 
+                                            <span class="drop-target" data-answer="멧비둘"></span> 
+                                            
+                                        </div><div class="sentence">
+                                            <strong>3.</strong> 
+                                            고향으로 돌아갈 수 없는 화자의 절망적인 현실과 고립감을 상징. 
+                                            <span class="drop-target" data-answer="얼어붙은 우라지오 바다"></span> 
+                                            
+                                        </div><div class="sentence">
+                                            <strong>4.</strong> 
+                                            화자가 현재 서 있는 공간이자, 고향으로 가기 위한 수단인 '배'가 있어야 하는 장소. 배가 없다는 것은 고향으로 갈 수 없는 현실을 강조. 
+                                            <span class="drop-target" data-answer="부두"></span> 
+                                            
+                                        </div><div class="sentence">
+                                            <strong>5.</strong> 
+                                            어린 시절의 따뜻했던 밤과 현재의 고립되고 절망적인 밤으로 대비되며, 과거 회상의 매개체 역할.&nbsp;&nbsp; 
+                                            <span class="drop-target" data-answer="밤"></span> 
+                                            
+                                        </div></div>
+                                <p><strong>선택지</strong></p>
+                                <div class="source-container"><span class="drag-source" draggable="true">멧비둘</span><span class="drag-source" draggable="true">얼어붙은 우라지오 바다</span><span class="drag-source" draggable="true">밤</span><span class="drag-source" draggable="true">부두</span><span class="drag-source" draggable="true">우라지오</span></div>
+                                <div class="quiz-controls">
+                                    <span class="feedback"></span>
+                                    <button class="check-drag-drop-btn">정답 확인</button>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                </div>
+                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1760595657072"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview">이 시의 특징에 대하여 문제를 풀어 보시오.</div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q1.</strong> 가족과도 떨어져 살아가야 하는 유랑민의 처지와 현실의 안락함이 드러난다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q2.</strong> 일제 강점기 우리 민족의 애처로운 삶의 모습을 형상화하고 있다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q3.</strong> 어렸을 때 추억과 현재 타향에서의 삶을 그리움에 잠긴 의연한 어조로 드러내고 있다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q4.</strong> 비유적 표현으로 화자의 처지를 효과적으로 드러내고 있다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q5.</strong> 시어의 반복적 표현으로 화자의 소망을 강조하고 있다.</div>
+                                        <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q6.</strong> 서술어로 문장을 종결지어 시적 여운을 주고 있다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="ox-preview-item">
+                                        <div class="ox-question-row">
+                                        <div class="question-text"><strong>Q7.</strong> 청각, 촉각, 시각적 이미지를 활용하여 배경을 제시하고 있다.</div>
+                                        <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
+                                        </div>
+                                        <div class="feedback"></div>
+                                    </div><div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div></div></div><div class="block" data-type="text"><details class="text-preview-container" open="">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 [기출] 다음 글을 읽고 물음에 답하시오.</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div>(가)</div><div>삽살개 짓는 소리</div><div>눈보라에 얼어붙는 섣달 그믐 밤이</div><div><font color="#0000ff">⒜<u>얄궂은 손을 하도 곱게 흔들길래</u></font></div><div>술을 마시어 불타는 소원이 이 부두로 왔다</div><div><br></div><div><font color="#0000ff">⒝<u>걸어온 길가에 찔레 한 송이 없었대도</u></font></div><div><b>나의 아롱범<span style="color: rgb(128, 0, 128);">*</span>은 자옥 자옥을 뉘우칠 줄 모른다</b></div><div>어깨에 쌓여도 하얀 눈이 무겁지 않고나</div><div><br></div><div></div><span class="passage-marker" data-symbol="A"><b>철없는 눈이 고수머릴랑 어루만지며</b><div>우라지오*의 이야길 캐고 싶은 밤이면</div><div>울 어머닌서투른 마우재 말*도 들려 주셨지</div><div><font color="#0000ff">⒞<u>졸음졸음 귀밝히는 누이 잠들 때꺼정</u></font></div><div>등불이 깜박 저절로 눈감을 때꺼정</div></span><div><div></div><div></div></div><div><div><br></div><div>다시 내게로 헤여드는</div><div>어머니의 입김이 무지개처럼 어질다</div><div>나는 그 모두를 살뜰히 담았으니</div><div>어린 기억의 새야 귀성스럽다<span style="color: rgb(128, 0, 128);">*</span></div><div>거사리지 말고 마음의 은줄에 작은 날개를 털라</div><div><br></div><div>드나드는 배 하나 없는 지금</div><div>부두에 호젓 선 나는 <font color="#ff0000">ⓐ</font><b><u>멧비둘기</u></b> 아니건만</div><div>날고 싶어 날고 싶어</div><div>머리에 어슴푸레 그리어진 그곳</div><div><font color="#0000ff">⒟<u>우라지오의 바다는 얼음이 두텁다</u></font></div><div><br></div><div><font color="#ff0000">ⓑ</font><u style="font-weight: bold;">등대</u>와 나와</div><div><font color="#0000ff">⒠<u>서로 속삭일 수 없는 생각에 잠기고</u></font></div><div>밤은 얄팍한 꿈을 끝없이 꾀인다</div><div><b>가도오도 못할 우라지오</b></div><div><font color="#ffa500">-이용악, 「우라지오 가까운 항구에서」</font></div><div><br></div><div></div><span style="font-size: 15px;"><font color="#800080"><div></div></font></span><span style="font-size: 14px;"><span style="color: rgb(128, 0, 128); font-size: 13px;"><div>*아롱법: 표범</div><div>*우라지오: 러시아의 블라디보스토크.&nbsp;</div><div>*마우재 말: 러시아 말.&nbsp;</div><div>*귀성스럽다: 수수하면서도 마음을 끄는 맛이 있다.</div></span></span><div></div><div></div><div><br></div><div>(나) 내 유년의 7월에는 냇가 잘 자란 미루나무 한 그루 솟아오르고 또 그 위 파란 하늘에 뭉게구름 내려와 어린 눈동자 속 터져나갈 듯 가득 차고 찬물들은 반짝이는 햇살 수면에 담아 쉼 없이 흘러갔다. 냇물아 흘러 흘러 어디로 가니, 착한 노래들도 물고기들과 함께 큰 강으로 헤엄쳐 가버리면 과수원을 지나온 달콤한 바람은 미루나무 손들을 흔들어 차르르 차르르 내 겨드랑에도 간지러운 새 잎이 돋고 물 아래까지 헤엄쳐가 누워 바라보는 하늘 위로 삐뚤빼뚤 헤엄쳐 달아나던 미루나무 한 그루. 달아나지 마 달아나지 마 미루나무야, 귀에 들어간 물을 뽑으려 햇살에 데워진 둥근 돌을 골라 귀를 가져다 대면 허기보다 먼저 온몸으로 퍼져오던 따뜻한 오수*.</div><div><span class="passage-marker" data-symbol="B">&nbsp; 점점 무거워져 오는 눈꺼풀 위로 멀리 누나가 다니는 분교의 풍금소리 쌓이고 미루나무 그늘 아래에서 7월은 더위를 잊은 채 깜빡 잠이 들었다.</span></div><div><font color="#ffa500">- 정일근, 「흑백 사진 - 7월」</font></div><div><br></div><div><span style="font-size: 14px;"><font color="#800080">*오수: 낮에 자는 잠.</font></span></div></div><div><span style="font-size: 14px;"><font color="#800080"><br></font></span></div><div><div>(다)</div><div>&nbsp;내 마음의 고향은 이제</div></div><div>침새 떼 왁자히 내려앉는 대숲 마을의</div><div>노오란 초가을의 초가지붕에 있지 아니하고</div><div>내 아믐의 고향은 이제</div><div>토란 잎에 후두둑 빗방울 스치고 가는</div><div>여름날의 고요 적막한 뒤란에 있지 아니하고</div><div>내 마음의 고향은 이제</div><div>추수 끝낸 빈 들판을 쿵쿵 울리며 가는</div><div><b>서늘한 뜨거운 기적 소리</b>에 있지 아니하고</div><div><div>내 마음의 고향은 이제</div></div><div>빈 들길을 걸어 걸어 흰 옷자락 날리며</div><div><b>서울로 가는 순이 누나의 파르라한 옷고름</b>에 있지 아니하고</div><div><div>내 마음의 고향은 이제</div></div><div>아득한 상큼한 짚벼늘에 파묻혀</div><div>나를 부르는 소리도 잊어버린 채</div><div>까닭 모를 굵은 눈물 흘리던 그 어린 저녁 무렵에도 있지 아니하고</div><div><div>내 마음의 고향은 이제</div></div><div>싸락눈 홀로 이마에 받으며</div><div><b>내가 그 어둑한 신작로 길로 나섰을 때 끝났다.</b></div><div>눈 위로 막 얼어붙기 시작한</div><div><b>작디작은 수레바퀴 자국을 뒤에 남기며</b></div><div><font color="#ffa500">- 이시영,&nbsp;</font><span style="color: rgb(255, 165, 0);">「아음의 고향 6-초설</span><span style="color: rgb(255, 165, 0);">」</span></div></div>
+                                    </div>
+                                </details></div><div style="height: 81px;"></div><div class="block" data-type="mcq"><div class="block-title">🔢 문제1</div><div class="mcq-preview-item" data-attempts="0" data-answer="3" data-explanation="JTVCQSU1RCVFQyU5OSU4MCUyMCU1QkIlNUQlRUIlOEElOTQlMjAlRUIlQUElQTglRUIlOTElOTAlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUElQjMlQjUlRUElQjAlODQlMjAlRUMlOUQlQjQlRUIlOEYlOTklRUMlOTclOTAlMjAlRUIlOTQlQjAlRUIlQTUlQjglMjAlRUQlOTIlOEQlRUElQjIlQkQlMjAlRUIlQjMlODAlRUQlOTklOTQlRUElQjAlODAlMjAlRUIlODIlOTglRUQlODMlODAlRUIlODIlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUIlOEElOTQlRUIlOEIlQTQu"><p><strong>Q.</strong> [A]와 [B]에 대한 설명으로 적절하지&nbsp;<b><u>않은</u></b>&nbsp;것은?</p><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① [A]는 [B]와 달리 동일한 시구를 반복하여 음악적 효과를 자아내고 있다.</div><div class="mcq-preview-option" data-choice="2">② [B]는 [A]와 달리 계절이 드러나는 시어를 통해 화자가 처한 상황을 나타내고 있다.</div><div class="mcq-preview-option" data-choice="3">③ [A]와 [B]는 모두 화자의 공간 이동에 따른 풍경 변화를 묘사하고 있다.</div><div class="mcq-preview-option" data-choice="4">④ [A]와 [B]는 모두 음성 상징어를 활용하여 대상의 모습을 구체화하고 있다.</div><div class="mcq-preview-option" data-choice="5">⑤ [A]는 활유법을 활용하여 시간의 경과를,&nbsp; [B]는 활유법을 활용하여 화자와 자연의 일체감을 드러내고 있다.</div></div>
+                            <div class="quiz-controls">
+                                <span class="feedback"></span>
+                                <button class="retry-quiz-btn">다시 풀기</button>
+                            </div>
+                            <div class="explanation"></div>
+                            </div></div><div class="block" data-type="mcq"><div class="block-title">🔢 문제2</div><div class="mcq-preview-item" data-attempts="0" data-answer="2" data-explanation=""><p><strong>Q.</strong> <font color="#ff0000">ⓐ</font>와 <font color="#ff0000">ⓑ</font>에 대한 이해로 가장 적절한 것은?</p><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① ⓐ는 화자에게 시련을 주는 존재이고, ⓑ는&nbsp;화자의 성숙을 이끄는 존재이다.</div><div class="mcq-preview-option" data-choice="2">② ⓐ는&nbsp;화자의 소망을 환기하는 존재이고, ⓑ는&nbsp;화자의 처지가 투영된 존재이다.</div><div class="mcq-preview-option" data-choice="3">③ ⓐ는&nbsp;화자의 미래를 상징하는 존재이고, ⓑ는&nbsp;화자의 과거를 상징하는 존재이다.</div><div class="mcq-preview-option" data-choice="4">④ ⓐ는&nbsp;화자에게 상실감을 주는 존재이고, ⓑ는&nbsp;화자에게 기대감을 주는 존재이다.</div><div class="mcq-preview-option" data-choice="5">⑤ ⓐ는&nbsp;화자에게 아픔을 해소하는 존재이고, ⓑ는&nbsp;화자의 아픔을 심화하는 존재이다.</div></div>
+                            <div class="quiz-controls">
+                                <span class="feedback"></span>
+                                <button class="retry-quiz-btn">다시 풀기</button>
+                            </div>
+                            <div class="explanation"></div>
+                            </div></div><div class="block active" data-type="mcq"><div class="block-title">🔢 문제3</div><div class="mcq-preview-item" data-attempts="0" data-answer="5" data-explanation=""><p><strong>Q.</strong> (가)의 ⒜~⒠에 대한 이해로 적절하지 <b><u>않은</u></b> 것은?</p><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① ⒜: '얄궂은 손'이 화자의 마음을 움직이게 한 것이라는 점에서, 화자가 무엇인가에 이끌려 '부두'로 오게 된 상황을 나타낸다.</div><div class="mcq-preview-option" data-choice="2">② ⒝: '걸어온 길가'가 삶의 여정을 비유한 것이라는 점에서, 화자가 살아온 고달픈 인생을 함축한다.</div><div class="mcq-preview-option" data-choice="3">③ ⒞: '졸음졸음 귀밝히는'은 잠에 겨운 모습을 나타낸 것이라는 점에서, 밤늦도록 어머니 이야기에 귀 기울이던 유년 시절을 환기한다.</div><div class="mcq-preview-option" data-choice="4">④ ⒟: '얼음이 두텁다'는 바다로 나갈 수 없는 상황을 보여 준다는 점에서, 고향에 돌아갈 수 없는 화자의 처지를 부각한다.</div><div class="mcq-preview-option" data-choice="5">⑤ ⒠: '서로 속삭일 수 없는 생각에 잠기고'는 서로 대화가 차단된 상황을 나타낸다는 점에서, '등대'에 대한 화자의 심리적 거리감을 나타낸다.</div></div>
+                            <div class="quiz-controls">
+                                <span class="feedback"></span>
+                                <button class="retry-quiz-btn">다시 풀기</button>
+                            </div>
+                            <div class="explanation"></div>
+                            </div></div><div class="block" data-type="mcq"><div class="block-title">🔢 문제4</div><div class="mcq-preview-item" data-attempts="0" data-answer="4" data-explanation="KCVFQiU4QiVBNCklRUMlOUQlOTglMjZuYnNwJTNCJTIwJyVFQyU5RSU5MSVFQiU5NCU5NCVFQyU5RSU5MSVFQyU5RCU4MCUyMCVFQyU4OCU5OCVFQiVBMCU4OCVFQiVCMCU5NCVFRCU4MCVCNCUyMCVFQyU5RSU5MCVFQSVCNSVBRCVFQyU5RCU4NCUyMCVFQiU5MiVBNCVFQyU5NyU5MCUyMCVFQiU4MiVBOCVFQSVCOCVCMCVFQiVBOSVCMCclRUIlOEElOTQlMjAlRUElQjMlQTAlRUQlOTYlQTUlRUMlOUQlODQlMjAlRUIlOTYlQTAlRUIlODIlOTglRUIlOEElOTQlMjAlRUMlOUUlQTUlRUIlQTklQjQlRUMlOUQlODQlMjAlRUQlOTElOUMlRUQlOTglODQlRUQlOTUlOUMlMjAlRUElQjIlODMlRUMlOUQlQjQlRUIlOEIlQTQu"><p><strong>Q.</strong> &lt;보기&gt;를 바탕으로 (가), (다)를 감상한 내용으로 적절하지 <b><u>않은</u></b> 것은?</p><div class="mcq-passage-preview">&nbsp; 이향(離鄕)을 한 사람들에게 고향은 평안한 안식처이자 성장의 토대가 되었던 곳으로, 귀향하고 싶지만 그럴 수 없는 처지에 놓이게 되면 그 절망감은 더 커지게 된다. (가), (다) 모두 고향을 떠난 화자의 정서가 형상화되어 있다. (가)의 화자는 일제 강점기 이국땅을 떠돌면서 냉혹한 현실에 맞서며 살아가지만 그럴수록 고향이 더 그립고 고향에 갈 수 없는 처지에 절망한다. (다)의 화자는 산업화, 도시화의 과정에서 고향을 떠났고, 과거의 모습을 상실한 고향으로 인해 절망한다.</div><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① (가)의 '나의 아롱범은 / 자옥자옥 뉘우칠 줄 모른다'에는 냉혹한 현실에 맞서며 살아왔던 삶에 대해 후회하지 않는다는 당당함이 드러나 있군.</div><div class="mcq-preview-option" data-choice="2">② (가)의 '철없는 누이 고수머릴랑 어루만지'는 것과 어머니가 '서투른 마우재 말도 들려주'시는 것에는 평안한 안식처이자 성장의 토대가 되었던 고향에서의 삶이 나타나 있군.</div><div class="mcq-preview-option" data-choice="3">③ (다)의 '서늘한 뜨거운 기적 소리'와 '서울로 가는 순이 누나의 파르라한 옷고름'에는 산업화와 도시화에 영향을 받고 있는 고향의 모습이 나타나 있군.</div><div class="mcq-preview-option" data-choice="4">④ (가)의 '술을 마시어 불타는 소원이 이 부도로 왔다'와 (다)의&nbsp; '작디작은 수레바퀴 자국을 뒤에 남기며'에는 고향에 돌아가고 싶은 이향인의 간절함이 형상화되어 있군.</div><div class="mcq-preview-option" data-choice="5">⑤ (가)의 '가도 오도 못할 우라지오'에는 고향에 갈 수 없다는 절망감이, (다)의 '내가 그 어둑한 신작로 길로 나섰을 때 끝났다'에는 고향을 잃은 절망감이 표출되어 있군.</div></div>
+                            <div class="quiz-controls">
+                                <span class="feedback"></span>
+                                <button class="retry-quiz-btn">다시 풀기</button>
+                            </div>
+                            <div class="explanation"></div>
+                            </div></div></div></div>
+                <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
+                <div id="explanationPopup" class="explanation-popup"></div>
+            
+                        <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
+                    </div>
+                    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const explanationPopup = document.getElementById('explanationPopup');
+                const previewContainer = document.getElementById('exported-container');
+                let proverbDataCache = {}; // 퀴즈 데이터 캐시
+
+                const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+                if (scrollToTopBtn) {
+                    window.addEventListener('scroll', () => {
+                        if (window.scrollY > 200) {
+                            scrollToTopBtn.classList.add('show');
+                        } else {
+                            scrollToTopBtn.classList.remove('show');
+                        }
+                    });
+                    scrollToTopBtn.addEventListener('click', () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+
+                const tabButtonsContainer = document.querySelector('#preview-tab-buttons');
+                if (tabButtonsContainer) {
+                    tabButtonsContainer.addEventListener('click', e => {
+                        const tabButton = e.target.closest('.tab-btn');
+                        if (!tabButton) return;
+
+                        const tabId = tabButton.dataset.tabId;
+
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                        tabButton.classList.add('active');
+                        const activeContent = document.querySelector('.tab-content[data-tab-content-id="' + tabId + '"]');
+                        if (activeContent) {
+                            activeContent.classList.add('active');
+                            adjustBlankInputWidths(activeContent);
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                window.MathJax.typesetPromise([activeContent]);
+                            }
+                        }
+
+                        if (previewContainer) {
+                            previewContainer.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                }
+                
+                function renderQuizContent(quizData, items, quizBlock) {
+                    const correctAnswer = quizData.proverb;
+                    const currentQuizIndex = items.findIndex(item => item.proverb === correctAnswer);
+                    
+                    let wrongAnswers = [];
+                    while(wrongAnswers.length < 3) {
+                        const randomIndex = Math.floor(Math.random() * items.length);
+                        if (randomIndex !== currentQuizIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
+                            wrongAnswers.push(items[randomIndex].proverb);
+                        }
+                    }
+
+                    const choices = shuffle([correctAnswer, ...wrongAnswers]);
+                    const answerIndex = choices.indexOf(correctAnswer) + 1;
+                    
+                    let choicesHtml = '';
+                    const numberChars = ['①', '②', '③', '④'];
+                    choices.forEach((choice, index) => {
+                        choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
+                    });
+
+                    const quizHtml = `
+                        <div class="daily-quiz-preview">
+                            <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="${btoa(encodeURIComponent(correctAnswer))}">
+                                <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
+                                <div class="mcq-passage-preview">${quizData.explanation.replace(/\n/g, '<br>')}</div>
+                                <div class="mcq-options-preview">${choicesHtml}</div>
+                                <div class="quiz-controls" style="display: none;">
+                                    <span class="feedback"></span>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    <button class="new-proverb-btn" style="display:none;">다른 속담 더 풀어보기</button>
+                                </div>
+                                <div class="explanation"></div>
+                            </div>
+                        </div>
+                    `;
+                    quizBlock.innerHTML = quizHtml;
+                }
+
+                async function renderDailyQuiz(quizBlock) {
+                    try {
+                        const quizType = quizBlock.dataset.quizType;
+                        if (!quizType) throw new Error('퀴즈 종류가 지정되지 않았습니다.');
+                        
+                        const fileName = `quiz_data_${quizType}.json`;
+                        
+                        if (!proverbDataCache[quizType]) {
+                            const response = await fetch(fileName); 
+                            if (!response.ok) throw new Error(`데이터 파일(${fileName})을 불러올 수 없습니다.`);
+                            proverbDataCache[quizType] = await response.json();
+                        }
+                        const items = proverbDataCache[quizType];
+
+                        const now = new Date();
+                        const start = new Date(now.getFullYear(), 0, 0);
+                        const diff = now - start;
+                        const oneDay = 1000 * 60 * 60 * 24;
+                        const dayOfYear = Math.floor(diff / oneDay);
+
+                        const todaysItemIndex = dayOfYear % items.length;
+                        const quizData = items[todaysItemIndex];
+                        
+                        renderQuizContent(quizData, items, quizBlock);
+
+                    } catch (error) {
+                        quizBlock.innerHTML = `<div class="daily-quiz-preview" style="color: var(--incorrect-color); text-align: center;">${error.message}</div>`;
+                    }
+                }
+
+                function adjustBlankInputWidths(container) {
+                    const measureSpan = document.createElement('span');
+                    measureSpan.style.visibility = 'hidden';
+                    measureSpan.style.position = 'absolute';
+                    measureSpan.style.fontFamily = 'inherit';
+                    measureSpan.style.fontSize = '1em';
+                    document.body.appendChild(measureSpan);
+
+                    container.querySelectorAll('.blank-input-preview').forEach(input => {
+                        const encodedAnswer = input.dataset.answer;
+                        if (encodedAnswer) {
+                            try {
+                                const answer = decodeURIComponent(atob(encodedAnswer));
+                                measureSpan.textContent = answer || '____';
+                                const textWidth = measureSpan.offsetWidth;
+                                input.style.width = (textWidth + 10) + 'px';
+                            } catch (e) {}
+                        }
+                    });
+                    document.body.removeChild(measureSpan);
+                }
+
+                function initializeAllInteractiveBlocks() {
+                    document.querySelectorAll('.classification-preview-container').forEach(container => {
+                        const sourceContainer = container.querySelector('.classification-items-source');
+                        if (sourceContainer) {
+                            const allCards = Array.from(sourceContainer.querySelectorAll('.classification-item-card'));
+                            shuffle(allCards).forEach(card => {
+                                sourceContainer.appendChild(card);
+                            });
+                        }
+                    });
+
+                    document.querySelectorAll('.line-quiz-preview').forEach(quizEl => {
+                        initializeLineQuiz(quizEl);
+                    });
+                    
+                    document.querySelectorAll('.block[data-type="daily-quiz"]').forEach(renderDailyQuiz);
+                }
+
+                function shuffle(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                }
+
+                function initializeLineQuiz(quizEl) {
+                    if (quizEl.lineQuizInstance) {
+                        quizEl.lineQuizInstance.reset();
+                        return;
+                    }
+                    const canvas = quizEl.querySelector('.line-quiz-canvas');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const allDots = quizEl.querySelectorAll('.dot');
+                    let selectedDot = null;
+                    let connections = [];
+
+                    const matchItemHeights = () => {
+                        const leftItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item'));
+                        const rightItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:last-child .line-quiz-item'));
+                        const numItems = Math.min(leftItems.length, rightItems.length);
+                        for (let i = 0; i < numItems; i++) {
+                            leftItems[i].style.height = '';
+                            rightItems[i].style.height = '';
+                            const leftHeight = leftItems[i].offsetHeight;
+                            const rightHeight = rightItems[i].offsetHeight;
+                            const maxHeight = Math.max(leftHeight, rightHeight);
+                            if (maxHeight > 36) {
+                                leftItems[i].style.height = maxHeight + 'px';
+                                rightItems[i].style.height = maxHeight + 'px';
+                            }
+                        }
+                    };
+
+                    const resizeCanvas = () => {
+                        if (!quizEl.isConnected) return;
+                        canvas.width = quizEl.clientWidth;
+                        canvas.height = quizEl.clientHeight;
+                        matchItemHeights();
+                        redrawLines();
+                    };
+
+                    const getDotPosition = (dot) => {
+                        const dotRect = dot.getBoundingClientRect();
+                        const canvasRect = canvas.getBoundingClientRect();
+                        return {
+                            x: dotRect.left - canvasRect.left + dotRect.width / 2,
+                            y: dotRect.top - canvasRect.top + dotRect.height / 2
+                        };
+                    };
+                    const redrawLines = () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        connections.forEach(conn => {
+                            const startDot = quizEl.querySelector('.line-quiz-column:first-child .dot[data-id="' + conn.leftId + '"]');
+                            const endDot = quizEl.querySelector('.line-quiz-column:last-child .dot[data-id="' + conn.rightId + '"]');
+                            if (!startDot || !endDot) return;
+                            const startPos = getDotPosition(startDot);
+                            const endPos = getDotPosition(endDot);
+                            ctx.beginPath();
+                            ctx.moveTo(startPos.x, startPos.y);
+                            ctx.lineTo(endPos.x, endPos.y);
+                            ctx.strokeStyle = conn.color || '#007bff';
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                        });
+                    };
+                    const handleDotClick = (e) => {
+                        const dot = e.target;
+                        if (!dot.classList.contains('dot') || dot.classList.contains('disabled')) return;
+                        if (!selectedDot) {
+                            selectedDot = dot;
+                            dot.classList.add('selected');
+                        } else {
+                            if (selectedDot.closest('.line-quiz-column') === dot.closest('.line-quiz-column')) {
+                                selectedDot.classList.remove('selected');
+                                selectedDot = dot;
+                                dot.classList.add('selected');
+                                return;
+                            }
+                            const leftDot = selectedDot.closest('.line-quiz-column:first-child') ? selectedDot : dot;
+                            const rightDot = selectedDot.closest('.line-quiz-column:last-child') ? selectedDot : dot;
+                            const leftId = leftDot.dataset.id;
+                            const rightId = rightDot.dataset.id;
+                            connections = connections.filter(c => c.leftId !== leftId);
+                            connections.push({ leftId, rightId });
+                            redrawLines();
+                            selectedDot.classList.remove('selected');
+                            selectedDot = null;
+                        }
+                    };
+
+                    const instance = {
+                        checkAnswers: () => {
+                            connections.forEach(conn => {
+                                conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
+                            });
+                            redrawLines();
+                            allDots.forEach(d => d.classList.add('disabled'));
+                        },
+                        reset: () => {
+                            connections = [];
+                            selectedDot = null;
+                            allDots.forEach(dot => dot.classList.remove('selected', 'disabled'));
+                            const rightColumnEl = quizEl.querySelector('.line-quiz-column:last-child');
+                            const rightItems = Array.from(rightColumnEl.querySelectorAll('.line-quiz-item'));
+                            shuffle(rightItems);
+                            rightColumnEl.innerHTML = '';
+                            rightItems.forEach(item => rightColumnEl.appendChild(item));
+                            redrawLines();
+                            setTimeout(resizeCanvas, 0);
+                        }
+                    };
+                    quizEl.lineQuizInstance = instance;
+                    quizEl.addEventListener('click', handleDotClick);
+                    const resizeObserver = new ResizeObserver(resizeCanvas);
+                    resizeObserver.observe(quizEl);
+                    instance.reset();
+                }
+
+                let currentDraggedItem = null;
+                let dropIndicator = null; 
+
+                function getDragAfterElementHorizontal(container, x) {
+                    const draggableElements = [...container.querySelectorAll('.ordering-item:not(.dragging)')];
+                    return draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = x - box.left - box.width / 2;
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+                }
+
+                previewContainer.addEventListener('dragstart', e => {
+                    if (e.target.matches('.classification-item-card')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                    }
+                    if (e.target.matches('.drag-source, .ordering-item')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                        e.dataTransfer.setData('text/plain', e.target.textContent);
+                        if (e.target.matches('.ordering-item')) {
+                            dropIndicator = document.createElement('div');
+                            dropIndicator.className = 'ordering-drop-indicator';
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragend', e => {
+                    const droppedItem = e.target;
+
+                    if (droppedItem.matches('.ordering-item')) {
+                        setTimeout(() => {
+                            const targetContainer = droppedItem.closest('.ordering-target-container');
+                            
+                            if (targetContainer) {
+                                const item = targetContainer.closest('.ordering-preview-item');
+                                const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item'));
+                                const studentAnswer = studentItems.map(i => i.textContent.trim()).join(' // ');
+                                const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+                                const totalItemCount = correctAnswer.split('//').length;
+
+                                if (studentAnswer === correctAnswer) {
+                                    targetContainer.classList.remove('incorrect');
+                                    targetContainer.classList.add('correct');
+                                    if (feedbackIcon) feedbackIcon.textContent = '⭕';
+
+                                    const quizContainer = item.closest('.ordering-preview-container');
+                                    const allItems = quizContainer.querySelectorAll('.ordering-preview-item');
+                                    const allCorrect = Array.from(allItems).every(i => i.querySelector('.ordering-target-container.correct'));
+
+                                    if (allCorrect) {
+                                        const feedbackEl = quizContainer.querySelector('.feedback');
+                                        feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
+                                        feedbackEl.className = 'feedback show correct';
+                                        quizContainer.querySelector('.check-ordering-btn').style.display = 'none';
+                                        quizContainer.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                                    }
+                                } else if (studentItems.length === totalItemCount) {
+                                    targetContainer.classList.remove('correct');
+                                    targetContainer.classList.add('incorrect');
+                                    if (feedbackIcon) feedbackIcon.textContent = '❌';
+                                } else {
+                                    targetContainer.classList.remove('correct', 'incorrect');
+                                    if (feedbackIcon) feedbackIcon.textContent = '';
+                                }
+                            }
+                        }, 0);
+                    }
+
+                    if (currentDraggedItem) {
+                        currentDraggedItem.classList.remove('dragging');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.removeChild(dropIndicator);
+                        }
+                        dropIndicator = null;
+                        currentDraggedItem = null;
+                    }
+                });
+
+                previewContainer.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.classList.add('drag-over');
+                    }
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-target-container');
+
+                    if (dropTarget || (sourceContainer && currentDraggedItem?.parentElement.classList.contains('drop-target'))) {
+                        e.target.closest('.drop-target, .source-container').classList.add('drag-over');
+                    } else if (orderingContainer && currentDraggedItem?.matches('.ordering-item')) {
+                        orderingContainer.classList.add('drag-over');
+                        const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                        if (afterElement == null) {
+                            if (orderingContainer.lastChild !== dropIndicator) orderingContainer.appendChild(dropIndicator);
+                        } else {
+                            if (afterElement.previousSibling !== dropIndicator) orderingContainer.insertBefore(dropIndicator, afterElement);
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragleave', e => {
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone) {
+                        classificationDropZone.classList.remove('drag-over');
+                    }
+                    const relatedTarget = e.relatedTarget;
+                    const dropZone = e.target.closest('.drop-target, .source-container, .ordering-target-container');
+                    if (dropZone && !dropZone.contains(relatedTarget)) {
+                        dropZone.classList.remove('drag-over');
+                    }
+                    if(dropZone && dropIndicator && dropIndicator.parentNode) {
+                        dropIndicator.parentNode.removeChild(dropIndicator);
+                    }
+                });
+
+                previewContainer.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (!currentDraggedItem) return;
+
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.appendChild(currentDraggedItem);
+                        classificationDropZone.classList.remove('drag-over');
+
+                        const quizContainer = classificationDropZone.closest('.classification-preview-container');
+                        const hasChecked = quizContainer.querySelector('.classification-item-card.correct, .classification-item-card.incorrect');
+                        
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.classification-item-card').forEach(card => {
+                                card.classList.remove('correct', 'incorrect');
+                            });
+                            quizContainer.querySelector('.retry-quiz-btn').style.display = 'none';
+                            quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            const feedbackEl = quizContainer.querySelector('.feedback');
+                            feedbackEl.className = 'feedback';
+                            feedbackEl.innerHTML = '';
+                        }
+                    }
+
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-source-container, .ordering-target-container');
+
+                    if (dropTarget || (sourceContainer && currentDraggedItem.parentElement.classList.contains('drop-target'))) {
+                        const quizContainer = (dropTarget || sourceContainer).closest('.drag-drop-preview-container');
+                        const hasChecked = quizContainer.querySelector('.drop-target.correct, .drop-target.incorrect');
+
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                target.classList.remove('correct', 'incorrect');
+                            });
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls) {
+                                controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                controls.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                                const feedbackEl = controls.querySelector('.feedback');
+                                feedbackEl.className = 'feedback';
+                                feedbackEl.innerHTML = '';
+                            }
+                        }
+
+                        if (dropTarget) {
+                            dropTarget.classList.remove('drag-over');
+                            const existingItem = dropTarget.querySelector('.drag-source');
+                            const mainSourceContainer = quizContainer.querySelector('.source-container');
+                            if (existingItem) {
+                                mainSourceContainer.appendChild(existingItem);
+                            }
+                            dropTarget.appendChild(currentDraggedItem);
+                        } else {
+                            sourceContainer.classList.remove('drag-over');
+                            sourceContainer.appendChild(currentDraggedItem);
+                        }
+                    } 
+                    else if (orderingContainer) {
+                        orderingContainer.classList.remove('drag-over');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.replaceChild(currentDraggedItem, dropIndicator);
+                        } else {
+                            const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                            if (afterElement == null) orderingContainer.appendChild(currentDraggedItem);
+                            else orderingContainer.insertBefore(currentDraggedItem, afterElement);
+                        }
+                        const quizContainer = orderingContainer.closest('.ordering-preview-container');
+                        if (quizContainer && orderingContainer.classList.contains('ordering-target-container')) {
+                            if (orderingContainer.matches('.correct, .incorrect')) {
+                                orderingContainer.classList.remove('correct', 'incorrect');
+                                const controls = quizContainer.querySelector('.quiz-controls');
+                                if (controls) {
+                                    controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                    controls.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                                    controls.querySelector('.feedback').className = 'feedback';
+                                }
+                            }
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('click', e => {
+                    const newProverbBtn = e.target.closest('.new-proverb-btn');
+                    if (newProverbBtn) {
+                        const quizItem = newProverbBtn.closest('.mcq-preview-item');
+                        const quizBlock = newProverbBtn.closest('.block');
+                        const quizType = quizBlock.dataset.quizType;
+                        const items = proverbDataCache[quizType];
+                        const currentProverb = decodeURIComponent(atob(quizItem.dataset.currentProverb));
+
+                        if (items && items.length > 1) {
+                            let newIndex;
+                            let newQuizData;
+                            do {
+                                newIndex = Math.floor(Math.random() * items.length);
+                                newQuizData = items[newIndex];
+                            } while (newQuizData.proverb === currentProverb);
+                            
+                            renderQuizContent(newQuizData, items, quizBlock);
+                        }
+                        return;
+                    }
+
+                    const clozeChoice = e.target.closest('.cloze-choice');
+                    if (clozeChoice) {
+                        const container = clozeChoice.closest('.interactive-cloze-container');
+                        if (container.classList.contains('answered') || clozeChoice.classList.contains('used')) return;
+
+                        const blank = container.querySelector('.cloze-blank');
+                        const studentAnswer = clozeChoice.textContent.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
+
+                        blank.textContent = studentAnswer;
+                        blank.classList.add('filled');
+                        blank.classList.remove('incorrect');
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            blank.classList.add('correct');
+                            container.classList.add('answered');
+                            container.querySelectorAll('.cloze-choice').forEach(choice => {
+                                choice.classList.add('used');
+                            });
+                        } else {
+                            blank.classList.add('incorrect');
+                            clozeChoice.classList.add('used');
+                        }
+                        return;
+                    }
+
+                    const filledBlank = e.target.closest('.cloze-blank.filled');
+                    if (filledBlank && filledBlank.classList.contains('correct')) {
+                        const container = filledBlank.closest('.interactive-cloze-container');
+                        container.classList.remove('answered');
+                        filledBlank.innerHTML = '&nbsp;';
+                        filledBlank.className = 'cloze-blank';
+                        container.querySelectorAll('.cloze-choice').forEach(choice => {
+                            choice.classList.remove('used');
+                        });
+                        return;
+                    }
+
+                    const cloze = e.target.closest('.revealable-cloze');
+                    const revealed = e.target.closest('.revealed-answer');
+                    if (cloze) {
+                        const answer = decodeURIComponent(atob(cloze.dataset.answer));
+                        cloze.textContent = answer;
+                        cloze.className = 'revealed-answer';
+                        return;
+                    }
+                    if (revealed) {
+                        const hint = decodeURIComponent(atob(revealed.dataset.hint));
+                        revealed.textContent = hint;
+                        revealed.className = 'revealable-cloze';
+                        return;
+                    }
+                    const summary = e.target.closest('.frame-preview-summary, .summary-preview-summary, .text-preview-summary');
+                    if (summary) {
+                        e.preventDefault();
+                        const details = summary.parentElement;
+                        details.open = !details.open;
+                        return;
+                    }
+                    const retryBtn = e.target.closest('.retry-quiz-btn');
+                    const checkAnswerBtn = e.target.closest('.check-answer-btn');
+                    const checkFillInBtn = e.target.closest('.check-fill-in-btn');
+                    const checkLineQuizBtn = e.target.closest('.check-line-quiz-btn');
+                    const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
+                    const checkOrderingBtn = e.target.closest('.check-ordering-btn');
+                    const checkClassificationBtn = e.target.closest('.check-classification-btn');
+                    const youtubePlaceholder = e.target.closest('.youtube-placeholder');
+
+                    if (retryBtn) {
+                        const quizContainer = retryBtn.closest('.quiz-container, .mcq-preview-item, .descriptive-preview-item, .fill-in-container, .table-preview-container, .drag-drop-preview-container, .ordering-preview-container, .classification-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        if (quizContainer) {
+                            
+                            if(quizContainer.classList.contains('mcq-preview-item')) { 
+                                const isDailyQuiz = quizContainer.closest('.daily-quiz-preview');
+                                if (isDailyQuiz) {
+                                    const quizBlock = quizContainer.closest('.block');
+                                    renderDailyQuiz(quizBlock);
+                                    return; // 오늘의 퀴즈 '다시풀기'는 여기서 종료
+                                } 
+                            }
+
+                            quizContainer.dataset.attempts = "0";
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls && controls.querySelector('.feedback')) {
+                                controls.querySelector('.feedback').className = 'feedback';
+                                controls.querySelector('.feedback').innerHTML = '';
+                            }
+                            quizContainer.querySelectorAll('.explanation').forEach(el => { el.className = 'explanation'});
+                            
+                            if (quizContainer.querySelector('.ox-preview-item')) {
+                                quizContainer.querySelectorAll('.ox-preview-item .feedback').forEach(fb => {
+                                    fb.className = 'feedback';
+                                    fb.innerHTML = '';
+                                });
+                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => btn.classList.remove('selected'));
+                            }
+                            
+                            if(quizContainer.classList.contains('mcq-preview-item')) { 
+                                quizContainer.dataset.attempts = "0";
+                                quizContainer.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+                                retryBtn.style.display = 'none';
+                                if (controls) controls.style.display = 'none';
+                                const explanation = quizContainer.querySelector('.explanation');
+                                if (explanation) explanation.classList.remove('show');
+                            }
+                            if(quizContainer.classList.contains('descriptive-preview-item')) {
+                                const studentAnswerEl = quizContainer.querySelector('.descriptive-student-answer');
+                                studentAnswerEl.value = '';
+                                studentAnswerEl.disabled = false;
+                                quizContainer.querySelector('.check-answer-btn').style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+                            
+                            const blankInputs = quizContainer.querySelectorAll('.blank-input-preview');
+                            if (blankInputs.length > 0) {
+                                blankInputs.forEach(input => {
+                                    input.value = '';
+                                    input.disabled = false;
+                                    input.className = 'blank-input-preview';
+                                });
+                                const checkBtn = quizContainer.querySelector('.check-fill-in-btn');
+                                if (checkBtn) checkBtn.style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+
+                            const lineQuizPreview = quizContainer.querySelector('.line-quiz-preview');
+                            if(lineQuizPreview && lineQuizPreview.lineQuizInstance){
+                                lineQuizPreview.lineQuizInstance.reset();
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('drag-drop-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.source-container');
+                                const allWords = [];
+                                quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                    if (target.textContent.trim()) { allWords.push(target.textContent.trim()); }
+                                    target.textContent = '';
+                                    target.className = 'drop-target';
+                                });
+                                sourceContainer.querySelectorAll('.drag-source').forEach(source => { allWords.push(source.textContent.trim()); });
+                                const originalAnswers = Array.from(quizContainer.querySelectorAll('.drop-target')).map(t => t.dataset.answer);
+                                while(allWords.length < originalAnswers.length) {
+                                    const wordCount = allWords.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    const originalWordCount = originalAnswers.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    let missingWordFound = false;
+                                    for(const word in originalWordCount) {
+                                        if((wordCount[word] || 0) < originalWordCount[word]) {
+                                            allWords.push(word); missingWordFound = true; break;
+                                        }
+                                    }
+                                    if (!missingWordFound) break;
+                                }
+                                sourceContainer.innerHTML = '';
+                                shuffle(allWords).forEach(word => {
+                                    const newSource = document.createElement('span');
+                                    newSource.className = 'drag-source'; newSource.draggable = true; newSource.textContent = word;
+                                    sourceContainer.appendChild(newSource);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('ordering-preview-container')) {
+                                quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                    const sourceContainer = item.querySelector('.ordering-source-container');
+                                    const targetContainer = item.querySelector('.ordering-target-container');
+                                    const allItemsForThisQuestion = Array.from(item.querySelectorAll('.ordering-item'));
+                                    shuffle(allItemsForThisQuestion).forEach(card => sourceContainer.appendChild(card));
+                                    targetContainer.className = 'ordering-target-container';
+                                    const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                                    if(feedbackIcon) feedbackIcon.textContent = '';
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('classification-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.classification-items-source');
+                                const allCards = Array.from(quizContainer.querySelectorAll('.classification-item-card'));
+                                allCards.forEach(card => {
+                                    card.classList.remove('correct', 'incorrect');
+                                });
+                                shuffle(allCards).forEach(card => {
+                                    sourceContainer.appendChild(card);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            }
+                        }
+                    } else if (checkAnswerBtn) {
+                        const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                        const studentAnswerEl = item.querySelector('.descriptive-student-answer');
+                        const studentAnswer = studentAnswerEl.value.trim();
+                        const feedbackEl = item.querySelector('.feedback');
+                        const retryBtnItem = item.querySelector('.retry-quiz-btn');
+                        const encodedAnswers = item.dataset.answers;
+                        const correctAnswers = JSON.parse(decodeURIComponent(atob(encodedAnswers)));
+                        if (!studentAnswer) { alert('답을 입력해주세요!'); return; }
+                        const isCorrect = correctAnswers.some(ans => ans.toLowerCase() === studentAnswer.toLowerCase());
+                        feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                        feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 훌륭해요! 👍' : '<strong>모범 정답:</strong> ' + correctAnswers.join(', ');
+                        studentAnswerEl.disabled = true;
+                        checkAnswerBtn.style.display = 'none';
+                        retryBtnItem.style.display = 'inline-block';
+                    } else if (checkFillInBtn) {
+                        const container = checkFillInBtn.closest('.fill-in-container, .table-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let attempts = parseInt(container.dataset.attempts || "0", 10);
+                        attempts++;
+                        container.dataset.attempts = attempts;
+                        let allCorrect = true;
+                        
+                        container.querySelectorAll('.blank-input-preview').forEach(inputEl => {
+                            const studentAnswer = inputEl.value.trim();
+                            const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
+                            if (studentAnswer && studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                inputEl.className = 'blank-input-preview correct';
+                            } else {
+                                inputEl.className = 'blank-input-preview incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            if (attempts < 2) {
+                                feedbackEl.textContent = '아쉬워요. 틀린 문제를 다시 풀어보세요!';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => input.value = '');
+                                return; 
+                            } else {
+                                feedbackEl.textContent = '정답을 확인하세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => {
+                                    input.value = decodeURIComponent(atob(input.dataset.answer));
+                                    input.disabled = true;
+                                });
+                            }
+                        }
+                        checkFillInBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkLineQuizBtn) {
+                        const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
+                        if (quizEl && quizEl.lineQuizInstance) {
+                            quizEl.lineQuizInstance.checkAnswers();
+                            checkLineQuizBtn.style.display = 'none';
+                            checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
+                        }
+                    } else if (checkOrderingBtn) {
+                        const container = checkOrderingBtn.closest('.ordering-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+
+                        container.querySelectorAll('.ordering-preview-item').forEach(item => {
+                            const targetContainer = item.querySelector('.ordering-target-container');
+                            const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                            const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                            const studentAnswer = studentItems.join(' // ');
+                            const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+
+                            if (studentAnswer === correctAnswer) {
+                                targetContainer.classList.remove('incorrect');
+                                targetContainer.classList.add('correct');
+                                if(feedbackIcon) feedbackIcon.textContent = '⭕';
+                            } else {
+                                targetContainer.classList.remove('correct');
+                                targetContainer.classList.add('incorrect');
+                                if(feedbackIcon) feedbackIcon.textContent = '❌';
+                                allCorrect = false;
+                            }
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. ❌ 표시된 문제를 다시 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+
+                        checkOrderingBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkDragDropBtn) {
+                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+                        container.querySelectorAll('.drop-target').forEach(target => {
+                            const studentAnswer = target.textContent.trim();
+                            const correctAnswer = target.dataset.answer;
+                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                target.className = 'drop-target correct';
+                            } else {
+                                target.className = 'drop-target incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkDragDropBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkClassificationBtn) {
+                        const container = checkClassificationBtn.closest('.classification-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true; 
+
+                        const sourceContainer = container.querySelector('.classification-items-source');
+                        if (sourceContainer.querySelector('.classification-item-card')) {
+                            allCorrect = false; 
+                        }
+
+                        container.querySelectorAll('.classification-category-bin').forEach(bin => {
+                            const categoryName = bin.querySelector('.category-drop-zone').dataset.categoryName;
+                            bin.querySelectorAll('.classification-item-card').forEach(card => {
+                                if (card.dataset.correctCategory.trim() === categoryName.trim()) {
+                                    card.classList.add('correct');
+                                    card.classList.remove('incorrect');
+                                } else {
+                                    card.classList.add('incorrect');
+                                    card.classList.remove('correct');
+                                    allCorrect = false; 
+                                }
+                            });
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정확하게 분류했습니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 잘못 분류되었거나, 분류하지 않은 항목이 있습니다.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkClassificationBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (youtubePlaceholder) {
+                        const videoId = youtubePlaceholder.dataset.videoId;
+                        if(videoId) {
+                            const iframeWrapper = document.createElement('div');
+                            iframeWrapper.className = 'youtube-iframe-wrapper';
+                            iframeWrapper.dataset.videoId = videoId;
+                            iframeWrapper.innerHTML = '<button class="youtube-close-btn" title="영상 닫기">&times;</button><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                            youtubePlaceholder.replaceWith(iframeWrapper);
+                        }
+                    } else {
+                        const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
+                        if (youtubeCloseBtn) {
+                            const iframeWrapper = youtubeCloseBtn.parentElement;
+                            const videoId = iframeWrapper.dataset.videoId;
+                            if(videoId) {
+                                const placeholder = document.createElement('div');
+                                placeholder.className = 'youtube-placeholder';
+                                placeholder.dataset.videoId = videoId;
+                                placeholder.innerHTML = '🎬<div class="youtube-placeholder-text">클릭하여 영상 보기</div>';
+                                iframeWrapper.replaceWith(placeholder);
+                            }
+                        } else {
+                            const oxChoiceBtn = e.target.closest('.ox-choices button');
+                            const mcqOptionDiv = e.target.closest('.mcq-preview-option');
+                            const explainable = e.target.closest('.explainable');
+                            if (oxChoiceBtn) {
+                                const item = oxChoiceBtn.closest('.ox-preview-item');
+                                const choicesDiv = item.querySelector('.ox-choices');
+                                const choice = oxChoiceBtn.dataset.choice;
+                                const answer = choicesDiv.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
+                                feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+                            } else if (mcqOptionDiv) {
+                                const item = mcqOptionDiv.closest('.mcq-preview-item');
+                                const controls = item.querySelector('.quiz-controls');
+                                if (controls) controls.style.display = 'flex';
+                                
+                                let attempts = parseInt(item.dataset.attempts, 10);
+                                if (attempts >= 2) return;
+                                attempts++;
+                                item.dataset.attempts = attempts;
+                                const choice = mcqOptionDiv.dataset.choice;
+                                const answer = item.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                const explanationEl = item.querySelector('.explanation');
+                                const isCorrect = (choice === answer);
+                                
+                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+                                mcqOptionDiv.classList.add('selected');
+
+                                if (isCorrect) {
+                                    mcqOptionDiv.classList.add('correct');
+                                    feedbackEl.className = 'feedback show correct';
+                                    feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요, 💯';
+                                    item.dataset.attempts = 2;
+                                    if(explanationEl) explanationEl.className = 'explanation show';
+                                } else {
+                                    mcqOptionDiv.classList.add('incorrect');
+                                    feedbackEl.className = 'feedback show incorrect';
+                                    if (attempts < 2) {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                    } else {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                        if(explanationEl) explanationEl.className = 'explanation show';
+                                    }
+                                }
+                                if(explanationEl && explanationEl.classList.contains('show')) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
+                                        if (decodedExplanation.trim()) explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                    } catch(err) {}
+                                }
+
+                                if (isCorrect || attempts >= 2) {
+                                    const retryButton = item.querySelector('.retry-quiz-btn');
+                                    if (retryButton) retryButton.style.display = 'inline-block';
+                                    
+                                    if(item.closest('.daily-quiz-preview')){
+                                        const newProverbButton = item.querySelector('.new-proverb-btn');
+                                        if(newProverbButton) newProverbButton.style.display = 'inline-block';
+                                    }
+                                }
+                            } else if (explainable) {
+                                explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
+                                explanationPopup.classList.add('show');
+
+                                const rect = explainable.getBoundingClientRect();
+                                const containerRect = previewContainer.getBoundingClientRect();
+
+                                const popupWidth = explanationPopup.offsetWidth;
+                                const containerWidth = previewContainer.clientWidth;
+
+                                explanationPopup.classList.remove('popup-align-right');
+
+                                // Calculate position relative to the container
+                                const topPos = rect.bottom - containerRect.top + 12;
+                                let leftPos = rect.left - containerRect.left;
+
+                                // Adjust for overflow
+                                if (leftPos + popupWidth > containerWidth - 20) {
+                                    leftPos = rect.right - containerRect.left - popupWidth;
+                                    explanationPopup.classList.add('popup-align-right');
+                                }
+
+                                explanationPopup.style.top = topPos + 'px';
+                                explanationPopup.style.left = leftPos + 'px';
+
+                                e.stopPropagation();
+                            }
+                        }
+                    }
+                });
+                document.addEventListener('click', e => { 
+                    if (!e.target.closest('.explainable') && !e.target.closest('.explanation-popup')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                explanationPopup.addEventListener('click', e => {
+                    if (e.target.classList.contains('popup-close-btn')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                
+                initializeAllInteractiveBlocks();
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise();
+                }
+                document.querySelectorAll('.tab-content').forEach(adjustBlankInputWidths);
+            });
+            </script>
+                </body>
+                </html>
