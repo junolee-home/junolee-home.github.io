@@ -5,6 +5,7 @@
                     <title>이용악_우라지오 가까운 항구에서</title>
                     <style>
 :root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
+::selection { background-color: rgba(210, 234, 255, 0.6); color: inherit; }
 .preview-top-bar { flex-direction: column; align-items: flex-start; gap: 8px; padding: 45px 25px 8px; }
 .view-mode-controls button { background-color: transparent; border: none; border-radius: 4px; padding: 4px 8px; font-size: 1.1em; cursor: pointer; opacity: 0.6; transition: 0.2s ease-in-out; }
 .view-mode-controls button:hover { opacity: 1; background-color: rgb(255, 255, 255); }
@@ -265,6 +266,7 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .text-preview-content-wrapper { padding: 15px; background-color: transparent; border: none; }
 .text-preview-content { background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); padding: 10px 12px; border-radius: 4px; line-height: 2.3; }
 .passage-marker-in-editor { display: block; background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-structure-in-editor { background-color: rgb(241, 243, 245); border: 1px dashed rgb(173, 181, 189); border-radius: 4px; padding: 2px 6px; cursor: pointer; white-space: nowrap; }
 .passage-marker { display: block; position: relative; margin-left: 3.5em; padding-left: 1.5em; border-left: 3px solid var(--border-color); margin-top: 1em; margin-bottom: 1em; }
 .passage-marker::before { content: "[" attr(data-symbol) "]"; position: absolute; top: 50%; transform: translateY(-50%); right: 100%; margin-right: 1em; font-weight: bold; color: var(--hover-color); }
 .interactive-cloze-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -512,6 +514,21 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .layout-horizontal .horizontal-item-top .timeline-content { bottom: 50%; margin-bottom: 40px; }
 .layout-horizontal .horizontal-item-bottom .timeline-date { bottom: 50%; margin-bottom: 20px; }
 .layout-horizontal .horizontal-item-bottom .timeline-content { top: 50%; margin-top: 40px; }
+.block[data-type="room-escape"] .block-title { background-color: rgb(176, 190, 197); }
+.room-escape-editor-content, .room-escape-preview-content { border: 2px dashed rgb(207, 216, 220); padding: 15px; margin-top: 10px; border-radius: 5px; background-color: rgb(236, 239, 241); min-height: 100px; }
+.room-escape-editor-content::before { content: "이곳에 다음 단계의 블록을 넣으세요"; color: rgb(120, 144, 156); font-weight: bold; display: block; text-align: center; }
+.room-escape-editor-content:has(.block)::before { display: none; }
+.room-escape-preview-locked { text-align: center; padding: 20px; border: 1px solid rgb(176, 190, 197); border-radius: 8px; background-color: rgb(250, 250, 250); }
+.room-escape-preview-locked input { padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; margin-right: 5px; }
+.room-escape-preview-locked.shake { animation: 0.5s ease 0s 1 normal none running shake; }
+@keyframes shake { 
+  0%, 100% { transform: translateX(0px); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.room-escape-preview-unlocked-message { text-align: center; font-weight: bold; color: var(--correct-color); padding: 10px; background-color: rgb(232, 245, 233); border-radius: 5px; margin-bottom: 15px; }
+.icon-grid button.room-escape-usable { position: relative; }
+.icon-grid button.room-escape-usable::after { content: "🗝️"; position: absolute; top: 2px; right: 4px; font-size: 0.6em; text-shadow: rgba(0, 0, 0, 0.4) 1px 1px 2px; }
 .classification-preview-container { margin-top: 15px; }
 .classification-categories-preview { display: flex; gap: 15px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
 .classification-category-bin { flex: 1 0 180px; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); }
@@ -626,7 +643,12 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <span class="text-preview-toggle-icon">▼</span>
                                     </summary>
                                     <div class="text-preview-content-wrapper">
-                                        <div class="text-preview-content"><div style="text-align: center;"><b><span style="font-size: 20px;">우리지오 가까운 항구에서 <font color="#0000ff">｜</font><span class="explainable" data-explanation="- &lt;b&gt;함경북도 경성&lt;/b&gt; 출생.&lt;div&gt;- &lt;b&gt;두만강 인근&lt;/b&gt;:&amp;nbsp;&amp;nbsp;그의 출생지는 두만강과 접한 북방 지역으로, 이는 그의 시에 나타나는 북방 정서와 깊은 관련이 있습니다.&lt;/div&gt;">백석</span></span></b></div><div><br></div><div><br></div><div>1️⃣</div><div><span class="explainable" data-explanation="- 청각적 이미지&lt;div&gt;- 삽살개: 고향을 떠올리게 함.&lt;/div&gt;">삽살개 짖는 소리</span></div><div><span class="explainable" data-explanation="힘든 환경"><span class="text-border-blue">눈보라</span></span>에 얼어붙은 <span class="explainable" data-explanation="시간적 배경"><span class="text-border-blue">섣달 그믐</span></span></div><div><span class="explainable" data-explanation="시간적 배경, 힘든 현실"><span class="text-border-blue">밤</span></span>이</div><div><span class="explainable" data-explanation="시간상으로 밤이 깊어감을 표현.&amp;nbsp;&lt;div&gt;💡관념의 시각화, 의인화&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;">얄궂은 손을 하도 곱게 흔들길래</span></div><div>술을 마시어<span class="explainable" data-explanation="고향에 대한 그리움"><span class="text-border-red"> 불타는 소원</span></span>이 <span class="explainable" data-explanation="- 공간적 배경.&lt;div&gt;- 우라지오의 항구. (우라지오 가까운 항구)&lt;/div&gt;">이 부두</span>로 왔다.</div><div><br></div><div><font color="#0000ff">📍1연: 고향에 대한 그리움으로 부두르 찾은 '나'&nbsp;</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></font></div><div><font color="#0000ff">🔸요약: 눈보라 치는 추운 <span class="revealable-cloze" data-answer="JUVCJUIwJUE0" data-hint="JUUzJTg1JTgy">ㅂ</span>에 화자는 <span class="revealable-cloze" data-answer="JUVCJUI2JTg4JUVEJTgzJTgwJUVCJThBJTk0JTIwJUVDJTg2JThDJUVDJTlCJTkwKCVFRCU5NiVBNSVFQyU4OCU5OCk=" data-hint="JUUzJTg1JTgyJUUzJTg1JThDJUUzJTg0JUI0JTIwJUUzJTg1JTg1JUUzJTg1JTg3">ㅂㅌㄴ ㅅㅇ</span> 때문에 술을 마시러 이 부두로 왔다.</font></div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;불타는 소원 = 고향에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span> (향수)</div><div><br></div><div><br></div><div>2️⃣</div><div>​<span class="explainable" data-explanation="삶의 여정, 과거의 삶(회고) ➡️ 화자가 살아온 고달픈 인생을 함축">걸어온 길가</span>에 <span class="explainable" data-explanation="아름다운 존재, 조그마한 행복, 적은 위안">찔레꽃 한 송이</span> 없었대도</div><div><span style="background-color: rgb(255, 250, 205);"><span class="text-highlight-red">나</span>의 <span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 살아온 자신을 비유&lt;/div&gt;"><span class="text-highlight-red">아롱범</span></span></span><span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 헤쳐 온 자기 자신에 대한 비유&lt;/div&gt;"></span>은</div><div><span class="explainable" data-explanation="&lt;div&gt;- 반성, 후회 ❌. 당당함.&lt;/div&gt;- 자신이 살아온 삶에 대해 후회 없음, 당당함의 표현&lt;div&gt;💡자옥: 발자국. 자신이 걸어온 삶의 발자취&lt;/div&gt;">자옥 자옥을 뉘우칠 줄 모른다</span>.</div><div>어깨에 쌓여도 <span class="explainable" data-explanation="삶의 무게"><span class="text-border-blue">하얀 눈</span></span>이 <span class="explainable" data-explanation="의연함">무겁지 않고나</span>.</div><div>​</div><div><div><font color="#0000ff">📍2연: 살아온 삶에 대한 당당함. 고달픈 현실에 의연히 대처하며 후회 없이 살아온 삶</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></font></div></div><div><br></div><div><br></div><div><br></div><div>3️⃣</div><div>​철없는 <span class="text-border-green">누나</span> <span class="explainable" data-explanation="곱슬머리를">고수머릴</span>랑 어루만지며</div><div><span class="explainable" data-explanation="&lt;div&gt;- 어린 시절&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;화자의 동경의 공간&lt;/span&gt;. 이국(안 가 본 이국에 대한 동경의 공간)&lt;/div&gt;- 어린 시절 고향에서 말로만 들었던 우리지오.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">우라지오</span>의 이야길 캐고 싶던 밤이면</div><div><span class="text-border-green">울어머닌</span></div><div>​서투른 <span class="explainable" data-explanation="&lt;div&gt;&lt;span style=&quot;font-size: 1em;&quot;&gt;▪️러시아 사람.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡 당시 함경도 등 우리나라 북부 지방에서 러시아 사람들을 가리켜 부르던 방언으로, 약간 낮추어 부르는 뉘앙스를 가지고 있습니다.&lt;span style=&quot;font-size: 1em;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡그 어원은 중국어 '마오즈(毛子, máozi)'에서 온 것으로 알려져 있습니다. '털(毛)이 많은 사람'이라는 뜻으로, 서양인의 신체적 특징을 묘사한 말입니다.&lt;/div&gt;">마우재</span> 말도 들려주셨지.</div><div><span class="explainable" data-explanation="졸듯졸듯 하면서 이야기를 들으려 했던">졸음졸음 귀 밝히는</span> 누이 잠들 <font color="#800080">때꺼정</font></div><div><span class="explainable" data-explanation="- 시간의 경과.&amp;nbsp;&lt;div&gt;- 밤이 깊어질 때까지(늦은 밤까지)&lt;/div&gt;&lt;div&gt;- 활유법&lt;/div&gt;&lt;div&gt;- 깜빡: 음성상징어&lt;/div&gt;">등불이 깜박 저절로 눈감을 <font color="#800080">때꺼정</font>​</span><br><br></div><div><br></div><div><font color="#0000ff">📍</font><span style="color: rgb(0, 0, 255);">3연: (동경, 호기심의 공간이었던) 우라지오 이야기에 귀 기울이던 어린 시절의 밤.</span></div><div><div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span></span></span></span></div></div><div><span style="color: rgb(0, 0, 255);">🔸요약: <span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE4JUI4JUVCJThCJTg4" data-hint="JUUzJTg1JTg3JUUzJTg1JTgxJUUzJTg0JUI0">ㅇㅁㄴ</span>가 우라지오에 대해 동경하던&nbsp; <span class="revealable-cloze" data-answer="JUVCJTg4JTg0JUVCJTgyJTk4" data-hint="JUUzJTg0JUI0JUUzJTg0JUI0">ㄴㄴ</span>에게 우라지오에 대해 <span class="revealable-cloze" data-answer="JUVDJTlEJUI0JUVDJTk1JUJDJUVBJUI4JUIw" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3JUUzJTg0JUIx">ㅇㅇㄱ</span>를 들려주시는 장면</span></div><div><span style="color: rgb(0, 0, 255);">🔸문장 구조 반복(~ 때꺼정) → 운율&nbsp;</span></div></div><div>​<span style="color: rgb(0, 0, 255);">🔸어린 시절(회상, 가족공동체 모습) ↔️ 현재(혼자)</span></div><div><br></div><div><br></div><div><br></div><div>​4️⃣</div><div>​다시 내게로 <span class="explainable" data-explanation="헤치고 들어오는">헤여드는</span></div><div>어머니의 입김이 <span class="explainable" data-explanation="아름답게 떠오르는 과거의 기억">무지개</span>처럼<span class="explainable" data-explanation="어머니의 다정함과 따스한 사랑"> 어질다</span></div><div>나는 <span class="explainable" data-explanation="어머니가 들려주던 이야기">그 모두</span>를 살뜰히 담았으니</div><div><span class="explainable" data-explanation="🔸새 = 어린 시절 우라지오를 동경하던 화자의 기억들.">어린 기억의 새</span>야 <span class="explainable" data-explanation="수수하면서도 마음을 끄는 맛이 있다. (긍정적 의미임)">귀성스럽다</span></div><div><span class="explainable" data-explanation="✨적극적으로 과거 회상('털라'가 주는 동적 이미지 → 적극적 의미)&lt;div&gt;💡 7연과 연결해서 해석할 것.&lt;div&gt;💡가만히 있지 말고 어린 시절 우라지오에 대한 상상의 날개를 펴던 것처럼 고향으로 날아갈 수 있게 날개를 펼쳐라.&lt;/div&gt;&lt;div&gt;💡감각적(시각적)인 표현&lt;/div&gt;&lt;div&gt;📍다음과 같이 해석해서 이해해 보세요.&lt;br&gt;&quot;더 이상 무기력하게 상황이 나아지기만을 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;기다리지 마세요.&lt;/span&gt; &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;당신 마음속 깊은 곳에 아직 남아있는, 비록 연약하고 작을지라도(=마음의 은줄)&lt;/span&gt; 소중한 희망과 가능성을 스스로 일깨우세요. &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;거창한 시작이 아니어도 괜찮습니다. 그 작은 희망의 날개(작은 날개)&lt;/span&gt;를 &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;툭툭 털어보는 아주 작은 시도(새는 날기 전에 날개부터 텁니다)&lt;/span&gt;부터 지금 바로 시작하세요.&quot;&lt;/div&gt;&lt;/div&gt;">기다리지 말고 마음의 은줄에 작은 날개를 털라.</span></div><div><br></div><div><div><font color="#0000ff">📍4연: 어린 시절 추억을 회상하는 즐거움</font></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span></span></span></span></div></div><div><br></div><div><br></div><div><br></div><div>5️⃣</div><div><span class="explainable" data-explanation="- 우라지오 가까운 항구에 서 있는 현재의 상황&lt;div&gt;✨ (부정적) 현실 인식&lt;/div&gt;">드나드는 배 하나 없는 <span class="text-border-blue">지금</span></span></div><div>부두에 호젓 선 나는 <span class="explainable" data-explanation="&lt;div&gt;- 『멧비둘기(자유로움) ↔ 화자』의 대비.&lt;/div&gt;- 자유롭게 고향으로 가고 싶은 화자의 마음을 담아낸 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;객관적 상관물&lt;/span&gt;.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">멧비둘기</span> 아니건만</div><div><span class="explainable" data-explanation="반복 ➡️ 그리움 심화">날고 싶어 날고 싶어.</span></div><div><span class="explainable" data-explanation="기억 속에서조차 가물가물한 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;고향&lt;/span&gt;.&lt;div&gt;고향을 떠난 지 오래되었음을 암시.&lt;/div&gt;">머리에 어슴푸레 그리어진 <span class="text-highlight-red">그곳</span></span></div><div><span class="explainable" data-explanation="📍 고향으로 갈 수 없는 자신의 처지에 대한 상황 인식. ➡️ &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;돌아갈 수 ❌&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;절망감,&amp;nbsp;&lt;/span&gt;&lt;div&gt;📍 얼음이 두껍다 ➡️ 배가 출항할 수&amp;nbsp;❌&amp;nbsp;➡️ 고향으로 돌아갈 수&amp;nbsp;❌ ➡️ 절망&lt;/div&gt;">우라지오의 바다는 얼음이 두껍다.</span></div><div><br></div><div><span style="color: rgb(0, 0, 255);">📍5연: 귀향에 대한 소망과 절망</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div>6️⃣</div><div><span class="explainable" data-explanation="📍등대: 한 자리에 고정. 이동❌, = 화자의 처지 투영된 대상&lt;div&gt;📍고향을 그리지만 갈 수 없는 화자 자신의 감정이 이입된 존재. 객관적 상관물&lt;/div&gt;&lt;div&gt;📍등대(한 자리에 고정) ↔️ 멧비둘기(자유로움)&lt;/div&gt;">등대</span>와 나와</div><div>서로 속삭일 수 없는 생각에 잠기고</div><div><span class="explainable" data-explanation="💡'밤'의 기능: 고향에 돌아가고 싶은 마음을 더욱 떠올리게 하는 시간">밤</span>은 <span class="explainable" data-explanation="고향에 돌아가고 싶은 화자의 꿈과 소망">얄팍한 꿈</span>을 끝없이 꾀인다.</div><div><span class="explainable" data-explanation="돌아갈 수 ❌">가도오도</span> 못할 <span class="explainable" data-explanation="명사 종결 ➡️ 시적 여운, 안타까움 강조">우라지오​.</span></div><div><br></div><div>​<span style="color: rgb(0, 0, 255);">📍6연:고향에 그리움과 갈 수 없다는 절망감</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div>&nbsp; &nbsp; &nbsp; &nbsp;</div></div>
+                                        <div class="text-preview-content"><div style="text-align: center;"><b><span style="font-size: 20px;">우리지오 가까운 항구에서 <font color="#0000ff">｜</font><span class="explainable" data-explanation="- &lt;b&gt;함경북도 경성&lt;/b&gt; 출생.&lt;div&gt;- &lt;b&gt;두만강 인근&lt;/b&gt;:&amp;nbsp;&amp;nbsp;그의 출생지는 두만강과 접한 북방 지역으로, 이는 그의 시에 나타나는 북방 정서와 깊은 관련이 있습니다.&lt;/div&gt;">백석</span></span></b></div><div><br></div><div><br></div><div>1️⃣</div><div><span class="explainable" data-explanation="- 청각적 이미지&lt;div&gt;- 삽살개: 고향을 떠올리게 함.&lt;/div&gt;">삽살개 짖는 소리</span></div><div><span class="explainable" data-explanation="힘든 환경"><span class="text-border-blue">눈보라</span></span>에 얼어붙은 <span class="explainable" data-explanation="시간적 배경"><span class="text-border-blue">섣달 그믐</span></span></div><div><span class="explainable" data-explanation="시간적 배경, 힘든 현실"><span class="text-border-blue">밤</span></span>이</div><div><span class="explainable" data-explanation="시간상으로 밤이 깊어감을 표현.&amp;nbsp;&lt;div&gt;💡관념의 시각화, 의인화&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;">얄궂은 손을 하도 곱게 흔들길래</span></div><div>술을 마시어<span class="explainable" data-explanation="고향에 대한 그리움"><span class="text-border-red"> 불타는 소원</span></span>이 <span class="explainable" data-explanation="- 공간적 배경.&lt;div&gt;- 우라지오의 항구. (우라지오 근처의 항구)&lt;/div&gt;">이 부두</span>로 왔다.</div><div><br></div><div><font color="#0000ff">📍1연: 고향에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>으로 부두를 찾은 '나'&nbsp;</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span></span></span></font></div><div><font color="#0000ff">🔸요약: 눈보라 치는 추운 <span class="revealable-cloze" data-answer="JUVCJUIwJUE0" data-hint="JUUzJTg1JTgy">ㅂ</span>에 술을 마신 화자는 <span class="revealable-cloze" data-answer="JUVCJUI2JTg4JUVEJTgzJTgwJUVCJThBJTk0JTIwJUVDJTg2JThDJUVDJTlCJTkwKCVFRCU5NiVBNSVFQyU4OCU5OCk=" data-hint="JUUzJTg1JTgyJUUzJTg1JThDJUUzJTg0JUI0JTIwJUUzJTg1JTg1JUUzJTg1JTg3">ㅂㅌㄴ ㅅㅇ</span> 에 이끌려 부두로 왔다.</font></div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;불타는 소원 = 고향에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span> (향수)</div><div><br></div><div><br></div><div>2️⃣</div><div>​<span class="explainable" data-explanation="삶의 여정, 과거의 삶(회고) ➡️ 화자가 살아온 고달픈 인생을 함축">걸어온 길가</span>에 <span class="explainable" data-explanation="아름다운 존재, 조그마한 행복, 적은 위안">찔레꽃 한 송이</span> 없었대도</div><div><span style="background-color: rgb(255, 250, 205);"><span class="text-highlight-red">나</span>의 <span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 살아온 자신을 비유&lt;/div&gt;"><span class="text-highlight-red">아롱범</span></span></span><span class="explainable" data-explanation="아롱무늬의 범=표범=시적 화자&lt;div&gt;💡척박하고 고통스러운 현실을 당당하게 헤쳐 온 자기 자신에 대한 비유&lt;/div&gt;"></span>은</div><div><span class="explainable" data-explanation="&lt;div&gt;- 반성, 후회 ❌. 당당함.&lt;/div&gt;- 자신이 살아온 삶에 대해 후회 없음, 당당함의 표현&lt;div&gt;💡자옥: 발자국. 자신이 걸어온 삶의 발자취&lt;/div&gt;">자옥 자옥을 뉘우칠 줄 모른다</span>.</div><div>어깨에 쌓여도 <span class="explainable" data-explanation="삶의 무게"><span class="text-border-blue">하얀 눈</span></span>이 <span class="explainable" data-explanation="의연함">무겁지 않고나</span>.</div><div>​</div><div><div><font color="#0000ff">📍2연: 살아온 삶에 대한 <span class="revealable-cloze" data-answer="JUVCJThCJUI5JUVCJThCJUI5JUVEJTk1JUE4" data-hint="JUUzJTg0JUI3JUUzJTg0JUI3JUUzJTg1JThF">ㄷㄷㅎ</span>. 고달픈 현실에 <span class="revealable-cloze" data-answer="JUVDJTlEJTk4JUVDJTk3JUIwJUVEJTlFJTg4" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3JUUzJTg1JThF">ㅇㅇㅎ</span> 대처하며 후회 없이 살아온 삶</font></div><div><font color="#0000ff">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span></span></span></font></div></div><div><br></div><div><br></div><div><br></div><div>3️⃣</div><div>​철없는 <span class="text-border-green">누나</span> <span class="explainable" data-explanation="곱슬머리를">고수머릴</span>랑 어루만지며</div><div><span class="explainable" data-explanation="&lt;div&gt;- 어린 시절&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 250, 205);&quot;&gt;화자의 동경의 공간&lt;/span&gt;. 이국(안 가 본 이국에 대한 동경의 공간)&lt;/div&gt;- 어린 시절 고향에서 말로만 들었던 우리지오.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">우라지오</span>의 이야길 캐고 싶던 밤이면</div><div><span class="text-border-green">울어머닌</span></div><div>​서투른 <span class="explainable" data-explanation="&lt;div&gt;&lt;span style=&quot;font-size: 1em;&quot;&gt;▪️러시아 사람.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡 당시 함경도 등 우리나라 북부 지방에서 러시아 사람들을 가리켜 부르던 방언으로, 약간 낮추어 부르는 뉘앙스를 가지고 있습니다.&lt;span style=&quot;font-size: 1em;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;💡그 어원은 중국어 '마오즈(毛子, máozi)'에서 온 것으로 알려져 있습니다. '털(毛)이 많은 사람'이라는 뜻으로, 서양인의 신체적 특징을 묘사한 말입니다.&lt;/div&gt;">마우재</span> 말도 들려주셨지.</div><div><span class="explainable" data-explanation="졸듯졸듯 하면서 이야기를 들으려 했던">졸음졸음 귀 밝히는</span> 누이 잠들 <font color="#800080">때꺼정</font></div><div><span class="explainable" data-explanation="- 시간의 경과.&amp;nbsp;&lt;div&gt;- 밤이 깊어질 때까지(늦은 밤까지)&lt;/div&gt;&lt;div&gt;- 활유법&lt;/div&gt;&lt;div&gt;- 깜빡: 음성상징어&lt;/div&gt;">등불이 깜박 저절로 눈감을 <font color="#800080">때꺼정</font>​</span><br><br></div><div><br></div><div><font color="#0000ff">📍</font><span style="color: rgb(0, 0, 255);">3연: (동경, 호기심의 공간이었던) <span class="revealable-cloze" data-answer="JUVDJTlBJUIwJUVCJTlEJUJDJUVDJUE3JTgwJUVDJTk4JUE0" data-hint="JUUzJTg1JTg3JUUzJTg0JUI5JUUzJTg1JTg4JUUzJTg1JTg3">ㅇㄹㅈㅇ</span> 이야기에 귀 기울이던 <span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE2JUIw" data-hint="JUUzJTg1JTg3JUUzJTg0JUI5">ㅇㄹ</span> 시절의 밤.</span></div><div><div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span></span></span></span></div></div><div><span style="color: rgb(0, 0, 255);">🔸요약: <span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE4JUI4JUVCJThCJTg4" data-hint="JUUzJTg1JTg3JUUzJTg1JTgxJUUzJTg0JUI0">ㅇㅁㄴ</span>가 우라지오에 대해 동경하던&nbsp; <span class="revealable-cloze" data-answer="JUVCJTg4JTg0JUVCJTgyJTk4" data-hint="JUUzJTg0JUI0JUUzJTg0JUI0">ㄴㄴ</span>에게 우라지오에 대해 <span class="revealable-cloze" data-answer="JUVDJTlEJUI0JUVDJTk1JUJDJUVBJUI4JUIw" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3JUUzJTg0JUIx">ㅇㅇㄱ</span>를 들려주시는 장면</span></div><div><span style="color: rgb(0, 0, 255);">🔸문장 구조 반복(~ 때꺼정) → 운율</span></div><div><span style="color: rgb(0, 0, 255);">&nbsp;&nbsp;</span><span style="color: rgb(0, 0, 255);">
+                            <div style="display: inline-block; min-width: 200px; margin: 5px 0; vertical-align: middle; padding: 10px; background-color: #f1f3f5; border-radius: 6px; box-sizing: border-box;">
+                                
+                                <table style="border-collapse: separate; border-spacing: 8px 8px;"><tbody><tr><td style="width: 50%; word-break: break-all; border: 1px solid #ced4da; border-radius: 4px; padding: 8px 10px; background-color: #fff; line-height: 1.4; vertical-align: top;">어린 시절(과거 회상)</td><td style="background: transparent; vertical-align: middle; text-align: center; font-weight: bold; font-size: 1.2em; color: #495057; width: 40px;">↔</td><td style="width: 50%; word-break: break-all; border: 1px solid #ced4da; border-radius: 4px; padding: 8px 10px; background-color: #fff; line-height: 1.4; vertical-align: top;">현재</td></tr><tr><td style="width: 50%; word-break: break-all; border: 1px solid #ced4da; border-radius: 4px; padding: 8px 10px; background-color: #fff; line-height: 1.4; vertical-align: top;">가족공동체 모습<br>(엄마, 누나, 나)</td><td style="background: transparent; vertical-align: middle; text-align: center; font-weight: bold; font-size: 1.2em; color: #495057; width: 40px;">&nbsp;</td><td style="width: 50%; word-break: break-all; border: 1px solid #ced4da; border-radius: 4px; padding: 8px 10px; background-color: #fff; line-height: 1.4; vertical-align: top;">가족공동체 해체<br>(혼자  ←호젓 선)</td></tr></tbody></table>
+                            </div>
+                        &nbsp;</span></div></div><div><br></div><div><br></div><div><br></div><div>​4️⃣</div><div>​다시 내게로 <span class="explainable" data-explanation="헤치고 들어오는">헤여드는</span></div><div>어머니의 입김이 <span class="explainable" data-explanation="아름답게 떠오르는 과거의 기억">무지개</span>처럼<span class="explainable" data-explanation="어머니의 다정함과 따스한 사랑"> 어질다</span></div><div>나는 <span class="explainable" data-explanation="어머니가 들려주던 이야기">그 모두</span>를 살뜰히 담았으니</div><div><span class="explainable" data-explanation="🔸새 = 어린 시절 우라지오를 동경하던 화자의 기억들.">어린 기억의 새</span>야 <span class="explainable" data-explanation="수수하면서도 마음을 끄는 맛이 있다. (긍정적 의미임)">귀성스럽다</span></div><div><span class="explainable" data-explanation="✨적극적으로 과거 회상('털라'가 주는 동적 이미지 → 적극적 의미)&lt;div&gt;💡 7연과 연결해서 해석할 것.&lt;div&gt;💡가만히 있지 말고 어린 시절 우라지오에 대한 상상의 날개를 펴던 것처럼 고향으로 날아갈 수 있게 날개를 펼쳐라.&lt;/div&gt;&lt;div&gt;💡감각적(시각적)인 표현&lt;/div&gt;&lt;div&gt;📍다음과 같이 해석해서 이해해 보세요.&lt;br&gt;&quot;더 이상 무기력하게 상황이 나아지기만을 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;기다리지 마세요.&lt;/span&gt; &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;당신 마음속 깊은 곳에 아직 남아있는, 비록 연약하고 작을지라도(=마음의 은줄)&lt;/span&gt; 소중한 희망과 가능성을 스스로 일깨우세요. &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;거창한 시작이 아니어도 괜찮습니다. 그 작은 희망의 날개(작은 날개)&lt;/span&gt;를 &lt;span style=&quot;background-color: rgb(210, 234, 255);&quot;&gt;툭툭 털어보는 아주 작은 시도(새는 날기 전에 날개부터 텁니다)&lt;/span&gt;부터 지금 바로 시작하세요.&quot;&lt;/div&gt;&lt;/div&gt;">기다리지 말고 마음의 은줄에 작은 날개를 털라.</span></div><div><br></div><div><div><font color="#0000ff">📍4연: 어린 시절 추억을 회상하는 즐거움</font></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span></span></span></span></div></div><div><br></div><div><br></div><div><br></div><div>5️⃣</div><div><span class="explainable" data-explanation="- 우라지오 가까운 항구에 서 있는 현재의 상황&lt;div&gt;✨ (부정적) 현실 인식&lt;/div&gt;">드나드는 배 하나 없는 <span class="text-border-blue">지금</span></span></div><div>부두에 호젓 선 나는 <span class="explainable" data-explanation="&lt;div&gt;- 『멧비둘기(자유로움) ↔ 화자』의 대비.&lt;/div&gt;- 자유롭게 고향으로 가고 싶은 화자의 마음을 담아낸 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;객관적 상관물&lt;/span&gt;.&lt;div&gt;&lt;br&gt;&lt;/div&gt;">멧비둘기</span> 아니건만</div><div><span class="explainable" data-explanation="반복 ➡️ 그리움 심화">날고 싶어 날고 싶어.</span></div><div><span class="explainable" data-explanation="기억 속에서조차 가물가물한 &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;고향&lt;/span&gt;.&lt;div&gt;고향을 떠난 지 오래되었음을 암시.&lt;/div&gt;">머리에 어슴푸레 그리어진 <span class="text-highlight-red">그곳</span></span></div><div><span class="explainable" data-explanation="📍 고향으로 갈 수 없는 자신의 처지에 대한 상황 인식. ➡️ &lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;돌아갈 수 ❌&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;background-color: rgb(255, 214, 214);&quot;&gt;절망감,&amp;nbsp;&lt;/span&gt;&lt;div&gt;📍 얼음이 두껍다 ➡️ 배가 출항할 수&amp;nbsp;❌&amp;nbsp;➡️ 고향으로 돌아갈 수&amp;nbsp;❌ ➡️ 절망&lt;/div&gt;">우라지오의 바다는 얼음이 두껍다.</span></div><div><br></div><div><span style="color: rgb(0, 0, 255);">📍5연: 귀향에 대한 소망과 절망</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div><span style="color: rgb(0, 0, 255);"><br></span></div><div>6️⃣</div><div><span class="explainable" data-explanation="📍등대: 한 자리에 고정. 이동❌, = 화자의 처지 투영된 대상&lt;div&gt;📍고향을 그리지만 갈 수 없는 화자 자신의 감정이 이입된 존재. 객관적 상관물&lt;/div&gt;&lt;div&gt;📍등대(한 자리에 고정) ↔️ 멧비둘기(자유로움)&lt;/div&gt;">등대</span>와 나와</div><div>서로 속삭일 수 없는 생각에 잠기고</div><div><span class="explainable" data-explanation="💡'밤'의 기능: 고향에 돌아가고 싶은 마음을 더욱 떠올리게 하는 시간">밤</span>은 <span class="explainable" data-explanation="고향에 돌아가고 싶은 화자의 꿈과 소망">얄팍한 꿈</span>을 끝없이 꾀인다.</div><div><span class="explainable" data-explanation="돌아갈 수 ❌">가도오도</span> 못할 <span class="explainable" data-explanation="명사 종결 ➡️ 시적 여운, 안타까움 강조">우라지오​.</span></div><div><br></div><div>​<span style="color: rgb(0, 0, 255);">📍6연:고향에 그리움과 갈 수 없다는 절망감</span></div><div><span style="color: rgb(0, 0, 255);">🔸시간:&nbsp; <span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></span><span style="color: rgb(0, 0, 255);"></span></div><div>&nbsp; &nbsp; &nbsp; &nbsp;</div></div>
                                     </div>
                                 </details></div><div class="block active" data-type="text"><details class="text-preview-container" open="" data-attempts="0">
                                     <summary class="text-preview-summary">
@@ -634,14 +656,14 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <span class="text-preview-toggle-icon">▼</span>
                                     </summary>
                                     <div class="text-preview-content-wrapper">
-                                        <div class="text-preview-content"><div><b><span style="font-size: 17px;">📍화자의 현재 상황</span></b></div>🔸 공간적 배경: 러시아 블라디보스토크( <span class="interactive-cloze-container" data-answer="JUVDJTlBJUIwJUVCJTlEJUJDJUVDJUE3JTgwJUVDJTk4JUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">우라지오</span><span class="cloze-choice">아우라지</span></span></span> ) 근처의 항구 <span class="revealable-cloze" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>에 <span class="revealable-cloze" data-answer="JUVEJTk5JTgwJUVCJUExJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 서 있음.<br>🔸 시간적 배경: 눈보라가 몰아치는 <span class="interactive-cloze-container" data-answer="JUVDJTg0JUEzJUVCJThCJUFDJTIwJUVBJUI3JUI4JUVCJUFGJTkwJUVCJUIwJUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">새해 아침</span><span class="cloze-choice">섣달 그믐밤</span><span class="cloze-choice">동지 보름</span></span></span><br>🔸 정서: 고향과 가족에 대한 깊은 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 함께, 현재 처한 <span class="revealable-cloze" data-answer="JUVBJUIzJUEwJUVCJUE2JUJE" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5">ㄱㄹ</span>되고 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실에 대한 안타까움.<br>🔸 처지: 드나드는 배 한 척 없는 얼어붙은 바다처럼, 고향으로 돌아갈 수도, 이곳에서 벗어날 수도 없는 '<span class="revealable-cloze" data-answer="JUVBJUIwJTgwJUVCJThGJTg0JUVDJTk4JUE0JUVCJThGJTg0" data-hint="JUUzJTg0JUIxJUUzJTg0JUI3JUUzJTg1JTg3JUUzJTg0JUI3">ㄱㄷㅇㄷ</span> 못할' 막막한 상황에 놓여 있음.<br>🔸 태도: 지난 삶에 대한 후회 없이 묵묵히 살아온 자신의 강인함을 드러내지만, 어린 시절의 따뜻했던 추억을 <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVDJTgzJTgx" data-hint="JUUzJTg1JThFJUUzJTg1JTg1">ㅎㅅ</span>하며 고향에 대한 소망을 간절히 품고 있음.<br><div><div><br></div><div>📍<b>과거 회상 (어린 시절의 고향)</b></div></div><div><div><div>🔸화자: 어린 시절, 철없는 누이와 함께 어머니가 들려주는 '우라지오 이야기'와 '마우재 말(러시아 말)'을 들으며 보냈던 따뜻한 밤을 회상함.</div><div>🔸정서: 어머니의 다정했던 입김, 어린 시절의 기억들이 무지개처럼 어질고 소중하게 남아 있음.</div><div>🔸의미: 이 기억들은 현재의 고립되고 힘겨운 현실 속에서 화자에게 유일한 위로이자 고향에 대한 그리움을 더욱 깊게 하는 매개체 역할을 함.</div></div><div><br></div><div><div>📍<b>시적 상징 및 표현</b></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUE5JUE3JUVCJUI5JTg0JUVCJTkxJTk4JUVBJUI4JUIw">: 자유롭게 날아다니는 멧비둘기와 달리, 배가 없어 갈 수 없는 화자의 처지를 부각하며 고향으로 날아가고 싶은 소망을 드러내는 객관적 상관물.</div><div>🔸<b>얼어붙은 우라지오 바다</b>: 고향으로 돌아갈 수 없는 화자의 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실과 고립감을 상징.</div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw">: 화자가 현재 서 있는 공간이자, 고향으로 가기 위한 수단인 '배'가 있어야 하는 장소. 배가 없다는 것은 고향으로 갈 수 없는 현실을 강조.</div></div></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUIwJUE0">: 어린 시절의 따뜻했던 밤과 현재의 고립되고 절망적인 밤으로 대비되며, 과거 회상의 매개체 역할.&nbsp;&nbsp;</div></div>
+                                        <div class="text-preview-content"><div><b><span style="font-size: 17px;">📍화자의 현재 상황</span></b></div>🔸 공간적 배경: 러시아 블라디보스토크( <span class="interactive-cloze-container" data-answer="JUVDJTlBJUIwJUVCJTlEJUJDJUVDJUE3JTgwJUVDJTk4JUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">아우라지</span><span class="cloze-choice">우라지오</span></span></span> ) 근처의 항구 <span class="revealable-cloze" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>에 <span class="revealable-cloze" data-answer="JUVEJTk5JTgwJUVCJUExJTlD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 서 있음.<br>🔸 시간적 배경: 눈보라가 몰아치는 <span class="interactive-cloze-container" data-answer="JUVDJTg0JUEzJUVCJThCJUFDJTIwJUVBJUI3JUI4JUVCJUFGJTkwJUVCJUIwJUE0"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">동지 보름</span><span class="cloze-choice">새해 아침</span><span class="cloze-choice">섣달 그믐밤</span></span></span><br>🔸 정서: 고향과 가족에 대한 깊은 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 함께, 현재 처한 <span class="revealable-cloze" data-answer="JUVBJUIzJUEwJUVCJUE2JUJE" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5">ㄱㄹ</span>되고 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실에 대한 안타까움.<br>🔸 처지: 드나드는 배 한 척 없는 얼어붙은 바다처럼, 고향으로 돌아갈 수도, 이곳에서 벗어날 수도 없는 '<span class="revealable-cloze" data-answer="JUVBJUIwJTgwJUVCJThGJTg0JUVDJTk4JUE0JUVCJThGJTg0" data-hint="JUUzJTg0JUIxJUUzJTg0JUI3JUUzJTg1JTg3JUUzJTg0JUI3">ㄱㄷㅇㄷ</span> 못할' 막막한 상황에 놓여 있음.<br>🔸 태도: 지난 삶에 대한 후회 없이 묵묵히 살아온 자신의 강인함을 드러내지만, 어린 시절의 따뜻했던 추억을 <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVDJTgzJTgx" data-hint="JUUzJTg1JThFJUUzJTg1JTg1">ㅎㅅ</span>하며 고향에 대한 소망을 간절히 품고 있음.<br><div><div><br></div><div>📍<b>과거 회상 (어린 시절의 고향)</b></div></div><div><div><div>🔸화자: 어린 시절, 철없는 누이와 함께 어머니가 들려주는 '우라지오 이야기'와 '마우재 말(러시아 말)'을 들으며 보냈던 따뜻한 밤을 회상함.</div><div>🔸정서: 어머니의 다정했던 입김, 어린 시절의 기억들이 무지개처럼 어질고 소중하게 남아 있음.</div><div>🔸의미: 이 기억들은 현재의 고립되고 힘겨운 현실 속에서 화자에게 유일한 위로이자 고향에 대한 그리움을 더욱 깊게 하는 매개체 역할을 함.</div></div><div><br></div><div><div>📍<b>시적 상징 및 표현</b></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUE5JUE3JUVCJUI5JTg0JUVCJTkxJTk4JUVBJUI4JUIw">: 자유롭게 날아다니는 멧비둘기와 달리, 배가 없어 갈 수 없는 화자의 처지를 부각하며 고향으로 날아가고 싶은 소망을 드러내는 객관적 상관물.</div><div>🔸<b>얼어붙은 우라지오 바다</b>: 고향으로 돌아갈 수 없는 화자의 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlE" data-hint="JUUzJTg1JTg4JUUzJTg1JTgx">ㅈㅁ</span>적인 현실과 고립감을 상징.</div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUI2JTgwJUVCJTkxJTkw">: 화자가 현재 서 있는 공간이자, 고향으로 가기 위한 수단인 '배'가 있어야 하는 장소. 배가 없다는 것은 고향으로 갈 수 없는 현실을 강조.</div></div></div><div>🔸<input type="text" class="blank-input-preview" data-answer="JUVCJUIwJUE0">: 어린 시절의 따뜻했던 밤과 현재의 고립되고 절망적인 밤으로 대비되며, 과거 회상의 매개체 역할.&nbsp;&nbsp;</div></div>
                                     </div>
                         <div class="quiz-controls" style="text-align: right; margin-top: 10px; padding: 0 15px 15px;">
                             <span class="feedback"></span>
                             <button class="check-fill-in-btn">정답 확인</button>
                             <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                         </div>
-                                </details></div><div class="block active" data-type="flowchart"><div class="block-title">➔ 시상 전개</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style=""><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span><span class="cloze-choice">과거</span></span></span></div></div><div class="flowchart-preview-node">겨울밤, 우라지오 가까운 부두</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span></div></div><div class="flowchart-preview-node">어린 시절 회상</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">미래</span><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span></span></span></span></div></div><div class="flowchart-preview-node">절망적. 귀향❌</div></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1760594188973"><h2 style="display:none;">핵심정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td>갈래</td><td>자유시, 서정시</td></tr><tr><td>성격</td><td><span class="revealable-cloze" data-answer="JUVDJTk1JUEwJUVDJTgzJTgx" data-hint="JUUzJTg1JTg3JUUzJTg1JTg1">ㅇㅅ</span>적, <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVBJUIzJUEw" data-hint="JUUzJTg1JThFJUUzJTg0JUIx">ㅎㄱ</span>적, 서정적</td></tr><tr><td>제재</td><td><span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE2JUIwJTIwJUVDJThCJTlDJUVDJUEwJTg4" data-hint="JUUzJTg1JTg3JUUzJTg0JUI5JTIwJUUzJTg1JTg1JUUzJTg1JTg4">ㅇㄹ ㅅㅈ</span>의 추억과 <span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span> 타향에서의 삶</td></tr><tr><td>주제</td><td>고향과 가족에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlEJUVBJUIwJTkw" data-hint="JUUzJTg1JTg4JUUzJTg1JTgxJUUzJTg0JUIx">ㅈㅁㄱ</span></td></tr><tr><td>특징</td><td>1️⃣ 동일한 시구인 ‘때꺼정’을 <span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUzJTg1JTgyJUUzJTg1JTgy">ㅂㅂ</span>하여 <span class="revealable-cloze" data-answer="JUVDJTlEJThDJUVDJTk1JTg1" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3">ㅇㅇ</span>적 효과를 보임.<div>2️⃣ ‘<span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span>-과거(회상)-현재’의 시상 전개를 통해 주제를 강조함.</div><div>3️⃣ 다양한 비유와 상징을 통해 화자의 삶을 효과적으로 드러냄.</div></td></tr></tbody></table></div></div><div class="block active" data-type="drag-drop"><div class="block-title">✋ 드래그 앤 드롭</div><div class="drag-drop-preview-container">
+                                </details></div><div class="block active" data-type="flowchart"><div class="block-title">➔ 시상 전개</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style=""><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">현재</span><span class="cloze-choice">과거</span><span class="cloze-choice">미래</span></span></span></div></div><div class="flowchart-preview-node">겨울밤, 우라지오 가까운 부두</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVBJUIzJUJDJUVBJUIxJUIw"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></span></div></div><div class="flowchart-preview-node">어린 시절 회상</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><div style="text-align: center;"><span style="text-align: start;"><span class="interactive-cloze-container" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">과거</span><span class="cloze-choice">현재</span><span class="cloze-choice">미래</span></span></span></span></div></div><div class="flowchart-preview-node">절망적. 귀향❌</div></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1760594188973"><h2 style="display:none;">핵심정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td>갈래</td><td>자유시, 서정시</td></tr><tr><td>성격</td><td><span class="revealable-cloze" data-answer="JUVDJTk1JUEwJUVDJTgzJTgx" data-hint="JUUzJTg1JTg3JUUzJTg1JTg1">ㅇㅅ</span>적, <span class="revealable-cloze" data-answer="JUVEJTlBJThDJUVBJUIzJUEw" data-hint="JUUzJTg1JThFJUUzJTg0JUIx">ㅎㄱ</span>적, 서정적</td></tr><tr><td>제재</td><td><span class="revealable-cloze" data-answer="JUVDJTk2JUI0JUVCJUE2JUIwJTIwJUVDJThCJTlDJUVDJUEwJTg4" data-hint="JUUzJTg1JTg3JUUzJTg0JUI5JTIwJUUzJTg1JTg1JUUzJTg1JTg4">ㅇㄹ ㅅㅈ</span>의 추억과 <span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span> 타향에서의 삶</td></tr><tr><td>주제</td><td>고향과 가족에 대한 <span class="revealable-cloze" data-answer="JUVBJUI3JUI4JUVCJUE2JUFDJUVDJTlCJTgw" data-hint="JUUzJTg0JUIxJUUzJTg0JUI5JUUzJTg1JTg3">ㄱㄹㅇ</span>과 <span class="revealable-cloze" data-answer="JUVDJUEwJTg4JUVCJUE3JTlEJUVBJUIwJTkw" data-hint="JUUzJTg1JTg4JUUzJTg1JTgxJUUzJTg0JUIx">ㅈㅁㄱ</span></td></tr><tr><td>특징</td><td>1️⃣ 동일한 시구인 ‘때꺼정’을 <span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUzJTg1JTgyJUUzJTg1JTgy">ㅂㅂ</span>하여 <span class="revealable-cloze" data-answer="JUVDJTlEJThDJUVDJTk1JTg1" data-hint="JUUzJTg1JTg3JUUzJTg1JTg3">ㅇㅇ</span>적 효과를 보임.<div>2️⃣ ‘<span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJTlFJUFD" data-hint="JUUzJTg1JThFJUUzJTg1JTg4">ㅎㅈ</span>-과거(회상)-현재’의 시상 전개를 통해 주제를 강조함.</div><div>3️⃣ 다양한 비유와 상징을 통해 화자의 삶을 효과적으로 드러냄.</div></td></tr></tbody></table></div></div><div class="block active" data-type="drag-drop"><div class="block-title">✋ 드래그 앤 드롭</div><div class="drag-drop-preview-container" data-explanation="">
                                 <div class="quiz-title-preview">시어의 의미</div>
                                 <div class="sentences-container"><div class="sentence">
                                             <strong>1.</strong> 
@@ -670,13 +692,16 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                             
                                         </div></div>
                                 <p><strong>선택지</strong></p>
-                                <div class="source-container"><span class="drag-source" draggable="true">멧비둘</span><span class="drag-source" draggable="true">밤</span><span class="drag-source" draggable="true">우라지오</span><span class="drag-source" draggable="true">부두</span><span class="drag-source" draggable="true">얼어붙은 우라지오 바다</span></div>
+                                <div class="source-container"><span class="drag-source" draggable="true">밤</span><span class="drag-source" draggable="true">멧비둘</span><span class="drag-source" draggable="true">부두</span><span class="drag-source" draggable="true">얼어붙은 우라지오 바다</span><span class="drag-source" draggable="true">우라지오</span></div>
+                                <div class="explanation" style="display:none; margin-top:15px;"></div>
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-drag-drop-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1760595657072"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview">이 시의 특징에 대하여 문제를 풀어 보시오.</div><div class="ox-preview-item">
+                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1760595657072"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container" data-explanation="">
+                                <div class="quiz-title-preview">이 시의 특징에 대하여 문제를 풀어 보시오.</div>
+                                <div class="ox-preview-item">
                                         <div class="ox-question-row">
                                         <div class="question-text"><strong>Q1.</strong> 가족과도 떨어져 살아가야 하는 유랑민의 처지와 현실의 안락함이 드러난다.</div>
                                         <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
@@ -718,7 +743,10 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
                                         </div>
                                         <div class="feedback"></div>
-                                    </div><div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div></div></div><div class="block" data-type="text"><details class="text-preview-container" open="">
+                                    </div>
+                                
+                                <div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div>
+                            </div></div><div class="block" data-type="text"><details class="text-preview-container" open="">
                                     <summary class="text-preview-summary">
                                         <span class="text-preview-title-pill">📝 [기출] 다음 글을 읽고 물음에 답하시오.</span>
                                         <span class="text-preview-toggle-icon">▼</span>
@@ -1007,11 +1035,21 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
 
                     const instance = {
                         checkAnswers: () => {
+                            let allConnectionsCorrect = true;
+                            const totalPairs = quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item').length;
+
+                            if (connections.length !== totalPairs) {
+                                allConnectionsCorrect = false;
+                            }
+
                             connections.forEach(conn => {
-                                conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
+                                const isCorrect = conn.leftId === conn.rightId;
+                                if (!isCorrect) allConnectionsCorrect = false;
+                                conn.color = isCorrect ? '#28a745' : '#dc3545';
                             });
                             redrawLines();
                             allDots.forEach(d => d.classList.add('disabled'));
+                            return allConnectionsCorrect;
                         },
                         reset: () => {
                             connections = [];
@@ -1070,40 +1108,37 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
 
                     if (droppedItem.matches('.ordering-item')) {
                         setTimeout(() => {
-                            const targetContainer = droppedItem.closest('.ordering-target-container');
-                            
-                            if (targetContainer) {
-                                const item = targetContainer.closest('.ordering-preview-item');
-                                const feedbackIcon = item.querySelector('.ordering-item-feedback');
-                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item'));
-                                const studentAnswer = studentItems.map(i => i.textContent.trim()).join(' // ');
+                            // 이전에 있던 로직은 모두 삭제하고, 아래 새로운 로직으로 교체합니다.
+                            const quizContainer = droppedItem.closest('.ordering-preview-container');
+                            if (!quizContainer) return;
+
+                            let allQuestionsCorrect = true;
+
+                            quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                const targetContainer = item.querySelector('.ordering-target-container');
+                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                                const studentAnswer = studentItems.join(' // ');
                                 const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
                                 const totalItemCount = correctAnswer.split('//').length;
 
-                                if (studentAnswer === correctAnswer) {
-                                    targetContainer.classList.remove('incorrect');
-                                    targetContainer.classList.add('correct');
-                                    if (feedbackIcon) feedbackIcon.textContent = '⭕';
-
-                                    const quizContainer = item.closest('.ordering-preview-container');
-                                    const allItems = quizContainer.querySelectorAll('.ordering-preview-item');
-                                    const allCorrect = Array.from(allItems).every(i => i.querySelector('.ordering-target-container.correct'));
-
-                                    if (allCorrect) {
-                                        const feedbackEl = quizContainer.querySelector('.feedback');
-                                        feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
-                                        feedbackEl.className = 'feedback show correct';
-                                        quizContainer.querySelector('.check-ordering-btn').style.display = 'none';
-                                        quizContainer.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                                    }
-                                } else if (studentItems.length === totalItemCount) {
-                                    targetContainer.classList.remove('correct');
-                                    targetContainer.classList.add('incorrect');
-                                    if (feedbackIcon) feedbackIcon.textContent = '❌';
-                                } else {
-                                    targetContainer.classList.remove('correct', 'incorrect');
-                                    if (feedbackIcon) feedbackIcon.textContent = '';
+                                if (studentItems.length !== totalItemCount || studentAnswer !== correctAnswer) {
+                                    allQuestionsCorrect = false;
                                 }
+                            });
+
+                            if (allQuestionsCorrect) {
+                                const feedbackEl = quizContainer.querySelector('.feedback');
+                                const isInsideRoomEscape = quizContainer.closest('.room-escape-preview-content');
+                                const answerWord = decodeURIComponent(atob(quizContainer.dataset.answerWord));
+
+                                if (isInsideRoomEscape && answerWord) {
+                                    feedbackEl.innerHTML = '✨ 성공! 다음 암호는 <div class="feedback-answer-box">' + answerWord + '</div> 입니다.';
+                                } else {
+                                    feedbackEl.innerHTML = '✨ 모든 순서를 완벽하게 맞혔습니다!';
+                                }
+                                feedbackEl.className = 'feedback show correct';
+
+                                quizContainer.querySelectorAll('.ordering-item').forEach(item => item.draggable = false);
                             }
                         }, 0);
                     }
@@ -1327,6 +1362,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                     const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
                     const checkOrderingBtn = e.target.closest('.check-ordering-btn');
                     const checkClassificationBtn = e.target.closest('.check-classification-btn');
+                    const openRoomEscapeBtn = e.target.closest('.room-escape-open-btn');
                     const youtubePlaceholder = e.target.closest('.youtube-placeholder');
 
                     if (retryBtn) {
@@ -1355,7 +1391,14 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                     fb.className = 'feedback';
                                     fb.innerHTML = '';
                                 });
-                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => btn.classList.remove('selected'));
+                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => {
+                                    btn.classList.remove('selected');
+                                });
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
                             }
                             
                             if(quizContainer.classList.contains('mcq-preview-item')) { 
@@ -1393,6 +1436,13 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 lineQuizPreview.lineQuizInstance.reset();
                                 retryBtn.style.display = 'none';
                                 quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+
+                                // ✅ [추가] '다시 풀기' 시 해설(explanation) 요소를 찾아 숨기는 코드
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
                             }
                             if (quizContainer.classList.contains('drag-drop-preview-container')) {
                                 const sourceContainer = quizContainer.querySelector('.source-container');
@@ -1452,6 +1502,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         }
                     } else if (checkAnswerBtn) {
                         const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                        const isInsideRoomEscape = checkAnswerBtn.closest('.room-escape-preview-content');
                         const studentAnswerEl = item.querySelector('.descriptive-student-answer');
                         const studentAnswer = studentAnswerEl.value.trim();
                         const feedbackEl = item.querySelector('.feedback');
@@ -1505,12 +1556,74 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         checkFillInBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkLineQuizBtn) {
-                        const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
+                        const quizContainer = checkLineQuizBtn.closest('.quiz-container');
+                        const quizEl = quizContainer.querySelector('.line-quiz-preview');
+                        const feedbackEl = quizContainer.querySelector('.feedback');
+
                         if (quizEl && quizEl.lineQuizInstance) {
-                            quizEl.lineQuizInstance.checkAnswers();
+                            const isAllCorrect = quizEl.lineQuizInstance.checkAnswers();
+
+                            if (isAllCorrect) {
+                                feedbackEl.textContent = '정답입니다! 참 잘했어요! ✨';
+                                feedbackEl.className = 'feedback show correct';
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                const encodedExplanation = quizContainer.dataset.explanation;
+                                if (explanationEl && encodedExplanation) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.innerHTML = decodedExplanation;
+                                        if (tempDiv.textContent.trim()) {
+                                            explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                            explanationEl.style.display = 'block';
+                                        }
+                                    } catch (err) {}
+                                }
+                            } else {
+                                feedbackEl.textContent = '아쉬워요. 틀린 연결이 있는지 확인해보세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                            }
+
                             checkLineQuizBtn.style.display = 'none';
                             checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
                         }
+                    } else if (checkDragDropBtn) {
+                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+                        container.querySelectorAll('.drop-target').forEach(target => {
+                            const studentAnswer = target.textContent.trim();
+                            const correctAnswer = target.dataset.answer;
+                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                target.className = 'drop-target correct';
+                            } else {
+                                target.className = 'drop-target incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [추가] 모든 문제가 정답일 때만 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    if (decodedExplanation.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkDragDropBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkOrderingBtn) {
                         const container = checkOrderingBtn.closest('.ordering-preview-container');
                         const feedbackEl = container.querySelector('.feedback');
@@ -1538,35 +1651,27 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         if (allCorrect) {
                             feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
                             feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] isInsideRoomEscape 조건을 삭제했습니다.
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
                         } else {
                             feedbackEl.textContent = '아쉬워요. ❌ 표시된 문제를 다시 확인해보세요.';
                             feedbackEl.className = 'feedback show incorrect';
                         }
 
                         checkOrderingBtn.style.display = 'none';
-                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                    } else if (checkDragDropBtn) {
-                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
-                        const feedbackEl = container.querySelector('.feedback');
-                        let allCorrect = true;
-                        container.querySelectorAll('.drop-target').forEach(target => {
-                            const studentAnswer = target.textContent.trim();
-                            const correctAnswer = target.dataset.answer;
-                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                                target.className = 'drop-target correct';
-                            } else {
-                                target.className = 'drop-target incorrect';
-                                allCorrect = false;
-                            }
-                        });
-                        if (allCorrect) {
-                            feedbackEl.textContent = '모두 정답입니다!';
-                            feedbackEl.className = 'feedback show correct';
-                        } else {
-                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
-                            feedbackEl.className = 'feedback show incorrect';
-                        }
-                        checkDragDropBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkClassificationBtn) {
                         const container = checkClassificationBtn.closest('.classification-preview-container');
@@ -1595,12 +1700,59 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         if (allCorrect) {
                             feedbackEl.textContent = '모두 정확하게 분류했습니다! 완벽해요! ✨';
                             feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
                         } else {
                             feedbackEl.textContent = '아쉬워요. 잘못 분류되었거나, 분류하지 않은 항목이 있습니다.';
                             feedbackEl.className = 'feedback show incorrect';
                         }
                         checkClassificationBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (openRoomEscapeBtn) {
+                        const container = openRoomEscapeBtn.closest('.room-escape-preview-container');
+                        const lockedDiv = container.querySelector('.room-escape-preview-locked');
+                        const unlockedDiv = container.querySelector('.room-escape-preview-content');
+                        const inputEl = container.querySelector('.room-escape-password-preview');
+
+                        const studentAnswer = inputEl.value.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.password));
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            lockedDiv.style.display = 'none';
+                            unlockedDiv.style.display = 'block';
+
+                            const allDoorsNodeList = document.querySelectorAll('.room-escape-preview-container');
+                            const allDoorsArray = Array.from(allDoorsNodeList);
+                            const currentIndex = allDoorsArray.indexOf(container);
+                            const nextDoor = allDoorsArray[currentIndex + 1];
+
+                            if (nextDoor) {
+                                nextDoor.style.display = 'block';
+                            }
+
+                            if (unlockedDiv.querySelector('.line-quiz-preview')) {
+                                initializeLineQuiz(unlockedDiv.querySelector('.line-quiz-preview'));
+                            }
+                        } else {
+                            lockedDiv.classList.add('shake');
+                            inputEl.value = '';
+                            setTimeout(() => {
+                                lockedDiv.classList.remove('shake');
+                            }, 500);
+                        }
                     } else if (youtubePlaceholder) {
                         const videoId = youtubePlaceholder.dataset.videoId;
                         if(videoId) {
@@ -1627,31 +1779,69 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                             const mcqOptionDiv = e.target.closest('.mcq-preview-option');
                             const explainable = e.target.closest('.explainable');
                             if (oxChoiceBtn) {
+                                const allChoiceBtns = oxChoiceBtn.parentElement.querySelectorAll('button');
+                                allChoiceBtns.forEach(btn => btn.classList.remove('selected'));
+                                oxChoiceBtn.classList.add('selected');
+
                                 const item = oxChoiceBtn.closest('.ox-preview-item');
                                 const choicesDiv = item.querySelector('.ox-choices');
                                 const choice = oxChoiceBtn.dataset.choice;
                                 const answer = choicesDiv.dataset.answer;
                                 const feedbackEl = item.querySelector('.feedback');
-                                feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
-                                feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+                                const isCorrect = (choice === answer);
+
+                                feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                                feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+
+                                const quizContainer = item.closest('.quiz-container');
+                                const allItems = quizContainer.querySelectorAll('.ox-preview-item');
+                                const allCorrect = Array.from(allItems).every(i => {
+                                    const selectedBtn = i.querySelector('.ox-choices button.selected');
+                                    return selectedBtn && selectedBtn.dataset.choice === i.querySelector('.ox-choices').dataset.answer;
+                                });
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (allCorrect) {
+                                    const encodedExplanation = quizContainer.dataset.explanation;
+                                    if (explanationEl && encodedExplanation) {
+                                        try {
+                                            const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                            const tempDiv = document.createElement('div');
+                                            tempDiv.innerHTML = decodedExplanation;
+                                            if (tempDiv.textContent.trim()) {
+                                                explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                                explanationEl.style.display = 'block';
+                                            }
+                                        } catch (err) {}
+                                    }
+                                } else {
+                                    if (explanationEl) {
+                                        explanationEl.style.display = 'none';
+                                    }
+                                }
                             } else if (mcqOptionDiv) {
                                 const item = mcqOptionDiv.closest('.mcq-preview-item');
+                                const isInsideRoomEscape = item.closest('.room-escape-preview-content'); // ✅ 방탈출 안에 있는지 확인
+
+                                let attempts = parseInt(item.dataset.attempts, 10);
+                                if (item.querySelector('.feedback.correct')) return;
+
                                 const controls = item.querySelector('.quiz-controls');
                                 if (controls) controls.style.display = 'flex';
-                                
-                                let attempts = parseInt(item.dataset.attempts, 10);
-                                if (attempts >= 2) return;
+
+                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+
                                 attempts++;
                                 item.dataset.attempts = attempts;
+
                                 const choice = mcqOptionDiv.dataset.choice;
                                 const answer = item.dataset.answer;
                                 const feedbackEl = item.querySelector('.feedback');
                                 const explanationEl = item.querySelector('.explanation');
                                 const isCorrect = (choice === answer);
-                                
-                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
-                                    opt.classList.remove('selected', 'correct', 'incorrect');
-                                });
+
                                 mcqOptionDiv.classList.add('selected');
 
                                 if (isCorrect) {
@@ -1663,13 +1853,19 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 } else {
                                     mcqOptionDiv.classList.add('incorrect');
                                     feedbackEl.className = 'feedback show incorrect';
-                                    if (attempts < 2) {
-                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+
+                                    if (isInsideRoomEscape) {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답</span> 다시 생각해보세요. 🤔';
                                     } else {
-                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
-                                        if(explanationEl) explanationEl.className = 'explanation show';
+                                        if (attempts < 2) {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                        } else {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                            if(explanationEl) explanationEl.className = 'explanation show';
+                                        }
                                     }
                                 }
+
                                 if(explanationEl && explanationEl.classList.contains('show')) {
                                     try {
                                         const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
@@ -1677,14 +1873,9 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                     } catch(err) {}
                                 }
 
-                                if (isCorrect || attempts >= 2) {
+                                if (isCorrect || (!isInsideRoomEscape && attempts >= 2)) {
                                     const retryButton = item.querySelector('.retry-quiz-btn');
                                     if (retryButton) retryButton.style.display = 'inline-block';
-                                    
-                                    if(item.closest('.daily-quiz-preview')){
-                                        const newProverbButton = item.querySelector('.new-proverb-btn');
-                                        if(newProverbButton) newProverbButton.style.display = 'inline-block';
-                                    }
                                 }
                             } else if (explainable) {
                                 explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
@@ -1728,6 +1919,12 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                 });
                 
                 initializeAllInteractiveBlocks();
+                // ✅ [추가] 모든 '비밀의 문'을 숨기고 첫 번째 문만 표시
+                const allDoors = document.querySelectorAll('.room-escape-preview-container');
+                allDoors.forEach(door => door.style.display = 'none');
+                if (allDoors.length > 0) {
+                    allDoors[0].style.display = 'block';
+                }
                 if (window.MathJax && window.MathJax.typesetPromise) {
                     window.MathJax.typesetPromise();
                 }
