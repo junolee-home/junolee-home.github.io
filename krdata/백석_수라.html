@@ -2,9 +2,10 @@
                 <html lang="ko">
                 <head>
                     <meta charset="UTF-8">
-                    <title>수라-백석</title>
+                    <title>백석_수라</title>
                     <style>
 :root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
+::selection { background-color: rgba(210, 234, 255, 0.6); color: inherit; }
 .preview-top-bar { flex-direction: column; align-items: flex-start; gap: 8px; padding: 45px 25px 8px; }
 .view-mode-controls button { background-color: transparent; border: none; border-radius: 4px; padding: 4px 8px; font-size: 1.1em; cursor: pointer; opacity: 0.6; transition: 0.2s ease-in-out; }
 .view-mode-controls button:hover { opacity: 1; background-color: rgb(255, 255, 255); }
@@ -264,7 +265,8 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .text-preview-container:not([open]) .text-preview-toggle-icon { transform: rotate(-90deg); }
 .text-preview-content-wrapper { padding: 15px; background-color: transparent; border: none; }
 .text-preview-content { background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); padding: 10px 12px; border-radius: 4px; line-height: 2.3; }
-.passage-marker-in-editor { background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.passage-marker-in-editor { display: block; background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-structure-in-editor { background-color: rgb(241, 243, 245); border: 1px dashed rgb(173, 181, 189); border-radius: 4px; padding: 2px 6px; cursor: pointer; white-space: nowrap; }
 .passage-marker { display: block; position: relative; margin-left: 3.5em; padding-left: 1.5em; border-left: 3px solid var(--border-color); margin-top: 1em; margin-bottom: 1em; }
 .passage-marker::before { content: "[" attr(data-symbol) "]"; position: absolute; top: 50%; transform: translateY(-50%); right: 100%; margin-right: 1em; font-weight: bold; color: var(--hover-color); }
 .interactive-cloze-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -289,12 +291,26 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .text-border-violet { border: 2px solid violet; padding: 0px 2px; border-radius: 3px; }
 .text-border-blue { border: 2px solid blue; padding: 0px 2px; border-radius: 3px; }
 .text-border-green { border: 2px solid green; padding: 0px 2px; border-radius: 3px; }
+.text-border-circle-black, .text-border-circle-gray, .text-border-circle-red, .text-border-circle-violet, .text-border-circle-blue, .text-border-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-border-circle-black { border-color: black; }
+.text-border-circle-gray { border-color: gray; }
+.text-border-circle-red { border-color: red; }
+.text-border-circle-violet { border-color: violet; }
+.text-border-circle-blue { border-color: blue; }
+.text-border-circle-green { border-color: green; }
 .text-highlight-gray { background-color: rgb(238, 238, 238); border: 2px solid rgb(189, 189, 189); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-violet { background-color: rgb(243, 229, 245); border: 2px solid rgb(206, 147, 216); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-red { background-color: rgb(255, 235, 238); border: 2px solid rgb(229, 115, 115); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-yellow { background-color: rgb(255, 253, 231); border: 2px solid rgb(255, 241, 118); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-blue { background-color: rgb(227, 242, 253); border: 2px solid rgb(144, 202, 249); padding: 1px 3px; border-radius: 3px; }
 .text-highlight-green { background-color: rgb(232, 245, 233); border: 2px solid rgb(165, 214, 167); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-circle-gray, .text-highlight-circle-violet, .text-highlight-circle-red, .text-highlight-circle-yellow, .text-highlight-circle-blue, .text-highlight-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-highlight-circle-gray { background-color: rgb(238, 238, 238); border-color: rgb(189, 189, 189); }
+.text-highlight-circle-violet { background-color: rgb(243, 229, 245); border-color: rgb(206, 147, 216); }
+.text-highlight-circle-red { background-color: rgb(255, 235, 238); border-color: rgb(229, 115, 115); }
+.text-highlight-circle-yellow { background-color: rgb(255, 253, 231); border-color: rgb(255, 241, 118); }
+.text-highlight-circle-blue { background-color: rgb(227, 242, 253); border-color: rgb(144, 202, 249); }
+.text-highlight-circle-green { background-color: rgb(232, 245, 233); border-color: rgb(165, 214, 167); }
 #preview .explainable { color: var(--correct-color); border-bottom: 1px dotted var(--correct-color); cursor: pointer; font-weight: bold; transition: 0.2s ease-in-out; }
 #preview .explainable:hover { color: var(--primary-color); border-bottom: 1px solid var(--primary-color); }
 .ox-question-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
@@ -440,7 +456,7 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .revealable-cloze { border: 1px dashed var(--primary-color); color: var(--primary-color); padding: 1px 5px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
 .revealable-cloze:hover { background-color: rgb(227, 242, 253); }
 .revealed-answer { font-weight: bold; color: var(--correct-color); padding: 1px 5px; cursor: pointer; }
-#scrollToTopBtn { position: fixed; bottom: 30px; right: 40px; width: 50px; height: 50px; background-color: var(--primary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.5em; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; z-index: 1000; opacity: 0; visibility: hidden; pointer-events: none; transition: 0.2s ease-in-out; }
+#scrollToTopBtn { position: sticky; bottom: 30px; margin-left: auto; margin-right: 20px; width: 50px; height: 50px; background-color: var(--primary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.5em; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; z-index: 1000; opacity: 0; visibility: hidden; pointer-events: none; transition: 0.2s ease-in-out; }
 #scrollToTopBtn.show { opacity: 0.8; visibility: visible; pointer-events: auto; }
 #scrollToTopBtn:hover { opacity: 1; transform: translateY(-3px); box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 12px; }
 #scrollToTopBtn:active { transform: translateY(0px); box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; }
@@ -498,6 +514,21 @@ body.resizing { cursor: ns-resize; user-select: none; }
 .layout-horizontal .horizontal-item-top .timeline-content { bottom: 50%; margin-bottom: 40px; }
 .layout-horizontal .horizontal-item-bottom .timeline-date { bottom: 50%; margin-bottom: 20px; }
 .layout-horizontal .horizontal-item-bottom .timeline-content { top: 50%; margin-top: 40px; }
+.block[data-type="room-escape"] .block-title { background-color: rgb(176, 190, 197); }
+.room-escape-editor-content, .room-escape-preview-content { border: 2px dashed rgb(207, 216, 220); padding: 15px; margin-top: 10px; border-radius: 5px; background-color: rgb(236, 239, 241); min-height: 100px; }
+.room-escape-editor-content::before { content: "이곳에 다음 단계의 블록을 넣으세요"; color: rgb(120, 144, 156); font-weight: bold; display: block; text-align: center; }
+.room-escape-editor-content:has(.block)::before { display: none; }
+.room-escape-preview-locked { text-align: center; padding: 20px; border: 1px solid rgb(176, 190, 197); border-radius: 8px; background-color: rgb(250, 250, 250); }
+.room-escape-preview-locked input { padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; margin-right: 5px; }
+.room-escape-preview-locked.shake { animation: 0.5s ease 0s 1 normal none running shake; }
+@keyframes shake { 
+  0%, 100% { transform: translateX(0px); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.room-escape-preview-unlocked-message { text-align: center; font-weight: bold; color: var(--correct-color); padding: 10px; background-color: rgb(232, 245, 233); border-radius: 5px; margin-bottom: 15px; }
+.icon-grid button.room-escape-usable { position: relative; }
+.icon-grid button.room-escape-usable::after { content: "🗝️"; position: absolute; top: 2px; right: 4px; font-size: 0.6em; text-shadow: rgba(0, 0, 0, 0.4) 1px 1px 2px; }
 .classification-preview-container { margin-top: 15px; }
 .classification-categories-preview { display: flex; gap: 15px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
 .classification-category-bin { flex: 1 0 180px; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); }
@@ -585,7 +616,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                     <div id="exported-container" style="position: relative; width: 90%; max-width: 1100px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                         
                 <div class="preview-top-bar">
-                    <h1 id="preview-main-title">수라-백석</h1>
+                    <h1 id="preview-main-title">백석_수라</h1>
                 </div>
                 <div id="preview-tab-bar" class="tab-bar preview-tabs">
                     <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1760311936818">학습전</button><button class="tab-btn " data-tab-id="tab-1758455763173">본문</button><button class="tab-btn " data-tab-id="tab-1758629506712">내용 정리</button><button class="tab-btn " data-tab-id="tab-1758632720384">퀴즈</button></div>
@@ -616,7 +647,9 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <img src="https://junolee-home.github.io/images/백석_수라_아수라들의 싸움_gemini-250719.jpg" alt="'아수라' 상상도">
                                         <a href="https://junolee-home.github.io/images/백석_수라_아수라들의 싸움_gemini-250719.jpg" target="_blank" class="frame-source-link">출처 방문하기</a>
                                     </div>
-                                </details></div><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview">1930년대 시 문학의 특성</div><div class="ox-preview-item">
+                                </details></div><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container" data-explanation="">
+                                <div class="quiz-title-preview">1930년대 시 문학의 특성</div>
+                                <div class="ox-preview-item">
                                         <div class="ox-question-row">
                                         <div class="question-text"><strong>Q1.</strong> 조선에 대한&nbsp;일제의 탄압이 더욱 심해진 사회적 분위 속에 사람들은 자신의 신념을 표현하는 것이 수월해졌다.</div>
                                         <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
@@ -634,7 +667,10 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <div class="ox-choices" data-answer="O"><button data-choice="O">O</button><button data-choice="X">X</button></div>
                                         </div>
                                         <div class="feedback"></div>
-                                    </div><div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1758455763173"><h2 style="display:none;">본문</h2><div class="block active" data-type="text"><details class="text-preview-container" open="">
+                                    </div>
+                                
+                                <div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div>
+                            </div></div></div><div class="tab-content " data-tab-content-id="tab-1758455763173"><h2 style="display:none;">본문</h2><div class="block" data-type="text"><details class="text-preview-container" open="">
                                     <summary class="text-preview-summary">
                                         <span class="text-preview-title-pill">📝 수라 전문</span>
                                         <span class="text-preview-toggle-icon">▼</span>
@@ -658,7 +694,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                     <div class="text-preview-content-wrapper">
                                         <div class="text-preview-content"><div>&nbsp; 『수라』가 창작된 <span style="background-color: rgb(224, 242, 241);">1930년대는 일제 강점하</span>에 <span style="background-color: rgb(224, 242, 241);">수탈 정책</span>이 강화된 시기로, 많은 사람이 생계를 유지하기 위해 만주와 연해주 등지로 이주하면서 <span style="background-color: rgb(224, 242, 241);">가족과 헤어지는 아픔</span>을 겪었다. 이러한 상황 속에서 백석은 가족 공동체를 소재로 한 작품을 많이 창작하였다. 『수라』도 그중 하나로, <span style="background-color: rgb(224, 242, 241);">공동체적 삶이 붕괴되는 당대의 상황</span>을 그리고 있다.</div><div><br><div>&nbsp; 이 작품에서 거미 가족은 차디찬 밤에 밖으로 쫓겨나고 이로 인해 <span style="background-color: rgb(224, 242, 241);">가족이 해체</span>되는 비극적 상황에 처하게 된다. 이러한 상황은 일제 강점하에 <span style="background-color: rgb(224, 242, 241);">우리 민족이 처한 상황</span>과 다르지 않기 때문에 작가는 이러한 <span style="background-color: rgb(224, 242, 241);">비극적 상황</span>을 반영하여 아수라장을 줄여서 쓴 말인 『수라』로 제목을 지은 것이다.</div></div><div><br></div><div><div>📍 <b style="background-color: rgb(255, 214, 214);">이 작품에서 '수라'의 상징적 의미</b>:</div></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><div>1️⃣ 화자의 행위로 인해 한 순간에 평화를 잃고 흩어져 생존을 위해 싸워야 하는 거미 가족의 비극적 처지 상징</div></div><div><div>2️⃣ 공동체적 삶이 붕괴되는 당대이 상황</div></div><div><div>3️⃣ 식민지 백성들의 참혹한 현실</div></div></blockquote><div><div><br style="font-family: &quot;Malgun Gothic&quot;, sans-serif; font-size: 16px;"></div></div><div><div style="text-align: left;"><span style="font-family: &quot;Malgun Gothic&quot;, sans-serif; font-size: 16px;">&nbsp;</span><span style="background-color: rgb(255, 250, 205);"><span style="font-size: 14px;">💬 <b><span style="font-size: 15px;">아수라</span></b>의 줄임말.&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">산스크리트어</span><span style="font-size: 14px;">&nbsp;‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="en" style="font-size: 14px;">asura’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">에서</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">기원</span><span style="font-size: 14px;">. ‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="en" style="font-size: 14px;">asura’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">는</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">불교에서</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">천룡팔부</span><span style="font-size: 14px;">(</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">天</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">龍</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">八</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">部</span><span style="font-size: 14px;">)</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">의</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">하나로</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">마신</span><span style="font-size: 14px;">(</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">魔</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">神</span><span style="font-size: 14px;">)</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">의</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">한</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">부류</span><span style="font-size: 14px;">.&nbsp;싸움 따위로 혼잡하고 어지러운 상태에 빠지는 것.</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">큰</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">혼란에</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">빠진</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">곳</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">혹은</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">그런</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">상태</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">이</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">말은</span><span style="font-size: 14px;">&nbsp;‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">阿</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">修</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj" style="font-size: 14px;">羅</span><span style="font-size: 14px;">’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">는&nbsp;</span><span style="font-size: 14px;">‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="en" style="font-size: 14px;">asura’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">의</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">음을</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">한자로</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">옮겨</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">적은</span><span style="font-size: 14px;">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko" style="font-size: 14px;">음역어이다</span><span style="font-size: 14px;">.&nbsp;</span></span></div><span style="font-size: 14px;"><div style="text-align: left;"><span style="background-color: rgb(255, 250, 205);">&nbsp; ‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">아수라장</span><span style="background-color: rgb(255, 250, 205);">(</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">阿</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">修</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">羅</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">場</span><span style="background-color: rgb(255, 250, 205);">)’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">은</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">본래</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">아수라왕</span><span style="background-color: rgb(255, 250, 205);">(</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">阿</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">修</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">羅</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">王</span><span style="background-color: rgb(255, 250, 205);">)</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">이</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">제석천</span><span style="background-color: rgb(255, 250, 205);">(</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">帝</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">釋</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="hj">天</span><span style="background-color: rgb(255, 250, 205);">)</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">과</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">싸운</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">마당이었는데</span><span style="background-color: rgb(255, 250, 205);">,&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">국어에서는</span><span style="background-color: rgb(255, 250, 205);">&nbsp;‘</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">큰</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">혼란에</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">빠진</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">곳</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">혹은</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">그런</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">상태</span><span style="background-color: rgb(255, 250, 205);">’</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">를</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">일컫게</span><span style="background-color: rgb(255, 250, 205);">&nbsp;</span><span class="u_word_dic" data-hook="tip" data-type="arken" data-lang="ko">되었다</span><span style="background-color: rgb(255, 250, 205);">.</span></div></span></div></div>
                                     </div>
-                                </details></div></div><div class="tab-content " data-tab-content-id="tab-1758629506712"><h2 style="display:none;">내용 정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심 정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td><b>갈래</b></td><td>자유시, 서정시</td></tr><tr><td><b>제재</b></td><td>거미 가족을 문밖으로 쓸어 버린 경험</td></tr><tr><td><b>주제</b></td><td>해체된 가족 공동체에 대한 슬픔과 가족에 대한 그리움</td></tr><tr><td><b>특징</b></td><td>1️⃣ 시적 대상을 <span class="revealable-cloze" data-answer="JUVDJTlEJTk4JUVDJTlEJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>화함<div>2️⃣ 시적 대상에 대한 화자의 정서가&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 심화됨</div><div>3️⃣ 거미를 문밖으로 버리는 화자의&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적인 행위를 통해 시상이 전개됨</div></td></tr></tbody></table></div></div><div class="block" data-type="table"><div class="block-title">田 각 연별 요지</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>연</th><th>요지</th></tr></thead><tbody><tr><td>1️⃣</td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span> 를 아무 <span class="revealable-cloze" data-answer="JUVDJTgzJTlEJUVBJUIwJTgx" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 없이 <span class="revealable-cloze" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 으로 쓸어버림</td></tr><tr><td>2️⃣</td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span>가 새끼 거미 있는 데로 가기를 바라면서 큰 거미도 문밖으로 <span class="revealable-cloze" data-answer="JUVDJTkzJUI4JUVDJTk2JUI0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 버림.</td></tr><tr><td>3️⃣</td><td>갓 태어난 <span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□ □□</span> 가&nbsp;가족을 <span class="revealable-cloze" data-answer="JUVCJUE3JThDJUVCJTgyJTk4JUVBJUI4JUIw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>&nbsp;를 바라며 문밖으로 버림.</td></tr></tbody></table></div></div><div class="block" data-type="table"><div class="block-title">田 화자의 행동과 정서 변화</div><div class="table-preview-container" data-attempts="0"><h3>시적 화자가 대상에게 한 행동을 살펴보며 화자의 정서를 파악해 보자.</h3><table><thead><tr><th>연</th><th>대상</th><th>시적 화자의 행동</th><th>시적 화자의 정서</th></tr></thead><tbody><tr><td><b>1연</b><div><font color="#0000ff">(2행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span></td><td>문밖으로 쓸어 버림.</td><td>▪️아무 생각 없음<div>▪️무심함</div></td></tr><tr><td><b>2연</b><div><font color="#0000ff">(4행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJTk4JTkw"> 문밖으로 쓸어 버림.</td><td>▪️가슴이 <span class="revealable-cloze" data-answer="JUVDJUE3JTlDJUVCJUE2JUJG" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>함<div>▪️서러워함.</div></td></tr><tr><td><b>3연</b><div><font color="#0000ff">(6행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJUIzJUI0JUVCJTkzJTlDJUVCJTlEJUJDJUVDJTlBJUI0"> 종이에 받아 <input type="text" class="blank-input-preview" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2">으로 버림.</td><td>▪️가슴이 메이고 <span class="revealable-cloze" data-answer="JUVDJTg0JTlDJUVCJTlGJUFDJUVDJTlCJTgw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span><div>▪️ 슬픔</div></td></tr></tbody></table>
+                                </details></div></div><div class="tab-content " data-tab-content-id="tab-1758629506712"><h2 style="display:none;">내용 정리</h2><div class="block" data-type="table"><div class="block-title">田 핵심 정리</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td><b>갈래</b></td><td>자유시, 서정시</td></tr><tr><td><b>제재</b></td><td>거미 가족을 문밖으로 쓸어 버린 경험</td></tr><tr><td><b>주제</b></td><td>해체된 가족 공동체에 대한 슬픔과 가족에 대한 그리움</td></tr><tr><td><b>특징</b></td><td>1️⃣ 시적 대상을 <span class="revealable-cloze" data-answer="JUVDJTlEJTk4JUVDJTlEJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>화함<div>2️⃣ 시적 대상에 대한 화자의 정서가&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 심화됨</div><div>3️⃣ 거미를 문밖으로 버리는 화자의&nbsp;&nbsp;<span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적인 행위를 통해 시상이 전개됨</div></td></tr></tbody></table></div></div><div class="block" data-type="table"><div class="block-title">田 각 연별 요지</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>연</th><th>요지</th></tr></thead><tbody><tr><td>1️⃣</td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span> 를&nbsp; <span class="revealable-cloze" data-answer="JUVDJTk1JTg0JUVCJUFBJUE4JTIwJUVDJTgzJTlEJUVBJUIwJTgx" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span> 없이 <span class="revealable-cloze" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 으로 쓸어버림</td></tr><tr><td>2️⃣</td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span>가 새끼 거미 있는 데로 가기를 바라면서 큰 거미도 문밖으로 <span class="revealable-cloze" data-answer="JUVDJTkzJUI4JUVDJTk2JUI0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 버림.</td></tr><tr><td>3️⃣</td><td>갓 태어난 <span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□ □□</span> 가&nbsp;가족을 <span class="revealable-cloze" data-answer="JUVCJUE3JThDJUVCJTgyJTk4JUVBJUI4JUIw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>&nbsp;를 바라며 문밖으로 버림.</td></tr></tbody></table></div></div><div class="block active" data-type="table"><div class="block-title">田 화자의 행동과 정서 변화</div><div class="table-preview-container" data-attempts="0"><h3>시적 화자가 대상에게 한 행동을 살펴보며 화자의 정서를 파악해 보자.</h3><table><thead><tr><th>연</th><th>대상</th><th>시적 화자의 행동</th><th>시적 화자의 정서</th></tr></thead><tbody><tr><td><b>1연</b><div><font color="#0000ff">(2행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJD" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□</span></td><td>문밖으로 쓸어 버림.</td><td>▪️아모 생각 없음<div>▪️무심함</div></td></tr><tr><td><b>2연</b><div><font color="#0000ff">(4행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVEJTgxJUIwJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJTk4JTkw"> 문밖으로 쓸어 버림.</td><td>▪️가슴이 <span class="revealable-cloze" data-answer="JUVDJUE3JTlDJUVCJUE2JUJG" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>함<div>▪️서러워함.</div></td></tr><tr><td><b>3연</b><div><font color="#0000ff">(6행)</font></div></td><td><span class="revealable-cloze" data-answer="JUVCJUFDJUI0JUVDJUIyJTk5JTIwJUVDJTlFJTkxJUVDJTlEJTgwJTIwJUVDJTgzJTg4JUVCJTgxJUJDJTIwJUVBJUIxJUIwJUVCJUFGJUI4" data-hint="JUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□ □□ □□</span></td><td><input type="text" class="blank-input-preview" data-answer="JUVCJUIzJUI0JUVCJTkzJTlDJUVCJTlEJUJDJUVDJTlBJUI0"> 종이에 받아 <input type="text" class="blank-input-preview" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2">으로 버림.</td><td>▪️가슴이 메이고 <span class="revealable-cloze" data-answer="JUVDJTg0JTlDJUVCJTlGJUFDJUVDJTlCJTgw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span><div>▪️ 슬픔</div></td></tr></tbody></table>
                         <div class="quiz-controls">
                             <span class="feedback"></span>
                             <button class="check-fill-in-btn">정답 확인</button>
@@ -669,14 +705,16 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <span class="text-preview-toggle-icon">▼</span>
                                     </summary>
                                     <div class="text-preview-content-wrapper">
-                                        <div class="text-preview-content">『수라』는 연이 바뀌면서 행이 길어지고 있는데 <span style="background-color: rgb(230, 230, 250);">화자의 고조된 정서</span>를 <span class="interactive-cloze-container" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1JUVCJUIyJTk1"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">점층법</span><span class="cloze-choice">설의법</span><span class="cloze-choice">점강법</span></span></span> 으로 강조하고 있다.<div><br><div>이러한 형식은</div><div>&nbsp; ①&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 아수라장으로 빠져드는 끔찍한 상황</span>과</div><div>&nbsp; ②&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 깊어지는 화자의 탄식</span>을 반영한다.</div></div></div>
+                                        <div class="text-preview-content">『수라』는 연이 바뀌면서 행이 길어지고 있는데 <span style="background-color: rgb(230, 230, 250);">화자의 고조된 정서</span>를 <span class="interactive-cloze-container" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1JUVCJUIyJTk1"><span class="cloze-blank">&nbsp;</span><span class="cloze-choices"><span class="cloze-choice">설의법</span><span class="cloze-choice">점층법</span><span class="cloze-choice">점강법</span></span></span> 으로 강조하고 있다.<div><br><div>이러한 형식은</div><div>&nbsp; ①&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 아수라장으로 빠져드는 끔찍한 상황</span>과</div><div>&nbsp; ②&nbsp;&nbsp;<span style="background-color: rgb(210, 234, 255);">점점 깊어지는 화자의 탄식</span>을 반영한다.</div></div></div>
                                     </div>
                                 </details></div><div class="block" data-type="flowchart" data-attempts="0"><div class="block-title">➔ 시 ·공간적 배경의 의미</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node">방바닥</div><div class="flowchart-preview-node">거미 가족이 <span class="revealable-cloze" data-answer="JUVEJTk1JUI0JUVDJUIyJUI0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>되는 공간</div></div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node"><input type="text" class="blank-input-preview" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2"></div><div class="flowchart-preview-node">▪️거미 가족이 <span class="revealable-cloze" data-answer="JUVCJUIyJTg0JUVCJUEwJUE0JUVDJUE3JTg0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span> 공간<div>▪️거미 가족이 다시 <span class="revealable-cloze" data-answer="JUVDJTlFJUFDJUVEJTlBJThD" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>할 수 있는 공간</div><div>&nbsp; &nbsp; (가족 공동체의 회복 가능성이 있음)</div></div></div><div class="flowchart-preview-row layout-two first-col-narrow"><div class="flowchart-preview-node">(차디찬)<div><input type="text" class="blank-input-preview" data-answer="JUVCJUIwJUE0"></div></div><div class="flowchart-preview-node">▪️거미 가족의 시련을 상징하는 <span class="revealable-cloze" data-answer="JUVCJUI2JTgwJUVDJUEwJTk1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적인 시간<div>▪️<span class="revealable-cloze" data-answer="JUVCJUFGJUJDJUVDJUExJUIx" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적 아픔과 고난의 <span class="revealable-cloze" data-answer="JUVEJTk4JTg0JUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>을 상징한다고 볼 수도 있음.</div></div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;">거미 가족이 처한 비극성을 강조함.</div></div></div></div><div class="quiz-controls" style="text-align: right; margin-top: 10px; padding: 0 15px 15px;"><span class="feedback"></span><button class="check-fill-in-btn">정답 확인</button><button class="retry-quiz-btn" style="display:none;">다시 풀기</button></div></div><div class="block" data-type="table"><div class="block-title">田 표현상의 특징</div><div class="table-preview-container" data-attempts="0"><table><thead><tr><th>표현</th><th>특징</th></tr></thead><tbody><tr><td>행위의 <span class="revealable-cloze" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span></td><td>화자가 각 연별로 거미를 쓸어버리는 행위를 <input type="text" class="blank-input-preview" data-answer="JUVCJUIwJTk4JUVCJUIzJUI1">함</td></tr><tr><td>적절한 <span class="revealable-cloze" data-answer="JUVCJUI5JTg0JUVDJTlDJUEw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span> 사용</td><td>거미를 감정을 가진 인간고 같은 존재로 <input type="text" class="blank-input-preview" data-answer="JUVDJTlEJTk4JUVDJTlEJUI4JUVEJTk5JTk0">하여 독자의 공감을 도움.</td></tr><tr><td>정서와 감정의 <span class="revealable-cloze" data-answer="JUVEJTk5JTk1JUVCJThDJTgw" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span></td><td>▪️1연→2연→3연으로 진행될수록 각 연의 길이가 점차 <span class="revealable-cloze" data-answer="JUVBJUI4JUI4JUVDJTk2JUI0JUVDJUE3JTkw" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUEx">□□□</span>.<div>▪️연이 진행될수록 화자의 정서와 감정이 <span class="revealable-cloze" data-answer="JUVDJUEwJTkwJUVDJUI4JUI1" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>적으로 확대됨.</div></td></tr><tr><td>배경의 상징적 의미</td><td>'<span class="revealable-cloze" data-answer="JUVDJUIwJUE4JUVCJTk0JTk0JUVDJUIwJUFDJTIwJUVCJUIwJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUUyJTk2JUExJTIwJUUyJTk2JUEx">□□□ □</span>'에서 '<span class="revealable-cloze" data-answer="JUVCJUFDJUI4JUVCJUIwJTk2" data-hint="JUUyJTk2JUExJUUyJTk2JUEx">□□</span>'이라는 시간적, 공간적 배경은 거미 가족의 처한 <span class="revealable-cloze" data-answer="JUVCJUI5JTg0JUVBJUI3JUI5JUVDJUEwJTgxJTIwJUVEJTk4JTg0JUVDJThCJUE0" data-hint="JUUyJTk2JUExJUUyJTk2JUExJUVDJUEwJTgxJTIwJUUyJTk2JUExJUUyJTk2JUEx">□□적 □□</span>을 상징함.</td></tr></tbody></table>
                         <div class="quiz-controls">
                             <span class="feedback"></span>
                             <button class="check-fill-in-btn">정답 확인</button>
                             <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
-                        </div></div></div><div class="block" data-type="flowchart"><div class="block-title">➔ '수라'의 의미</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-connected"><div class="flowchart-preview-node"><div style="text-align: center;"><b>시적 상황</b></div></div><div class="flowchart-preview-connector">─</div><div class="flowchart-preview-node"><div style="text-align: center;"><b>시대적 상황</b></div></div></div><div class="flowchart-preview-row layout-connected"><div class="flowchart-preview-node">거미 가족이 해체된 상황</div><div class="flowchart-preview-connector">&nbsp; &nbsp;&nbsp;</div><div class="flowchart-preview-node">일제 강점기에 가족 공동체가 해체된 우리 민족의 현실</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;"><b>수라</b></div></div></div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;">가족이 함께 지내지 못하는 비극적 상황을 <span class="revealable-cloze" data-answer="JUVDJTlBJUIwJUVEJTlBJThD" data-hint="JUUzJTg1JTg3JUUzJTg1JThF">ㅇㅎ</span>적으로 표현</div></div></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1758632720384"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container"><div class="quiz-title-preview"></div><div class="ox-preview-item">
+                        </div></div></div><div class="block" data-type="flowchart"><div class="block-title">➔ '수라'의 의미</div><div class="flowchart-preview-container"><div class="flowchart-preview-row layout-connected"><div class="flowchart-preview-node"><div style="text-align: center;"><b>시적 상황</b></div></div><div class="flowchart-preview-connector">─</div><div class="flowchart-preview-node"><div style="text-align: center;"><b>시대적 상황</b></div></div></div><div class="flowchart-preview-row layout-connected"><div class="flowchart-preview-node">거미 가족이 해체된 상황</div><div class="flowchart-preview-connector">&nbsp; &nbsp;&nbsp;</div><div class="flowchart-preview-node">일제 강점기에 가족 공동체가 해체된 우리 민족의 현실</div></div><div class="flowchart-preview-arrow">↓</div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;"><b>수라</b></div></div></div><div class="flowchart-preview-row layout-one"><div class="flowchart-preview-node"><div style="text-align: center;">가족이 함께 지내지 못하는 비극적 상황을 <span class="revealable-cloze" data-answer="JUVDJTlBJUIwJUVEJTlBJThD" data-hint="JUUzJTg1JTg3JUUzJTg1JThF">ㅇㅎ</span>적으로 표현</div></div></div></div></div></div><div class="tab-content " data-tab-content-id="tab-1758632720384"><h2 style="display:none;">퀴즈</h2><div class="block" data-type="ox"><div class="block-title">⭕ OX 퀴즈</div><div class="quiz-container" data-explanation="">
+                                <div class="quiz-title-preview"></div>
+                                <div class="ox-preview-item">
                                         <div class="ox-question-row">
                                         <div class="question-text"><strong>Q1.</strong> 시의 제목인 '수라(修羅)'는 평화롭고 안정된 상태를 의미한다.</div>
                                         <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
@@ -748,18 +786,23 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                         <div class="ox-choices" data-answer="X"><button data-choice="O">O</button><button data-choice="X">X</button></div>
                                         </div>
                                         <div class="feedback"></div>
-                                    </div><div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div></div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                    </div>
+                                
+                                <div class="quiz-controls"><button class="retry-quiz-btn">다시 풀기</button></div>
+                            </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container" data-explanation="">
                                 <div class="quiz-title-preview">시어의 상징적 의미 연결하기</div>
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">방바닥</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">문밖</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">차디찬 밤</span><span class="dot" data-id="2"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">가족이 해체되기 시작하는 공간</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가족 공동체 회복의 가능성이 있는 공간</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">우리 민족이 처한 비극적 현실과 시련</span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">가족 공동체 회복의 가능성이 있는 공간</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">우리 민족이 처한 비극적 현실과 시련</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">가족이 해체되기 시작하는 공간</span></div></div>
                                 </div>
+                                
                                 <div class="quiz-controls">
+                                    <span class="feedback"></span>
                                     <button class="check-line-quiz-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                            </div></div><div class="block" data-type="classification"><div class="block-title">🗂️ 분류하기 퀴즈</div><div class="classification-preview-container">
+                                </div></div><div class="block" data-type="classification"><div class="block-title">🗂️ 분류하기 퀴즈</div><div class="classification-preview-container" data-explanation="">
                                 <div class="quiz-title-preview">거미 가족에 대한 화자의 정서 변화를 연결하기</div>
                                 <p style="margin: 5px 0 10px;"><strong>카테고리</strong></p>
                                 <div class="classification-categories-preview">
@@ -776,44 +819,49 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                             <div class="category-drop-zone" data-category-name="무척 작은 새끼 거미"></div>
                         </div></div>
                                 <p style="margin: 15px 0 10px;"><strong>항목 카드</strong></p>
-                                <div class="classification-items-source"><span class="classification-item-card" draggable="true" data-correct-category="큰 거미(어미 거미)">가슴이 짜릿하고 서러움</span><span class="classification-item-card" draggable="true" data-correct-category="거미 새끼">아무 생각 없음 (무심함)</span><span class="classification-item-card" draggable="true" data-correct-category="무척 작은 새끼 거미">가슴이 메이고 슬픔</span></div>
+                                <div class="classification-items-source"><span class="classification-item-card" draggable="true" data-correct-category="거미 새끼">아무 생각 없음 (무심함)</span><span class="classification-item-card" draggable="true" data-correct-category="무척 작은 새끼 거미">가슴이 메이고 슬픔</span><span class="classification-item-card" draggable="true" data-correct-category="큰 거미(어미 거미)">가슴이 짜릿하고 서러움</span></div>
+                                
                                 <div class="quiz-controls">
                                     <span class="feedback"></span>
                                     <button class="check-classification-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                        </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                        </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container" data-explanation="">
                                 <div class="quiz-title-preview">화자의 행동과 의도 연결하기</div>
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">(1️⃣연) 문밖으로 쓸어버린다</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">(2️⃣연) 문밖으로 버리며</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">(3️⃣연) 보드라운 종이에 받어 버리며</span><span class="dot" data-id="2"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">연민과 안타까움, 가족이 만나기를 소망함</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">가족 공동체의 회복을 간절히 바람</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">아무 생각 없는 무심한 행위</span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">아무 생각 없는 무심한 행위</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">연민과 안타까움, 가족이 만나기를 소망함</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">가족 공동체의 회복을 간절히 바람</span></div></div>
                                 </div>
+                                
                                 <div class="quiz-controls">
+                                    <span class="feedback"></span>
                                     <button class="check-line-quiz-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                            </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container">
+                                </div></div><div class="block" data-type="line-quiz"><div class="block-title">〰️ 선긋기 퀴즈</div><div class="quiz-container" data-explanation="">
                                 <div class="quiz-title-preview">작품의 표현상 특징 연결하기</div>
                                 <div class="line-quiz-preview">
                                     <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="text">'어니젠가'와 같은 평안도 방언을 사용함</span><span class="dot" data-id="0"></span></div><div class="line-quiz-item" data-id="1"><span class="text">거미를 감정을 가진 인간처럼 표현함</span><span class="dot" data-id="1"></span></div><div class="line-quiz-item" data-id="2"><span class="text">연이 진행될수록 화자의 슬픔과 안타까움이 깊어짐</span><span class="dot" data-id="2"></span></div></div>
                                     <canvas class="line-quiz-canvas"></canvas>
-                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">의인화</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">점층적 심화</span></div><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">향토적 시어</span></div></div>
+                                    <div class="line-quiz-column"><div class="line-quiz-item" data-id="0"><span class="dot" data-id="0"></span><span class="text">향토적 시어</span></div><div class="line-quiz-item" data-id="1"><span class="dot" data-id="1"></span><span class="text">의인화</span></div><div class="line-quiz-item" data-id="2"><span class="dot" data-id="2"></span><span class="text">점층적 심화</span></div></div>
                                 </div>
+                                
                                 <div class="quiz-controls">
+                                    <span class="feedback"></span>
                                     <button class="check-line-quiz-btn">정답 확인</button>
                                     <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
                                 </div>
-                            </div></div><div class="block" data-type="mcq"><div class="block-title">🔢 객관식</div><div class="mcq-preview-item" data-attempts="0" data-answer="4" data-explanation="JTNDZGl2JTNFJUVDJTlEJUI0JTIwJUVCJUFDJUI4JUVDJUEwJTlDJUVCJThBJTk0JTIwJUVCJUIwJUIxJUVDJTg0JTlEJTIwJUVDJThCJTlDJUVDJTk3JTkwJTIwJUVCJTgyJTk4JUVEJTgzJTgwJUVCJTgyJTk4JUVCJThBJTk0JTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JUVDJThCJTlEJUVBJUIzJUJDJTIwJUVBJUIzJUI1JUVBJUIwJTg0JUVDJTlEJTk4JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJTg0JUIxJUVDJTlEJTg0JTIwJUVCJThCJUE0JUVCJUEzJUFDJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQiVBNSVCQyUyMCVFQSVCOCVCMCVFQyVBNCU4MCVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQyU5RSU5MSVFRCU5MiU4OCVFQyU5RCU4NCUyMCVFQSVCOSU4QSVFQyU5RCVCNCUyMCVFQyU5RSU4OCVFQSVCMiU4QyUyMCVFQSVCMCU5MCVFQyU4MyU4MSVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQiVCNiU4NCVFQyU4NCU5RCVFRCU5NSVBMCUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU4QSU5NCVFQyVBNyU4MCVFQiVBNSVCQyUyMCVFRCU4RiU4OSVFQSVCMCU4MCVFRCU5NSU5OCVFQiU4QSU5NCUyMCVFQiVBQyVCOCVFRCU5NSVBRCVFQyU5RSU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMCUyMCglRUMlQTAlODElRUMlQTAlODgpJTIwMSVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCclRUMlOTUlODQlRUIlQUElQTglMjAlRUMlODMlOUQlRUElQjAlODElMjAlRUMlOTclODYlRUMlOUQlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJDJUVCJUE1JUJDJTIwJUVCJUFDJUI4JUVCJUIwJTk2JUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJTkzJUI4JUVDJTk2JUI0JUVCJUIyJTg0JUVCJUE2JUJEJUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUQlOTUlOUMlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JTIwJUVEJTk1JUI0JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlDJUEwJUVCJUIwJTlDJUVEJTk1JTk4JUVCJThBJTk0JyUyMCVFQyU5OSVCOCVFQiVCNiU4MCVFQyU5RCU5OCUyMCVFRCU5RSU5OCVFQyU5QyVCQyVFQiVBMSU5QyVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQyU5NyVBRCVFRCU5NSVBMCVFQyU5RCU4NCUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUMlQjIlOTglRUMlOUQlOEMlRUMlOTclOTAlRUIlOEElOTQlMjAlRUMlOUQlOTglRUIlOEYlODQlRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMkMlMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUQlOTYlODklRUMlOUMlODQlRUElQjAlODAlMjAlRUElQjElQjAlRUIlQUYlQjglMjAlRUElQjAlODAlRUMlQTElQjElRUMlOUQlQjQlRUIlOUQlQkMlRUIlOEElOTQlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlMjAlRUQlOTUlQjQlRUMlQjIlQjQlRUMlOUQlOTglMjAlRUMlOEIlOUMlRUIlQjAlOUMlRUMlQTAlOTAlRUMlOUQlQjQlMjAlRUIlOTAlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTElMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMDIlRUMlOTclQjAlRUMlOTclOTAlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUIlOEElOTQlMjAlRUMlODMlODglRUIlODElQkMlRUIlQTUlQkMlMjAlRUMlQjAlQkUlRUMlOTUlODQlRUMlOTglQTglMjAlRUIlOTMlQUYlRUQlOTUlOUMlMjAlRUMlOTYlQjQlRUIlQUYlQjglMjAlRUElQjElQjAlRUIlQUYlQjglRUIlQTUlQkMlMjAlRUIlQjMlQjQlRUElQjMlQTAlMjAnJUVBJUIwJTgwJUVDJThBJUI0JUVDJTlEJUI0JTIwJUVDJUE3JTlDJUVCJUE2JUJGJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUMlODQlOUMlRUIlOUYlQUMlRUMlOUIlOEMnJUVEJTk1JUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCVFQyU5RSU5MCVFQyU4QiVBMCVFQyU5RCU5OCUyMCVFRCU5NiU4OSVFQyU5QyU4NCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFQyU5RCVCNCVFQyU4MiVCMCglRTklOUIlQTIlRTYlOTUlQTMpJUVEJTk1JTk4JUVBJUIyJThDJTIwJUVCJTkwJTlDJTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JTIwJUVBJUI1JUFDJUVDJTg0JUIxJUVDJTlCJTkwKCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSklRUMlOUQlODQlMjAlRUQlOTYlQTUlRUQlOTUlOUMlMjAlRUMlOTclQjAlRUIlQUYlQkMlRUElQjMlQkMlMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlOTglMjAlRUMlQTAlOTUlRUMlODQlOUMlRUElQjAlODAlMjAlRUMlODMlOUQlRUElQjIlQTglRUIlODIlQUMlRUMlOUQlOEMlRUMlOUQlODQlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlOTglRUIlQTklQjAlMkMlMjAlMjZsdCUzQiVFQiVCMyVCNCVFQSVCOCVCMCUyNmd0JTNCJUVDJTlEJTk4JTIwJyVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQyVBMSVCNCVFQyU5RSVBQyVFQiU5MyVBNCVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSVCNCUyMCVFQSVCOSU4QSVFQyU5RCU4MCUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MiVCOCVFQiU4QiVBNCclRUIlOEElOTQlMjAlRUMlODQlQTQlRUIlQUElODUlRUElQjMlQkMlMjAlRUMlOUQlQkMlRUMlQjklOTglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTIlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUIlOTAlOUMlMjAnJUVDJTk1JTg4JUVDJTk4JUE4JUVEJTk1JTlDJTIwJUVCJTgyJUI0JUVCJUI2JTgwJTIwJUVBJUIzJUI1JUVBJUIwJTg0JyVFQSVCMyVCQyUyMCclRUMlOUMlODQlRUQlOTglOTElRUMlQTAlODElRUMlOUQlQjglMjAlRUMlOTklQjglRUIlQjYlODAlMjAlRUElQjMlQjUlRUElQjAlODQnJUVDJTlEJTk4JTIwJUVCJThDJTgwJUVCJUE2JUJEJUVDJTlEJTgwJTIwJUVDJThCJTlDJUVDJTlEJTk4JTIwJyVFQiVCMCVBOSVFQiVCMCU5NCVFQiU4QiVBNSclRUElQjMlQkMlMjAnJUVDJUIwJUE4JUVCJTk0JTk0JUVDJUIwJUFDJTIwJUVCJUIwJUE0JyVFQyU5RCU5OCUyMCclRUIlQUMlQjglRUIlQjAlOTYnJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVBJUI1JUFDJUVDJUIyJUI0JUVEJTk5JTk0JUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQiU5NCVCMCVFQiU5QyVCQiVFRCU5NSU5QyUyMCVFQiVCMCVBOSVFQSVCMyVCQyUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQyVCNiVBNSVFQSVCMyVBMCUyMCVFQyU5QyU4NCVFRCU5NyU5OCVFRCU5NSU5QyUyMCVFQiVCMCU5NiVFQyU5RCU5OCUyMCVFQSVCMyVCNSVFQSVCMCU4NCVFQyVBMCU4MSUyMCVFQiU4QyU4MCVFQiVCOSU4NCVFQiU4QSU5NCUyQyUyMCVFQyU4MiVCNiVFQyU5RCU5OCUyMCVFRCU4NCVCMCVFQyVBMCU4NCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQiU4MiVCNCVFQyVBQiU5MyVFQSVCMiVBOCUyMCVFQyU4QiU5QyVFQiVBMCVBOCVFQyU5RCU4NCUyMCVFQSVCMiVBQSVFQSVCMiU4QyUyMCVFQiU5MCU5OCVFQiU4QSU5NCUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCU5OCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyU4NCVCMSVFQyU5RCU4NCUyMCVFRCU5QSVBOCVFQSVCMyVCQyVFQyVBMCU4MSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MyU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMyUyMCglRUIlQjYlODAlRUMlQTAlODElRUMlQTAlODgpJTIwMyVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQSVCMCU4MCUyMCclRUIlQjMlQjQlRUIlOTMlOUMlRUIlOUQlQkMlRUMlOUElQjQlMjAlRUMlQTIlODUlRUMlOUQlQjQlRUMlOTclOTAlMjAlRUIlQjAlOUIlRUMlOTYlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JUVCJUE1JUJDJTIwJUVCJUIyJTg0JUVCJUE2JUFDJUVCJThBJTk0JTIwJUVEJTk2JTg5JUVDJTlDJTg0JUVCJThBJTk0JTIwMSVFQyU5NyVCMCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU4MyU5QyVFQiU4RiU4NCVFQyU5OSU4MCUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQiU4QyU4MCVFQyU4MyU4MSVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSU5QyUyMCVFQyVBMSVCMCVFQyU4QiVBQyVFQyU4NCVCMSVFQSVCMyVCQyUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQyU5RCVCNCUyMCVFQiU4QiVCNCVFQSVCOCVCNCUyMCVFRCU5NiU4OSVFQiU4RiU5OSVFQyU5RCU5OCUyMCVFQiVCMyU4MCVFRCU5OSU5NCVFQiVBNSVCQyUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUQlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMjAlRUMlOUQlQjQlRUElQjIlODMlRUMlOUQlQjQlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlFJTkwJUVDJThCJUEwJUVDJTlEJTk4JTIwJUVDJTlEJTk4JUVDJUE3JTgwJUVCJUExJTlDJTIwJUVDJUEwJTgxJUVBJUI3JUI5JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVCJUIzJUI1JUVDJTlCJTkwJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUElQjclQjglMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlOTclOTAlMjAlRUMlOTUlODglRUIlOEYlODQnJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTgzJTlDJUVCJThGJTg0JUVCJThBJTk0JTIwJUVDJTk1JTg0JUVCJThCJTk5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5OCVBNCVFRCU5RSU4OCVFQiVBMCVBNCUyMCVFQiVBNyU4OCVFQyVBNyU4MCVFQiVBNyU4OSUyMCVFQSVCNSVBQyVFQyVBMCU4OCVFQyU5RCVCOCUyMCUyMiVFQyU4OSVBQyVFQyU5RCVCNCUyMCVFQiVBNyU4QyVFQiU4MiU5OCVFQSVCOCVCMCVFQiU4MiU5OCUyMCVFRCU5NiU4OCVFQyU5QyVCQyVFQiVBOSVCNCUyMCVFQyVBMiU4QiVFQyU5QyVCQyVFQiVBMCVBOCVFQiVBNyU4QyUyMCVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQyU4QSVBQyVFRCU4RCVCQyVFRCU5NSU5QyVFQiU4QiVBNCUyMiVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQyU5NSU4QyUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU5MyVBRiVFQyU5RCVCNCUyQyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCVFQSVCNyVCOCVFQiU5MyVBNCVFQyU5RCU5OCUyMCVFQyU5RSVBQyVFRCU5QSU4QyVFQiVBNSVCQyUyMCVFQiU4QiVBOCVFQyVBNyU4MCUyMCVFQyU4NiU4QyVFQiVBNyU5RCVFRCU5NSVBMCUyMCVFQiVCRiU5MCUyMCVFQSVCNyVCOCUyMCVFQSVCMiVCMCVFQSVCMyVCQyVFQiVBNSVCQyUyMCVFRCU5OSU5NSVFQyU4QiVBMCVFRCU5NSU5OCVFQyVBNyU4MCUyMCVFQiVBQSVCQiVFRCU5NSU5OCVFQiVBOSVCMCUyQyUyMCVFQiVBQyVCNCVFQiVBMCVBNSVFQSVCMCU5MCVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU4QSU5MCVFQiU4MSVCQyVFQSVCMyVBMCUyMCVFQyU5RSU4OCVFQyU4QSVCNSVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUIlOTQlQjAlRUIlOUQlQkMlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUElQjAlODAlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlRUIlQTUlQkMlMjAlRUMlQTAlODElRUElQjclQjklRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUIlQjMlQjUlRUMlOUIlOTAlRUQlOTUlOTglRUElQjMlQTAlMjAlRUMlOTUlODglRUIlOEYlODQlRUQlOTUlOUMlRUIlOEIlQTQlRUIlOEElOTQlMjAlRUMlQTclODQlRUMlODglQTAlRUMlOUQlODAlMjAlRUMlOEIlOUMlRUMlOUQlOTglMjAlRUIlQjklODQlRUElQjclQjklRUMlQTAlODElMjAlRUMlQTAlOTUlRUMlODQlOUMlRUMlOTklODAlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlODQlMjAlRUElQjMlQTAlRUIlQTAlQTQlRUQlOTUlQTAlMjAlRUIlOTUlOEMlMjAlRUMlQTAlODElRUMlQTAlODglRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOEElQjUlRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTQlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCclRUMlODglOTglRUIlOUQlQkMoJUVDJTk1JTg0JUVDJTg4JTk4JUVCJTlEJUJDKSclRUIlOEElOTQlMjAlRUIlQjMlQjglRUIlOUUlOTglMjAlRUMlOEIlQjglRUMlOUIlODAlRUMlOUQlQjQlMjAlRUIlODElOEElRUMlOUQlQjQlRUMlQTclODAlMjAlRUMlOTUlOEElRUIlOEElOTQlMjAlRUQlOTglQkMlRUIlOUUlODAlRUMlOUQlOTglMjAlRUMlODQlQjglRUElQjMlODQlRUIlQTUlQkMlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQyU5RCU5OCUyMCVFQyU4NCVBNCVFQiVBQSU4NSVFQyVCMiU5OCVFQiU5RiVCQyUyQyUyMCVFQyU5RCVCNCUyMCVFQyU4QiU5QyVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCVCNCVFQiU5RCVCQyVFQiU4QSU5NCUyMCVFQyU5RSU5MSVFQyU5RCU4MCUyMCVFQSVCMyVCNSVFQiU4RiU5OSVFQyVCMiVCNCVFQSVCMCU4MCUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU5NiU4OSVFQyU5QyU4NCUyMCVFRCU5NSU5OCVFQiU4MiU5OCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFRCU5NSVCNCVFQyVCMiVCNCVFQiU5MCU5OCVFQSVCMyVBMCUyMCVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyVBMCU4MSVFQyU5RCVCNCVFQSVCMyVBMCUyMCVFQyVCMCVCOCVFRCU5OCVCOSVFRCU5NSU5QyUyMCVFQyU4MyU4MSVFRCU5OSVBOSVFQyU5RCU4MCUyMCclRUMlODglOTglRUIlOUQlQkMnJUVCJTlEJUJDJUVCJThBJTk0JTIwJUVDJUEwJTlDJUVCJUFBJUE5JUVDJTlEJTg0JTIwJUVEJTg2JUI1JUVEJTk1JUI0JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJUE3JTkxJUVDJTk1JUJEJUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUzQyUyRmRpdiUzRQ=="><p><strong>Q.</strong> <span style="font-size: 17px;">『수라』를 &lt;보기&gt;의 관점에서 감상한 내용으로 적절하지&nbsp;</span><u style="font-size: 17px;"><b>않은</b></u><span style="font-size: 17px;">&nbsp;것은?</span></p><div class="mcq-passage-preview"><div style="text-align: center;"><b>&lt; 보 기 &gt;&nbsp;</b></div><div>&nbsp; 백석의 시에서 ‘공동체’는 중요한 의미를 지닌다. 그의 시에 나타나는 공동체는 따뜻하고 정겨운 삶의 공간이지만, 외부의 힘에 의해 쉽게 해체될 수 있는 연약한 모습을 보이기도 한다. 이 과정에서 시적 화자는 공동체의 해체를 유발하거나 목격하는 역할을 하며, 흩어지는 존재들에 대해 깊은 연민과 슬픔을 드러낸다. 특히 그의 시에서는 안온한 내부 공간과 위협적인 외부 공간의 대립이 나타나는데, 생명체들이 내부에서 외부로 내몰리는 과정은 공동체 붕괴의 비극성을 심화시킨다. 시인은 이러한 비극적 상황을 ‘수라’와 같은 혼란의 이미지로 형상화한다.</div></div><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① 1연에서 화자가 ‘거미 새끼’를 ‘아모 생각 없이’ ‘문밖으로 쓸어버리’는 행위는, 화자가 공동체 해체를 유발하는 외부의 힘으로 작용하는 순간을 보여주는군.</div><div class="mcq-preview-option" data-choice="2">② 2연에서 ‘큰 거미’가 ‘새끼 거미 쓸려 나간 곳’에 나타난 것을 보고 화자가 ‘서러워’하는 것은, 흩어진 공동체 구성원에 대한 연민의 정서가 발현된 것으로 볼 수 있군.</div><div class="mcq-preview-option" data-choice="3">③ ‘방바닥’이 안온한 내부 공간이라면 ‘차디찬 밤’의 ‘문밖’은 위협적인 외부 공간으로 설정되어, 두 공간의 대립을 통해 거미 가족이 처한 비극적 상황을 부각하고 있군.</div><div class="mcq-preview-option" data-choice="4">④ 3연에서 화자가 ‘무척 작은 새끼 거미’를 ‘보드라운 종이에 받어’ ‘문밖으로 버리’는 행위는, 파괴되었던 공동체를 자신의 의지로 적극적으로 복원시키고 그 결과에 안도하는 화자의 태도를 보여주는군.</div><div class="mcq-preview-option" data-choice="5">⑤ 이 시의 제목인 ‘수라’는 한 가족 공동체가 해체되어 뿔뿔이 흩어지는 혼란스럽고 참혹한 상황 그 자체를 상징적으로 압축하여 보여주는 것이라고 할 수 있군.</div></div>
+                                </div></div><div class="block" data-type="mcq"><div class="block-title">🔢 객관식</div><div class="mcq-preview-item" data-attempts="0" data-answer="4" data-explanation="JTNDZGl2JTNFJUVDJTlEJUI0JTIwJUVCJUFDJUI4JUVDJUEwJTlDJUVCJThBJTk0JTIwJUVCJUIwJUIxJUVDJTg0JTlEJTIwJUVDJThCJTlDJUVDJTk3JTkwJTIwJUVCJTgyJTk4JUVEJTgzJTgwJUVCJTgyJTk4JUVCJThBJTk0JTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JUVDJThCJTlEJUVBJUIzJUJDJTIwJUVBJUIzJUI1JUVBJUIwJTg0JUVDJTlEJTk4JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJTg0JUIxJUVDJTlEJTg0JTIwJUVCJThCJUE0JUVCJUEzJUFDJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQiVBNSVCQyUyMCVFQSVCOCVCMCVFQyVBNCU4MCVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQyU5RSU5MSVFRCU5MiU4OCVFQyU5RCU4NCUyMCVFQSVCOSU4QSVFQyU5RCVCNCUyMCVFQyU5RSU4OCVFQSVCMiU4QyUyMCVFQSVCMCU5MCVFQyU4MyU4MSVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQiVCNiU4NCVFQyU4NCU5RCVFRCU5NSVBMCUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU4QSU5NCVFQyVBNyU4MCVFQiVBNSVCQyUyMCVFRCU4RiU4OSVFQSVCMCU4MCVFRCU5NSU5OCVFQiU4QSU5NCUyMCVFQiVBQyVCOCVFRCU5NSVBRCVFQyU5RSU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMCUyMCglRUMlQTAlODElRUMlQTAlODgpJTIwMSVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCclRUMlOTUlODQlRUIlQUElQTglMjAlRUMlODMlOUQlRUElQjAlODElMjAlRUMlOTclODYlRUMlOUQlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JTIwJUVDJTgzJTg4JUVCJTgxJUJDJUVCJUE1JUJDJTIwJUVCJUFDJUI4JUVCJUIwJTk2JUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJTkzJUI4JUVDJTk2JUI0JUVCJUIyJTg0JUVCJUE2JUJEJUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUQlOTUlOUMlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVDJTlEJTk4JTIwJUVEJTk1JUI0JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlDJUEwJUVCJUIwJTlDJUVEJTk1JTk4JUVCJThBJTk0JyUyMCVFQyU5OSVCOCVFQiVCNiU4MCVFQyU5RCU5OCUyMCVFRCU5RSU5OCVFQyU5QyVCQyVFQiVBMSU5QyVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQyU5NyVBRCVFRCU5NSVBMCVFQyU5RCU4NCUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUMlQjIlOTglRUMlOUQlOEMlRUMlOTclOTAlRUIlOEElOTQlMjAlRUMlOUQlOTglRUIlOEYlODQlRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMkMlMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUQlOTYlODklRUMlOUMlODQlRUElQjAlODAlMjAlRUElQjElQjAlRUIlQUYlQjglMjAlRUElQjAlODAlRUMlQTElQjElRUMlOUQlQjQlRUIlOUQlQkMlRUIlOEElOTQlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlMjAlRUQlOTUlQjQlRUMlQjIlQjQlRUMlOUQlOTglMjAlRUMlOEIlOUMlRUIlQjAlOUMlRUMlQTAlOTAlRUMlOUQlQjQlMjAlRUIlOTAlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTElMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMDIlRUMlOTclQjAlRUMlOTclOTAlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUIlOEElOTQlMjAlRUMlODMlODglRUIlODElQkMlRUIlQTUlQkMlMjAlRUMlQjAlQkUlRUMlOTUlODQlRUMlOTglQTglMjAlRUIlOTMlQUYlRUQlOTUlOUMlMjAlRUMlOTYlQjQlRUIlQUYlQjglMjAlRUElQjElQjAlRUIlQUYlQjglRUIlQTUlQkMlMjAlRUIlQjMlQjQlRUElQjMlQTAlMjAnJUVBJUIwJTgwJUVDJThBJUI0JUVDJTlEJUI0JTIwJUVDJUE3JTlDJUVCJUE2JUJGJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUMlODQlOUMlRUIlOUYlQUMlRUMlOUIlOEMnJUVEJTk1JUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5RCVCNCVFQiU4QSU5NCUyMCVFQyU5RSU5MCVFQyU4QiVBMCVFQyU5RCU5OCUyMCVFRCU5NiU4OSVFQyU5QyU4NCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFQyU5RCVCNCVFQyU4MiVCMCglRTklOUIlQTIlRTYlOTUlQTMpJUVEJTk1JTk4JUVBJUIyJThDJTIwJUVCJTkwJTlDJTIwJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JTIwJUVBJUI1JUFDJUVDJTg0JUIxJUVDJTlCJTkwKCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSklRUMlOUQlODQlMjAlRUQlOTYlQTUlRUQlOTUlOUMlMjAlRUMlOTclQjAlRUIlQUYlQkMlRUElQjMlQkMlMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlOTglMjAlRUMlQTAlOTUlRUMlODQlOUMlRUElQjAlODAlMjAlRUMlODMlOUQlRUElQjIlQTglRUIlODIlQUMlRUMlOUQlOEMlRUMlOUQlODQlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlOTglRUIlQTklQjAlMkMlMjAlMjZsdCUzQiVFQiVCMyVCNCVFQSVCOCVCMCUyNmd0JTNCJUVDJTlEJTk4JTIwJyVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQyVBMSVCNCVFQyU5RSVBQyVFQiU5MyVBNCVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSVCNCUyMCVFQSVCOSU4QSVFQyU5RCU4MCUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MiVCOCVFQiU4QiVBNCclRUIlOEElOTQlMjAlRUMlODQlQTQlRUIlQUElODUlRUElQjMlQkMlMjAlRUMlOUQlQkMlRUMlQjklOTglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTIlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCUyNmx0JTNCJUVCJUIzJUI0JUVBJUI4JUIwJTI2Z3QlM0IlRUMlOTclOTAlRUMlODQlOUMlMjAlRUMlOTYlQjglRUElQjglODklRUIlOTAlOUMlMjAnJUVDJTk1JTg4JUVDJTk4JUE4JUVEJTk1JTlDJTIwJUVCJTgyJUI0JUVCJUI2JTgwJTIwJUVBJUIzJUI1JUVBJUIwJTg0JyVFQSVCMyVCQyUyMCclRUMlOUMlODQlRUQlOTglOTElRUMlQTAlODElRUMlOUQlQjglMjAlRUMlOTklQjglRUIlQjYlODAlMjAlRUElQjMlQjUlRUElQjAlODQnJUVDJTlEJTk4JTIwJUVCJThDJTgwJUVCJUE2JUJEJUVDJTlEJTgwJTIwJUVDJThCJTlDJUVDJTlEJTk4JTIwJyVFQiVCMCVBOSVFQiVCMCU5NCVFQiU4QiVBNSclRUElQjMlQkMlMjAnJUVDJUIwJUE4JUVCJTk0JTk0JUVDJUIwJUFDJTIwJUVCJUIwJUE0JyVFQyU5RCU5OCUyMCclRUIlQUMlQjglRUIlQjAlOTYnJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVBJUI1JUFDJUVDJUIyJUI0JUVEJTk5JTk0JUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQiU5NCVCMCVFQiU5QyVCQiVFRCU5NSU5QyUyMCVFQiVCMCVBOSVFQSVCMyVCQyUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQyVCNiVBNSVFQSVCMyVBMCUyMCVFQyU5QyU4NCVFRCU5NyU5OCVFRCU5NSU5QyUyMCVFQiVCMCU5NiVFQyU5RCU5OCUyMCVFQSVCMyVCNSVFQSVCMCU4NCVFQyVBMCU4MSUyMCVFQiU4QyU4MCVFQiVCOSU4NCVFQiU4QSU5NCUyQyUyMCVFQyU4MiVCNiVFQyU5RCU5OCUyMCVFRCU4NCVCMCVFQyVBMCU4NCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQiU4MiVCNCVFQyVBQiU5MyVFQSVCMiVBOCUyMCVFQyU4QiU5QyVFQiVBMCVBOCVFQyU5RCU4NCUyMCVFQSVCMiVBQSVFQSVCMiU4QyUyMCVFQiU5MCU5OCVFQiU4QSU5NCUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCU5OCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyU4NCVCMSVFQyU5RCU4NCUyMCVFRCU5QSVBOCVFQSVCMyVCQyVFQyVBMCU4MSVFQyU5QyVCQyVFQiVBMSU5QyUyMCVFQiU5MyU5QyVFQiU5RiVBQyVFQiU4MyU4NSVFQiU4QiU4OCVFQiU4QiVBNC4lM0MlMkZkaXYlM0UlM0NkaXYlM0UlM0NiciUzRSUzQyUyRmRpdiUzRSUzQ2RpdiUzRSVFMiU5MSVBMyUyMCglRUIlQjYlODAlRUMlQTAlODElRUMlQTAlODgpJTIwMyVFQyU5NyVCMCVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQSVCMCU4MCUyMCclRUIlQjMlQjQlRUIlOTMlOUMlRUIlOUQlQkMlRUMlOUElQjQlMjAlRUMlQTIlODUlRUMlOUQlQjQlRUMlOTclOTAlMjAlRUIlQjAlOUIlRUMlOTYlQjQnJTIwJUVBJUIxJUIwJUVCJUFGJUI4JUVCJUE1JUJDJTIwJUVCJUIyJTg0JUVCJUE2JUFDJUVCJThBJTk0JTIwJUVEJTk2JTg5JUVDJTlDJTg0JUVCJThBJTk0JTIwMSVFQyU5NyVCMCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU4MyU5QyVFQiU4RiU4NCVFQyU5OSU4MCUyMCVFQiU4QiVBQyVFQiVBNiVBQyUyMCVFQiU4QyU4MCVFQyU4MyU4MSVFQyU5NyU5MCUyMCVFQiU4QyU4MCVFRCU5NSU5QyUyMCVFQyVBMSVCMCVFQyU4QiVBQyVFQyU4NCVCMSVFQSVCMyVCQyUyMCVFQyU5NyVCMCVFQiVBRiVCQyVFQyU5RCVCNCUyMCVFQiU4QiVCNCVFQSVCOCVCNCUyMCVFRCU5NiU4OSVFQiU4RiU5OSVFQyU5RCU5OCUyMCVFQiVCMyU4MCVFRCU5OSU5NCVFQiVBNSVCQyUyMCVFQiVCMyVCNCVFQyU5NyVBQyVFQyVBNCU4RCVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUQlOTUlOTglRUMlQTclODAlRUIlQTclOEMlMjAlRUMlOUQlQjQlRUElQjIlODMlRUMlOUQlQjQlMjAnJUVBJUIzJUI1JUVCJThGJTk5JUVDJUIyJUI0JUVCJUE1JUJDJTIwJUVDJTlFJTkwJUVDJThCJUEwJUVDJTlEJTk4JTIwJUVDJTlEJTk4JUVDJUE3JTgwJUVCJUExJTlDJTIwJUVDJUEwJTgxJUVBJUI3JUI5JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVCJUIzJUI1JUVDJTlCJTkwJyVFRCU5NSU5OCVFQSVCMyVBMCUyMCclRUElQjclQjglMjAlRUElQjIlQjAlRUElQjMlQkMlRUMlOTclOTAlMjAlRUMlOTUlODglRUIlOEYlODQnJUVEJTk1JTk4JUVCJThBJTk0JTIwJUVEJTgzJTlDJUVCJThGJTg0JUVCJThBJTk0JTIwJUVDJTk1JTg0JUVCJThCJTk5JUVCJThCJTg4JUVCJThCJUE0LiUyMCVFQyU5OCVBNCVFRCU5RSU4OCVFQiVBMCVBNCUyMCVFQiVBNyU4OCVFQyVBNyU4MCVFQiVBNyU4OSUyMCVFQSVCNSVBQyVFQyVBMCU4OCVFQyU5RCVCOCUyMCUyMiVFQyU4OSVBQyVFQyU5RCVCNCUyMCVFQiVBNyU4QyVFQiU4MiU5OCVFQSVCOCVCMCVFQiU4MiU5OCUyMCVFRCU5NiU4OCVFQyU5QyVCQyVFQiVBOSVCNCUyMCVFQyVBMiU4QiVFQyU5QyVCQyVFQiVBMCVBOCVFQiVBNyU4QyUyMCVFRCU5NSU5OCVFQSVCMyVBMCUyMCVFQyU4QSVBQyVFRCU4RCVCQyVFRCU5NSU5QyVFQiU4QiVBNCUyMiVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQyU5NSU4QyUyMCVFQyU4OCU5OCUyMCVFQyU5RSU4OCVFQiU5MyVBRiVFQyU5RCVCNCUyQyUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQiU4QSU5NCUyMCVFQSVCNyVCOCVFQiU5MyVBNCVFQyU5RCU5OCUyMCVFQyU5RSVBQyVFRCU5QSU4QyVFQiVBNSVCQyUyMCVFQiU4QiVBOCVFQyVBNyU4MCUyMCVFQyU4NiU4QyVFQiVBNyU5RCVFRCU5NSVBMCUyMCVFQiVCRiU5MCUyMCVFQSVCNyVCOCUyMCVFQSVCMiVCMCVFQSVCMyVCQyVFQiVBNSVCQyUyMCVFRCU5OSU5NSVFQyU4QiVBMCVFRCU5NSU5OCVFQyVBNyU4MCUyMCVFQiVBQSVCQiVFRCU5NSU5OCVFQiVBOSVCMCUyQyUyMCVFQiVBQyVCNCVFQiVBMCVBNSVFQSVCMCU5MCVFQSVCMyVCQyUyMCVFQyU4QSVBQyVFRCU5NCU5NCVFQyU5RCU4NCUyMCVFQiU4QSU5MCVFQiU4MSVCQyVFQSVCMyVBMCUyMCVFQyU5RSU4OCVFQyU4QSVCNSVFQiU4QiU4OCVFQiU4QiVBNC4lMjAlRUIlOTQlQjAlRUIlOUQlQkMlRUMlODQlOUMlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUElQjAlODAlMjAlRUElQjMlQjUlRUIlOEYlOTklRUMlQjIlQjQlRUIlQTUlQkMlMjAlRUMlQTAlODElRUElQjclQjklRUMlQTAlODElRUMlOUMlQkMlRUIlQTElOUMlMjAlRUIlQjMlQjUlRUMlOUIlOTAlRUQlOTUlOTglRUElQjMlQTAlMjAlRUMlOTUlODglRUIlOEYlODQlRUQlOTUlOUMlRUIlOEIlQTQlRUIlOEElOTQlMjAlRUMlQTclODQlRUMlODglQTAlRUMlOUQlODAlMjAlRUMlOEIlOUMlRUMlOUQlOTglMjAlRUIlQjklODQlRUElQjclQjklRUMlQTAlODElMjAlRUMlQTAlOTUlRUMlODQlOUMlRUMlOTklODAlMjAlRUQlOTklOTQlRUMlOUUlOTAlRUMlOUQlOTglMjAlRUMlOEElQUMlRUQlOTQlOTQlRUMlOUQlODQlMjAlRUElQjMlQTAlRUIlQTAlQTQlRUQlOTUlQTAlMjAlRUIlOTUlOEMlMjAlRUMlQTAlODElRUMlQTAlODglRUQlOTUlOTglRUMlQTclODAlMjAlRUMlOTUlOEElRUMlOEElQjUlRUIlOEIlODglRUIlOEIlQTQuJTNDJTJGZGl2JTNFJTNDZGl2JTNFJTNDYnIlM0UlM0MlMkZkaXYlM0UlM0NkaXYlM0UlRTIlOTElQTQlMjAoJUVDJUEwJTgxJUVDJUEwJTg4KSUyMCclRUMlODglOTglRUIlOUQlQkMoJUVDJTk1JTg0JUVDJTg4JTk4JUVCJTlEJUJDKSclRUIlOEElOTQlMjAlRUIlQjMlQjglRUIlOUUlOTglMjAlRUMlOEIlQjglRUMlOUIlODAlRUMlOUQlQjQlMjAlRUIlODElOEElRUMlOUQlQjQlRUMlQTclODAlMjAlRUMlOTUlOEElRUIlOEElOTQlMjAlRUQlOTglQkMlRUIlOUUlODAlRUMlOUQlOTglMjAlRUMlODQlQjglRUElQjMlODQlRUIlQTUlQkMlMjAlRUMlOUQlOTglRUIlQUYlQjglRUQlOTUlQTklRUIlOEIlODglRUIlOEIlQTQuJTIwJTI2bHQlM0IlRUIlQjMlQjQlRUElQjglQjAlMjZndCUzQiVFQyU5RCU5OCUyMCVFQyU4NCVBNCVFQiVBQSU4NSVFQyVCMiU5OCVFQiU5RiVCQyUyQyUyMCVFQyU5RCVCNCUyMCVFQyU4QiU5QyVFQyU5NyU5MCVFQyU4NCU5QyUyMCVFQSVCMSVCMCVFQiVBRiVCOCUyMCVFQSVCMCU4MCVFQyVBMSVCMSVFQyU5RCVCNCVFQiU5RCVCQyVFQiU4QSU5NCUyMCVFQyU5RSU5MSVFQyU5RCU4MCUyMCVFQSVCMyVCNSVFQiU4RiU5OSVFQyVCMiVCNCVFQSVCMCU4MCUyMCVFRCU5OSU5NCVFQyU5RSU5MCVFQyU5RCU5OCUyMCVFQiVBQyVCNCVFQyU4QiVBQyVFRCU5NSU5QyUyMCVFRCU5NiU4OSVFQyU5QyU4NCUyMCVFRCU5NSU5OCVFQiU4MiU5OCVFQiVBMSU5QyUyMCVFQyU5RCVCOCVFRCU5NSVCNCUyMCVFRCU5NSVCNCVFQyVCMiVCNCVFQiU5MCU5OCVFQSVCMyVBMCUyMCVFRCU5RCVBOSVFQyU5NiVCNCVFQyVBNyU4MCVFQiU4QSU5NCUyMCVFQiVCOSU4NCVFQSVCNyVCOSVFQyVBMCU4MSVFQyU5RCVCNCVFQSVCMyVBMCUyMCVFQyVCMCVCOCVFRCU5OCVCOSVFRCU5NSU5QyUyMCVFQyU4MyU4MSVFRCU5OSVBOSVFQyU5RCU4MCUyMCclRUMlODglOTglRUIlOUQlQkMnJUVCJTlEJUJDJUVCJThBJTk0JTIwJUVDJUEwJTlDJUVCJUFBJUE5JUVDJTlEJTg0JTIwJUVEJTg2JUI1JUVEJTk1JUI0JTIwJUVDJTgzJTgxJUVDJUE3JTk1JUVDJUEwJTgxJUVDJTlDJUJDJUVCJUExJTlDJTIwJUVDJUE3JTkxJUVDJTk1JUJEJUVCJTkwJUE5JUVCJThCJTg4JUVCJThCJUE0LiUzQyUyRmRpdiUzRQ=="><p><strong>Q.</strong> <span style="font-size: 17px;">『수라』를 &lt;보기&gt;의 관점에서 감상한 내용으로 적절하지&nbsp;</span><u style="font-size: 17px;"><b>않은</b></u><span style="font-size: 17px;">&nbsp;것은?</span></p><div class="mcq-passage-preview"><div style="text-align: center;"><b>&lt; 보 기 &gt;&nbsp;</b></div><div>&nbsp; 백석의 시에서 ‘공동체’는 중요한 의미를 지닌다. 그의 시에 나타나는 공동체는 따뜻하고 정겨운 삶의 공간이지만, 외부의 힘에 의해 쉽게 해체될 수 있는 연약한 모습을 보이기도 한다. 이 과정에서 시적 화자는 공동체의 해체를 유발하거나 목격하는 역할을 하며, 흩어지는 존재들에 대해 깊은 연민과 슬픔을 드러낸다. 특히 그의 시에서는 안온한 내부 공간과 위협적인 외부 공간의 대립이 나타나는데, 생명체들이 내부에서 외부로 내몰리는 과정은 공동체 붕괴의 비극성을 심화시킨다. 시인은 이러한 비극적 상황을 ‘수라’와 같은 혼란의 이미지로 형상화한다.</div></div><div class="mcq-options-preview"><div class="mcq-preview-option" data-choice="1">① 1연에서 화자가 ‘거미 새끼’를 ‘아모 생각 없이’ ‘문밖으로 쓸어버리’는 행위는, 화자가 공동체 해체를 유발하는 외부의 힘으로 작용하는 순간을 보여주는군.</div><div class="mcq-preview-option" data-choice="2">② 2연에서 ‘큰 거미’가 ‘새끼 거미 쓸려 나간 곳’에 나타난 것을 보고 화자가 ‘서러워’하는 것은, 흩어진 공동체 구성원에 대한 연민의 정서가 발현된 것으로 볼 수 있군.</div><div class="mcq-preview-option" data-choice="3">③ ‘방바닥’이 안온한 내부 공간이라면 ‘차디찬 밤’의 ‘문밖’은 위협적인 외부 공간으로 설정되어, 두 공간의 대립을 통해 거미 가족이 처한 비극적 상황을 부각하고 있군.</div><div class="mcq-preview-option" data-choice="4">④ 3연에서 화자가 ‘무척 작은 새끼 거미’를 ‘보드라운 종이에 받어’ ‘문밖으로 버리’는 행위는, 파괴되었던 공동체를 자신의 의지로 적극적으로 복원시키고 그 결과에 안도하는 화자의 태도를 보여주는군.</div><div class="mcq-preview-option" data-choice="5">⑤ 이 시의 제목인 ‘수라’는 한 가족 공동체가 해체되어 뿔뿔이 흩어지는 혼란스럽고 참혹한 상황 그 자체를 상징적으로 압축하여 보여주는 것이라고 할 수 있군.</div></div>
                             <div class="quiz-controls">
                                 <span class="feedback"></span>
                                 <button class="retry-quiz-btn">다시 풀기</button>
                             </div>
                             <div class="explanation"></div>
                             </div></div></div></div>
-                <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
                 <div id="explanationPopup" class="explanation-popup"></div>
             
+                        <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
                     </div>
                     <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -1067,11 +1115,21 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
 
                     const instance = {
                         checkAnswers: () => {
+                            let allConnectionsCorrect = true;
+                            const totalPairs = quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item').length;
+
+                            if (connections.length !== totalPairs) {
+                                allConnectionsCorrect = false;
+                            }
+
                             connections.forEach(conn => {
-                                conn.color = conn.leftId === conn.rightId ? '#28a745' : '#dc3545';
+                                const isCorrect = conn.leftId === conn.rightId;
+                                if (!isCorrect) allConnectionsCorrect = false;
+                                conn.color = isCorrect ? '#28a745' : '#dc3545';
                             });
                             redrawLines();
                             allDots.forEach(d => d.classList.add('disabled'));
+                            return allConnectionsCorrect;
                         },
                         reset: () => {
                             connections = [];
@@ -1130,40 +1188,37 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
 
                     if (droppedItem.matches('.ordering-item')) {
                         setTimeout(() => {
-                            const targetContainer = droppedItem.closest('.ordering-target-container');
-                            
-                            if (targetContainer) {
-                                const item = targetContainer.closest('.ordering-preview-item');
-                                const feedbackIcon = item.querySelector('.ordering-item-feedback');
-                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item'));
-                                const studentAnswer = studentItems.map(i => i.textContent.trim()).join(' // ');
+                            // 이전에 있던 로직은 모두 삭제하고, 아래 새로운 로직으로 교체합니다.
+                            const quizContainer = droppedItem.closest('.ordering-preview-container');
+                            if (!quizContainer) return;
+
+                            let allQuestionsCorrect = true;
+
+                            quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                const targetContainer = item.querySelector('.ordering-target-container');
+                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                                const studentAnswer = studentItems.join(' // ');
                                 const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
                                 const totalItemCount = correctAnswer.split('//').length;
 
-                                if (studentAnswer === correctAnswer) {
-                                    targetContainer.classList.remove('incorrect');
-                                    targetContainer.classList.add('correct');
-                                    if (feedbackIcon) feedbackIcon.textContent = '⭕';
-
-                                    const quizContainer = item.closest('.ordering-preview-container');
-                                    const allItems = quizContainer.querySelectorAll('.ordering-preview-item');
-                                    const allCorrect = Array.from(allItems).every(i => i.querySelector('.ordering-target-container.correct'));
-
-                                    if (allCorrect) {
-                                        const feedbackEl = quizContainer.querySelector('.feedback');
-                                        feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
-                                        feedbackEl.className = 'feedback show correct';
-                                        quizContainer.querySelector('.check-ordering-btn').style.display = 'none';
-                                        quizContainer.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                                    }
-                                } else if (studentItems.length === totalItemCount) {
-                                    targetContainer.classList.remove('correct');
-                                    targetContainer.classList.add('incorrect');
-                                    if (feedbackIcon) feedbackIcon.textContent = '❌';
-                                } else {
-                                    targetContainer.classList.remove('correct', 'incorrect');
-                                    if (feedbackIcon) feedbackIcon.textContent = '';
+                                if (studentItems.length !== totalItemCount || studentAnswer !== correctAnswer) {
+                                    allQuestionsCorrect = false;
                                 }
+                            });
+
+                            if (allQuestionsCorrect) {
+                                const feedbackEl = quizContainer.querySelector('.feedback');
+                                const isInsideRoomEscape = quizContainer.closest('.room-escape-preview-content');
+                                const answerWord = decodeURIComponent(atob(quizContainer.dataset.answerWord));
+
+                                if (isInsideRoomEscape && answerWord) {
+                                    feedbackEl.innerHTML = '✨ 성공! 다음 암호는 <div class="feedback-answer-box">' + answerWord + '</div> 입니다.';
+                                } else {
+                                    feedbackEl.innerHTML = '✨ 모든 순서를 완벽하게 맞혔습니다!';
+                                }
+                                feedbackEl.className = 'feedback show correct';
+
+                                quizContainer.querySelectorAll('.ordering-item').forEach(item => item.draggable = false);
                             }
                         }, 0);
                     }
@@ -1387,6 +1442,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                     const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
                     const checkOrderingBtn = e.target.closest('.check-ordering-btn');
                     const checkClassificationBtn = e.target.closest('.check-classification-btn');
+                    const openRoomEscapeBtn = e.target.closest('.room-escape-open-btn');
                     const youtubePlaceholder = e.target.closest('.youtube-placeholder');
 
                     if (retryBtn) {
@@ -1415,7 +1471,14 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                     fb.className = 'feedback';
                                     fb.innerHTML = '';
                                 });
-                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => btn.classList.remove('selected'));
+                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => {
+                                    btn.classList.remove('selected');
+                                });
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
                             }
                             
                             if(quizContainer.classList.contains('mcq-preview-item')) { 
@@ -1453,6 +1516,13 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 lineQuizPreview.lineQuizInstance.reset();
                                 retryBtn.style.display = 'none';
                                 quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+
+                                // ✅ [추가] '다시 풀기' 시 해설(explanation) 요소를 찾아 숨기는 코드
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
                             }
                             if (quizContainer.classList.contains('drag-drop-preview-container')) {
                                 const sourceContainer = quizContainer.querySelector('.source-container');
@@ -1512,6 +1582,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         }
                     } else if (checkAnswerBtn) {
                         const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                        const isInsideRoomEscape = checkAnswerBtn.closest('.room-escape-preview-content');
                         const studentAnswerEl = item.querySelector('.descriptive-student-answer');
                         const studentAnswer = studentAnswerEl.value.trim();
                         const feedbackEl = item.querySelector('.feedback');
@@ -1565,12 +1636,74 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         checkFillInBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkLineQuizBtn) {
-                        const quizEl = checkLineQuizBtn.closest('.quiz-container').querySelector('.line-quiz-preview');
+                        const quizContainer = checkLineQuizBtn.closest('.quiz-container');
+                        const quizEl = quizContainer.querySelector('.line-quiz-preview');
+                        const feedbackEl = quizContainer.querySelector('.feedback');
+
                         if (quizEl && quizEl.lineQuizInstance) {
-                            quizEl.lineQuizInstance.checkAnswers();
+                            const isAllCorrect = quizEl.lineQuizInstance.checkAnswers();
+
+                            if (isAllCorrect) {
+                                feedbackEl.textContent = '정답입니다! 참 잘했어요! ✨';
+                                feedbackEl.className = 'feedback show correct';
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                const encodedExplanation = quizContainer.dataset.explanation;
+                                if (explanationEl && encodedExplanation) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.innerHTML = decodedExplanation;
+                                        if (tempDiv.textContent.trim()) {
+                                            explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                            explanationEl.style.display = 'block';
+                                        }
+                                    } catch (err) {}
+                                }
+                            } else {
+                                feedbackEl.textContent = '아쉬워요. 틀린 연결이 있는지 확인해보세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                            }
+
                             checkLineQuizBtn.style.display = 'none';
                             checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
                         }
+                    } else if (checkDragDropBtn) {
+                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+                        container.querySelectorAll('.drop-target').forEach(target => {
+                            const studentAnswer = target.textContent.trim();
+                            const correctAnswer = target.dataset.answer;
+                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                target.className = 'drop-target correct';
+                            } else {
+                                target.className = 'drop-target incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [추가] 모든 문제가 정답일 때만 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    if (decodedExplanation.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkDragDropBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkOrderingBtn) {
                         const container = checkOrderingBtn.closest('.ordering-preview-container');
                         const feedbackEl = container.querySelector('.feedback');
@@ -1598,35 +1731,27 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         if (allCorrect) {
                             feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
                             feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] isInsideRoomEscape 조건을 삭제했습니다.
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
                         } else {
                             feedbackEl.textContent = '아쉬워요. ❌ 표시된 문제를 다시 확인해보세요.';
                             feedbackEl.className = 'feedback show incorrect';
                         }
 
                         checkOrderingBtn.style.display = 'none';
-                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
-                    } else if (checkDragDropBtn) {
-                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
-                        const feedbackEl = container.querySelector('.feedback');
-                        let allCorrect = true;
-                        container.querySelectorAll('.drop-target').forEach(target => {
-                            const studentAnswer = target.textContent.trim();
-                            const correctAnswer = target.dataset.answer;
-                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                                target.className = 'drop-target correct';
-                            } else {
-                                target.className = 'drop-target incorrect';
-                                allCorrect = false;
-                            }
-                        });
-                        if (allCorrect) {
-                            feedbackEl.textContent = '모두 정답입니다!';
-                            feedbackEl.className = 'feedback show correct';
-                        } else {
-                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
-                            feedbackEl.className = 'feedback show incorrect';
-                        }
-                        checkDragDropBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
                     } else if (checkClassificationBtn) {
                         const container = checkClassificationBtn.closest('.classification-preview-container');
@@ -1655,12 +1780,59 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                         if (allCorrect) {
                             feedbackEl.textContent = '모두 정확하게 분류했습니다! 완벽해요! ✨';
                             feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
                         } else {
                             feedbackEl.textContent = '아쉬워요. 잘못 분류되었거나, 분류하지 않은 항목이 있습니다.';
                             feedbackEl.className = 'feedback show incorrect';
                         }
                         checkClassificationBtn.style.display = 'none';
                         container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (openRoomEscapeBtn) {
+                        const container = openRoomEscapeBtn.closest('.room-escape-preview-container');
+                        const lockedDiv = container.querySelector('.room-escape-preview-locked');
+                        const unlockedDiv = container.querySelector('.room-escape-preview-content');
+                        const inputEl = container.querySelector('.room-escape-password-preview');
+
+                        const studentAnswer = inputEl.value.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.password));
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            lockedDiv.style.display = 'none';
+                            unlockedDiv.style.display = 'block';
+
+                            const allDoorsNodeList = document.querySelectorAll('.room-escape-preview-container');
+                            const allDoorsArray = Array.from(allDoorsNodeList);
+                            const currentIndex = allDoorsArray.indexOf(container);
+                            const nextDoor = allDoorsArray[currentIndex + 1];
+
+                            if (nextDoor) {
+                                nextDoor.style.display = 'block';
+                            }
+
+                            if (unlockedDiv.querySelector('.line-quiz-preview')) {
+                                initializeLineQuiz(unlockedDiv.querySelector('.line-quiz-preview'));
+                            }
+                        } else {
+                            lockedDiv.classList.add('shake');
+                            inputEl.value = '';
+                            setTimeout(() => {
+                                lockedDiv.classList.remove('shake');
+                            }, 500);
+                        }
                     } else if (youtubePlaceholder) {
                         const videoId = youtubePlaceholder.dataset.videoId;
                         if(videoId) {
@@ -1687,31 +1859,69 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                             const mcqOptionDiv = e.target.closest('.mcq-preview-option');
                             const explainable = e.target.closest('.explainable');
                             if (oxChoiceBtn) {
+                                const allChoiceBtns = oxChoiceBtn.parentElement.querySelectorAll('button');
+                                allChoiceBtns.forEach(btn => btn.classList.remove('selected'));
+                                oxChoiceBtn.classList.add('selected');
+
                                 const item = oxChoiceBtn.closest('.ox-preview-item');
                                 const choicesDiv = item.querySelector('.ox-choices');
                                 const choice = oxChoiceBtn.dataset.choice;
                                 const answer = choicesDiv.dataset.answer;
                                 const feedbackEl = item.querySelector('.feedback');
-                                feedbackEl.className = 'feedback show ' + (choice === answer ? 'correct' : 'incorrect');
-                                feedbackEl.innerHTML = choice === answer ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+                                const isCorrect = (choice === answer);
+
+                                feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                                feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+
+                                const quizContainer = item.closest('.quiz-container');
+                                const allItems = quizContainer.querySelectorAll('.ox-preview-item');
+                                const allCorrect = Array.from(allItems).every(i => {
+                                    const selectedBtn = i.querySelector('.ox-choices button.selected');
+                                    return selectedBtn && selectedBtn.dataset.choice === i.querySelector('.ox-choices').dataset.answer;
+                                });
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (allCorrect) {
+                                    const encodedExplanation = quizContainer.dataset.explanation;
+                                    if (explanationEl && encodedExplanation) {
+                                        try {
+                                            const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                            const tempDiv = document.createElement('div');
+                                            tempDiv.innerHTML = decodedExplanation;
+                                            if (tempDiv.textContent.trim()) {
+                                                explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                                explanationEl.style.display = 'block';
+                                            }
+                                        } catch (err) {}
+                                    }
+                                } else {
+                                    if (explanationEl) {
+                                        explanationEl.style.display = 'none';
+                                    }
+                                }
                             } else if (mcqOptionDiv) {
                                 const item = mcqOptionDiv.closest('.mcq-preview-item');
+                                const isInsideRoomEscape = item.closest('.room-escape-preview-content'); // ✅ 방탈출 안에 있는지 확인
+
+                                let attempts = parseInt(item.dataset.attempts, 10);
+                                if (item.querySelector('.feedback.correct')) return;
+
                                 const controls = item.querySelector('.quiz-controls');
                                 if (controls) controls.style.display = 'flex';
-                                
-                                let attempts = parseInt(item.dataset.attempts, 10);
-                                if (attempts >= 2) return;
+
+                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+
                                 attempts++;
                                 item.dataset.attempts = attempts;
+
                                 const choice = mcqOptionDiv.dataset.choice;
                                 const answer = item.dataset.answer;
                                 const feedbackEl = item.querySelector('.feedback');
                                 const explanationEl = item.querySelector('.explanation');
                                 const isCorrect = (choice === answer);
-                                
-                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
-                                    opt.classList.remove('selected', 'correct', 'incorrect');
-                                });
+
                                 mcqOptionDiv.classList.add('selected');
 
                                 if (isCorrect) {
@@ -1723,13 +1933,19 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                 } else {
                                     mcqOptionDiv.classList.add('incorrect');
                                     feedbackEl.className = 'feedback show incorrect';
-                                    if (attempts < 2) {
-                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+
+                                    if (isInsideRoomEscape) {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답</span> 다시 생각해보세요. 🤔';
                                     } else {
-                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
-                                        if(explanationEl) explanationEl.className = 'explanation show';
+                                        if (attempts < 2) {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                        } else {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                            if(explanationEl) explanationEl.className = 'explanation show';
+                                        }
                                     }
                                 }
+
                                 if(explanationEl && explanationEl.classList.contains('show')) {
                                     try {
                                         const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
@@ -1737,14 +1953,9 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                                     } catch(err) {}
                                 }
 
-                                if (isCorrect || attempts >= 2) {
+                                if (isCorrect || (!isInsideRoomEscape && attempts >= 2)) {
                                     const retryButton = item.querySelector('.retry-quiz-btn');
                                     if (retryButton) retryButton.style.display = 'inline-block';
-                                    
-                                    if(item.closest('.daily-quiz-preview')){
-                                        const newProverbButton = item.querySelector('.new-proverb-btn');
-                                        if(newProverbButton) newProverbButton.style.display = 'inline-block';
-                                    }
                                 }
                             } else if (explainable) {
                                 explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
@@ -1788,6 +1999,12 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { st
                 });
                 
                 initializeAllInteractiveBlocks();
+                // ✅ [추가] 모든 '비밀의 문'을 숨기고 첫 번째 문만 표시
+                const allDoors = document.querySelectorAll('.room-escape-preview-container');
+                allDoors.forEach(door => door.style.display = 'none');
+                if (allDoors.length > 0) {
+                    allDoors[0].style.display = 'block';
+                }
                 if (window.MathJax && window.MathJax.typesetPromise) {
                     window.MathJax.typesetPromise();
                 }
