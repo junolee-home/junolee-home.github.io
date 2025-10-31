@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+                <html lang="ko">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>백석</title>
+                    <style>
+:root { --primary-color: #3b82f6; --border-color: #e5e7eb; --background-light: #f9fafb; --correct-color: #16a34a; --incorrect-color: #ef4444; --hover-color: #f59e0b; }
+::selection { background-color: rgba(210, 234, 255, 0.6); color: inherit; }
+.preview-top-bar { flex-direction: column; align-items: flex-start; gap: 8px; padding: 45px 25px 8px; }
+.view-mode-controls button { background-color: transparent; border: none; border-radius: 4px; padding: 4px 8px; font-size: 1.1em; cursor: pointer; opacity: 0.6; transition: 0.2s ease-in-out; }
+.view-mode-controls button:hover { opacity: 1; background-color: rgb(255, 255, 255); }
+.view-mode-controls button.active { opacity: 1; background-color: var(--primary-color); color: white; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px; }
+.view-mode-controls { position: absolute; top: 20px; right: 45px; z-index: 20; display: flex; gap: 5px; border: 1px solid var(--border-color); border-radius: 6px; padding: 3px; background-color: rgb(240, 243, 245); }
+.editor-column, .preview-column { transition: 0.3s ease-in-out; }
+.container.view-mode-editor .preview-column { display: none; }
+.container.view-mode-preview .editor-column { display: none; }
+.container.view-mode-editor #editor-tab-bar { border-top: 3px solid var(--primary-color); border-bottom: 1px solid var(--border-color); }
+.container.view-mode-editor .editor-column, .container.view-mode-preview .preview-column { max-width: 1100px; margin: 0px auto; }
+.container.view-mode-preview #preview-tab-bar { border-top: 3px solid var(--hover-color); }
+body { font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; background-color: rgb(244, 247, 249); margin: 0px; padding: 20px; line-height: 1.7; }
+body.resizing { cursor: ns-resize; user-select: none; }
+.container { display: flex; gap: 20px; position: relative; }
+.left-panel { width: 220px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; align-self: flex-start; height: calc(-40px + 100vh); overflow-y: auto; padding-bottom: 20px; box-sizing: border-box; padding-right: 2px; }
+.editor-column { flex: 1 1 0%; display: flex; flex-direction: column; gap: 10px; }
+.preview-column { flex: 1 1 0%; display: flex; flex-direction: column; background-color: white; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+#editor-title-input { font-size: 2em; font-weight: bold; padding: 10px 5px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 2px solid var(--border-color); outline: none; background: transparent; font-family: inherit; }
+#editor-title-input:focus { border-color: var(--primary-color); }
+.preview-top-bar { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 15px 25px 8px; background-color: var(--background-light); border-radius: 8px 8px 0px 0px; }
+#preview-tab-bar { width: 100%; text-align: right; position: sticky; top: 0px; z-index: 10; background-color: var(--background-light); padding-bottom: 8px; padding-right: 25px; box-sizing: border-box; border-bottom: 1px solid var(--border-color); }
+#preview-main-title { font-size: 1.8em; font-weight: 600; margin: 0px; font-family: "Noto Sans KR"; }
+.tab-bar { background: white; padding: 10px; border-radius: 8px 8px 0px 0px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; border-bottom: 2px solid var(--primary-color); }
+.tab-bar.preview-tabs { padding: 0px; margin: 0px; box-shadow: none; border-bottom: none; background-color: transparent; }
+.tab-btn { padding: 8px 15px; border: 1px solid var(--border-color); background: rgb(255, 255, 255); border-radius: 5px; cursor: pointer; margin-right: 5px; font-size: 0.9em; }
+.preview-tabs .tab-btn { border-top: none; border-right: none; border-left: none; border-image: initial; background: transparent; border-radius: 0px; padding: 0px 12px; margin: 0px; font-size: 0.95em; color: rgb(85, 85, 85); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; line-height: 2.5; }
+.preview-tabs .tab-btn:hover { color: var(--hover-color); }
+.tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: bold; }
+.preview-tabs .tab-btn.active { background: transparent; color: var(--hover-color); border-bottom: 2px solid var(--hover-color); font-weight: bold; }
+#add-tab-btn { background: var(--correct-color); color: white; border: none; }
+#editor { border-radius: 0px 0px 8px 8px; background-color: rgb(244, 247, 249); padding: 20px; box-shadow: none; min-height: 80vh; margin-top: -8px; }
+#preview { padding: 20px; font-size: 18px; }
+.toolbar-btn-group button[data-command="applyCurrentColor"] { padding: 5px 6px; min-width: auto; }
+.toolbar-btn-group .color-indicator { display: inline-block; width: 16px; height: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 2px; vertical-align: middle; background-color: black; margin: 0px; }
+.toolbar-btn-group .dropdown .dropdown-toggle { min-width: auto; padding: 5px 3px; line-height: 1; border-left: none; font-size: 0.8em; }
+#toolbar, #block-adder, #file-manager { background: white; padding: 15px; border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px; }
+#version-info { font-size: 0.8em; color: rgb(136, 136, 136); text-align: center; margin-top: 10px; }
+#toolbar h4, #block-adder h4, #file-manager h4 { margin: 0px 0px 10px; font-size: 1em; }
+.toolbar-group { margin-bottom: 15px; }
+.toolbar-group button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1.1em; vertical-align: middle; min-width: 32px; }
+.toolbar-group button:hover { background-color: rgb(226, 230, 234); }
+.toolbar-group button svg, .toolbar-group button img { pointer-events: none; }
+.color-swatch { width: 24px; height: 24px; }
+#emoji-palette { display: flex; flex-wrap: wrap; gap: 5px; }
+#emoji-palette span { cursor: pointer; font-size: 1.1em; padding: 2px; }
+#block-adder { }
+.icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.icon-grid button { border: 1px solid var(--border-color); background-color: var(--background-light); cursor: pointer; padding: 8px 4px; font-size: 1rem; aspect-ratio: 1 / 1; border-radius: 8px; min-width: 0px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+.icon-grid button:hover { background-color: rgb(226, 230, 234); }
+.icon-grid button img { width: 60%; height: auto; }
+#block-adder.disabled .icon-grid { opacity: 0.5; cursor: not-allowed; }
+#editor .block, #preview .block { line-height: 1.7; transition: box-shadow 0.2s; }
+#editor .block { position: relative; cursor: grab; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; border-radius: 8px; background-color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+#editor .block.active { border-color: var(--primary-color); box-shadow: rgba(59, 130, 246, 0.4) 0px 0px 0px 2px; }
+#editor .block:hover { border-color: var(--hover-color); box-shadow: rgba(195, 1, 153, 0.88) 0px 0px 0px 2px; }
+#editor .block.dragging { opacity: 0.5; border-style: solid; }
+#editor .editable { cursor: text; background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); line-height: 1.8; padding: 5px 8px; font-size: 18px; }
+#editor .block[data-type="spacer"] { position: relative; min-height: 30px; padding: 5px 15px 10px; text-align: center; background-color: transparent; border: 1px dashed rgb(204, 204, 204); box-shadow: none; }
+.resize-handle { position: absolute; bottom: 0px; left: 0px; width: 100%; height: 10px; cursor: ns-resize; border-bottom: 3px solid rgba(0, 0, 0, 0.2); }
+.resize-handle:hover { border-bottom-color: var(--primary-color); }
+.block-controls { position: absolute; top: 5px; right: 5px; display: flex; gap: 4px; z-index: 5; }
+.toggle-default-btn, .copy-block-btn, .delete-block-btn { background: transparent; border: none; font-size: 1.2em; cursor: pointer; opacity: 0.5; padding: 2px; }
+.toggle-default-btn:hover { opacity: 1; color: rgb(255, 122, 0); }
+.copy-block-btn:hover { opacity: 1; color: var(--primary-color); }
+.delete-block-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.drag-handle { cursor: grab; touch-action: none; }
+.drag-handle:active { cursor: grabbing; }
+.block.copied { outline: 2px solid var(--primary-color); box-shadow: rgba(0, 123, 255, 0.5) 0px 0px 15px; }
+.block-title { display: inline-flex; align-items: center; font-weight: bold; font-size: 0.9em; color: rgb(73, 80, 87); background-color: rgb(233, 236, 239); padding: 4px 12px; border-radius: 15px; margin-bottom: 15px; }
+.text-content { margin-top: -10px; }
+.block-title-text { display: inline-block; min-width: 30px; border-radius: 3px; padding: 0px 5px; outline: none; }
+.block-title-text:focus { background-color: rgb(255, 255, 255); box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="text"] .block-title { background-color: rgb(255, 249, 196); }
+.block[data-type="ox"] .block-title { background-color: rgb(200, 230, 201); }
+.block[data-type="mcq"] .block-title { background-color: rgb(187, 222, 251); }
+.block[data-type="descriptive"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="fill-in"] .block-title { background-color: rgb(255, 204, 188); }
+.block[data-type="table"] .block-title { background-color: rgb(215, 204, 200); }
+.block[data-type="math"] .block-title { background-color: rgb(178, 223, 219); }
+.block[data-type="line-quiz"] .block-title { background-color: rgb(252, 228, 236); }
+.block[data-type="youtube"] .block-title { background-color: rgb(255, 205, 210); }
+.block[data-type="link"] .block-title { background-color: rgb(224, 247, 250); }
+.block[data-type="frame"] .block-title { background-color: rgb(209, 196, 233); }
+.block[data-type="summary"] .block-title { background-color: rgb(225, 245, 254); }
+#editor .block[data-type="summary"] { border-width: 1px 1px 4px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(173, 181, 189); border-image: initial; background-color: rgb(248, 249, 250); box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; }
+#editor .block[data-type="summary"] p { color: rgb(108, 117, 125); }
+.youtube-url-input { width: 100%; padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; box-sizing: border-box; }
+.youtube-placeholder { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; background-color: rgb(240, 240, 240); border: 1px dashed rgb(204, 204, 204); border-radius: 8px; cursor: pointer; text-align: center; transition: background-color 0.2s; }
+.youtube-placeholder:hover { background-color: rgb(224, 224, 224); }
+.youtube-placeholder-icon { width: 50px; height: auto; margin-bottom: 10px; }
+.youtube-placeholder-text { font-weight: bold; color: rgb(51, 51, 51); }
+.youtube-iframe-wrapper { position: relative; overflow: hidden; width: 100%; max-width: 640px; margin: 0px auto; padding-top: 56.25%; }
+.youtube-iframe-wrapper iframe { position: absolute; inset: 0px; width: 100%; height: 100%; border: none; }
+.youtube-close-btn { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; background: black; color: white; border: 2px solid white; border-radius: 50%; cursor: pointer; font-size: 16px; font-weight: bold; line-height: 24px; text-align: center; z-index: 10; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 5px; }
+.link-editor-container, .frame-editor-container { display: flex; flex-direction: column; gap: 10px; }
+.link-editor-row, .frame-editor-row { display: flex; align-items: center; gap: 8px; }
+.link-editor-row > label:first-child, .frame-editor-row > label:first-child { font-weight: bold; flex-shrink: 0; width: 80px; }
+.link-editor-row input[type="text"], .link-editor-row input[type="url"], .frame-editor-row input[type="text"], .frame-editor-row input[type="url"] { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.link-target-options { display: flex; flex-wrap: wrap; gap: 5px 15px; align-items: center; }
+.link-target-options label { white-space: nowrap; }
+.preview-link-wrapper { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; padding: 5px; }
+.preview-link-label { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(224, 247, 250); padding: 6px 10px; border-radius: 15px; }
+.preview-link-title { padding: 6px 12px; background-color: rgb(227, 242, 253); border-radius: 4px; color: rgb(0, 86, 179); font-weight: bold; transition: background-color 0.2s; }
+.preview-link-wrapper:hover .preview-link-title { background-color: rgb(209, 231, 253); }
+.frame-preview-container { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background-color: rgb(255, 255, 255); }
+.frame-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px; cursor: pointer; list-style: none; }
+.frame-preview-summary::-webkit-details-marker { display: none; }
+.frame-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(209, 196, 233); padding: 4px 12px; border-radius: 15px; }
+.frame-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.frame-preview-container[open] .frame-preview-toggle-icon { transform: rotate(180deg); }
+.frame-preview-content { padding: 15px; border-top: 1px solid var(--border-color); }
+.frame-preview-content iframe { width: 100%; max-width: 100%; min-height: 450px; border: none; }
+.frame-preview-content img { display: block; margin: 0px auto; border-radius: 4px; max-width: 100%; max-height: 600px; }
+.frame-source-link { display: block; text-align: right; font-size: 0.8em; margin-top: 10px; color: rgb(108, 117, 125); }
+.summary-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.summary-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.summary-preview-summary::-webkit-details-marker { display: none; }
+.summary-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(225, 245, 254); padding: 4px 12px; border-radius: 15px; }
+.summary-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.summary-preview-container[open] .summary-preview-toggle-icon { transform: rotate(180deg); }
+.summary-preview-content { padding: 15px; color: rgb(108, 117, 125); }
+.summary-preview-content ul { list-style-type: none; padding-left: 0px; margin: 0px; }
+.summary-preview-content li { margin-bottom: 10px; }
+.summary-preview-content strong { color: rgb(73, 80, 87); }
+.block[data-type="flowchart"] .block-title { background-color: rgb(224, 224, 224); }
+.flowchart-editor-row { padding: 10px; margin-bottom: 5px; border: 1px dashed rgb(204, 204, 204); border-radius: 4px; background: rgb(253, 253, 253); position: relative; transition: 0.2s ease-in-out; }
+.flowchart-editor-row.focused { border-color: var(--primary-color); border-width: 1.5px; border-style: solid; box-shadow: rgba(59, 130, 246, 0.2) 0px 1px 4px; }
+.flowchart-row-controls { display: flex; align-items: center; gap: 5px; visibility: hidden; opacity: 0; height: 0px; overflow: hidden; transition: opacity 0.2s ease-in-out; }
+.flowchart-editor-row.focused .flowchart-row-controls { visibility: visible; opacity: 1; height: auto; margin-bottom: 8px; }
+.flowchart-row-controls button, .flowchart-row-controls .flowchart-toggle-label { padding: 2px 8px; font-size: 0.8em; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 4px; cursor: pointer; }
+.flowchart-row-controls .flowchart-toggle-label { display: inline-flex; align-items: center; gap: 4px; }
+.delete-flowchart-row-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; cursor: pointer; opacity: 0.5; }
+.delete-flowchart-row-btn:hover { opacity: 1; color: var(--incorrect-color); }
+.flowchart-nodes-container { display: flex; gap: 10px; align-items: stretch; }
+.flowchart-node-editor { flex: 1 1 0%; min-height: 50px; }
+.flowchart-connector-editor { flex: 0 0 50px; text-align: center; border-left: 1px solid rgb(238, 238, 238); border-right: 1px solid rgb(238, 238, 238); display: flex; align-items: center; justify-content: center; }
+.flowchart-preview-container { margin-bottom: 15px; }
+.flowchart-preview-row { display: flex; justify-content: center; align-items: stretch; gap: 15px; }
+.flowchart-preview-node { flex: 1 1 0%; padding: 12px; border: 1px solid rgb(209, 213, 219); background-color: rgb(249, 250, 251); border-radius: 6px; }
+.flowchart-preview-connector { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.2em; color: rgb(107, 114, 128); padding: 0px 10px; }
+.flowchart-preview-arrow { text-align: center; font-size: 1.5em; color: rgb(156, 163, 175); margin: 8px 0px; }
+.flowchart-preview-row.layout-three .flowchart-preview-node { flex-basis: 30%; max-width: 32%; }
+.flowchart-editor-row .drag-handle { cursor: grab; padding-right: 8px; opacity: 0.5; }
+.flowchart-editor-row .drag-handle:active { cursor: grabbing; }
+.flowchart-editor-row.dragging { opacity: 0.5; background-color: rgb(226, 230, 234); pointer-events: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list { list-style: none; margin: 0px; padding-left: 30px; position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root { padding-left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list::before { content: ""; position: absolute; left: 15px; top: 0px; width: 1px; height: 100%; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item { position: relative; padding: 4px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item::before { content: ""; position: absolute; top: 16px; left: -15px; width: 15px; height: 1px; background: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-item:last-child::after { content: ""; position: absolute; top: 17px; left: -15px; width: 1px; height: 100%; background: rgb(255, 255, 255); }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-node { font-weight: normal; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > .mindmap-node, #preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) .mindmap-list.mindmap-list-root > .mindmap-item > details > summary > .mindmap-node { font-weight: bold; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary { list-style: none; cursor: pointer; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary::-webkit-details-marker { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) summary > .mindmap-node::before { content: "▼"; font-size: 0.6em; margin-right: 6px; display: inline-block; color: rgb(134, 142, 150); transition: transform 0.2s; vertical-align: middle; }
+#preview .block[data-type="mindmap"] .mindmap-preview:not(.layout-orgchart) details:not([open]) > summary > .mindmap-node::before { content: "▶"; transform: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart { text-align: center; padding: 20px 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart ul, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart li { list-style: none; margin: 0px; padding: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list { display: flex; justify-content: center; position: relative; padding-top: 40px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list { padding-top: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item { display: flex; flex-direction: column; align-items: center; position: relative; padding-left: 10px; padding-right: 10px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:not(:has(.orgchart-list)) .orgchart-node-container::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::before { content: ""; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 1px; height: 20px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item::after { content: ""; position: absolute; top: -20px; left: 0px; width: 100%; height: 1px; background-color: rgb(160, 174, 192); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::before, #preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:first-child::after { width: 50%; left: 50%; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:last-child::after { width: 50%; left: 0px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-item:only-child::after { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node-container { position: relative; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-node { padding: 8px 15px; border-radius: 6px; display: inline-block; min-width: 80px; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart .orgchart-list .orgchart-list .orgchart-node { background-color: rgb(249, 250, 251); }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart > .orgchart-list > .orgchart-item > .orgchart-node-container > .orgchart-node { background-color: var(--primary-color); color: white; border: 2px solid rgb(30, 64, 175); font-weight: bold; font-size: 1.05em; border-radius: 8px; }
+.block[data-type="mindmap"] .mindmap-editor-container { border: 1px solid rgb(204, 204, 204); padding: 10px 15px; border-radius: 5px; background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container ul, .block[data-type="mindmap"] .mindmap-editor-container li { list-style: none; margin: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-item { position: relative; }
+.block[data-type="mindmap"] .mindmap-node-wrapper { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; transition: background-color 0.2s; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover { background-color: rgb(240, 243, 245); }
+.block[data-type="mindmap"] .mindmap-node { flex-grow: 1; }
+.block[data-type="mindmap"] .mindmap-node .editable { background-color: transparent; border: none; padding: 3px 5px; outline: none; width: 100%; }
+.block[data-type="mindmap"] .mindmap-node .editable:focus { background-color: white; box-shadow: 0 0 0 1px var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-node-actions { visibility: hidden; }
+.block[data-type="mindmap"] .mindmap-node-wrapper:hover .mindmap-node-actions { visibility: visible; }
+.block[data-type="mindmap"] .mindmap-add-child, .block[data-type="mindmap"] .mindmap-delete-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-child:hover { color: var(--correct-color); }
+.block[data-type="mindmap"] .mindmap-delete-node:hover { color: var(--incorrect-color); }
+.block[data-type="mindmap"] .mindmap-add-sibling-node, .block[data-type="mindmap"] .mindmap-indent-node, .block[data-type="mindmap"] .mindmap-outdent-node { border: 1px solid rgb(204, 204, 204); background-color: white; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-weight: bold; line-height: 20px; text-align: center; }
+.block[data-type="mindmap"] .mindmap-add-sibling-node:hover, .block[data-type="mindmap"] .mindmap-indent-node:hover, .block[data-type="mindmap"] .mindmap-outdent-node:hover { color: var(--primary-color); }
+.block[data-type="mindmap"] .mindmap-children-list { position: relative; padding-left: 35px; }
+.block[data-type="mindmap"] .mindmap-children-list::before { content: ""; position: absolute; left: 10px; top: 0px; width: 1px; height: 100%; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item::before { content: ""; position: absolute; top: 22px; left: 10px; width: 15px; height: 1px; background-color: rgb(209, 213, 219); }
+.block[data-type="mindmap"] .mindmap-children-list > .mindmap-editor-item:last-child::after { content: ""; position: absolute; left: 10px; top: 23px; width: 1px; height: calc(100% - 22px); background-color: rgb(253, 253, 253); }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list { padding-left: 0px; }
+.block[data-type="mindmap"] .mindmap-editor-container > .mindmap-children-list::before { display: none; }
+#preview .block[data-type="mindmap"] .mindmap-preview.layout-orgchart details .orgchart-node { border: none; background-color: rgb(249, 250, 251); }
+.mindmap-shortcut-guide { font-size: 0.8em; color: rgb(108, 117, 125); margin: -10px 0px 15px 5px; }
+.delete-line-quiz-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: auto; }
+.delete-line-quiz-item:hover { color: var(--incorrect-color); }
+.delete-fill-in-item { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
+.delete-fill-in-item:hover { color: var(--incorrect-color); }
+.flowchart-preview-row.first-col-narrow .flowchart-preview-node:first-child { flex: 0 0 17%; max-width: 180px; }
+.flowchart-first-col-narrow-toggle { font-size: 0.9em; cursor: pointer; display: none; }
+.youtube-title-editor { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.youtube-title-editor strong { flex-shrink: 0; }
+.youtube-title-editor input { flex-grow: 1; padding: 6px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.youtube-preview-title { display: inline-flex; align-items: center; gap: 10px; }
+.youtube-preview-title .pill { background-color: rgb(255, 205, 210); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; font-weight: bold; }
+.block[data-type="drag-drop"] .block-title { background-color: rgb(197, 225, 165); }
+.drag-drop-item-editor { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; background-color: rgb(255, 255, 255); padding: 8px; border-radius: 4px; }
+.drag-drop-item-editor .editable { border: 1px solid rgb(224, 224, 224); padding: 5px; min-width: 50px; flex: 1 1 0%; }
+#editor .drag-drop-item-editor .drag-drop-answer { background-color: rgb(255, 253, 231); border: 1px dashed rgb(201, 188, 143); font-weight: bold; text-align: center; flex: 0 1 120px; }
+.drag-drop-preview-container .sentence { margin-bottom: 10px; line-height: 2.2; padding: 10px; background: rgb(250, 250, 250); border-radius: 4px; }
+.drag-drop-preview-container .drop-target { display: inline-flex; align-items: center; justify-content: center; min-width: 100px; max-width: 250px; height: 28px; border: 1px dashed rgb(173, 181, 189); background-color: rgb(233, 236, 239); vertical-align: middle; margin: 0px 5px; border-radius: 4px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0px 8px; box-sizing: border-box; }
+.drag-drop-preview-container .drop-target.drag-over { background-color: rgb(209, 196, 233); border-style: solid; }
+.drag-drop-preview-container .drop-target.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.drag-drop-preview-container .drop-target.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.drag-drop-preview-container .source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border: 1px solid rgb(224, 224, 224); background-color: rgb(248, 249, 250); border-radius: 4px; min-height: 40px; }
+.drag-drop-preview-container .drag-source { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.drag-drop-preview-container .drag-source:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.drag-drop-preview-container .drag-source.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.drag-drop-preview-container .drag-source.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.delete-drag-drop-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 8px; margin-left: 5px; }
+.delete-drag-drop-item:hover { color: var(--incorrect-color); }
+.block[data-type="ordering"] .block-title { background-color: rgb(255, 218, 185); }
+.block[data-type="classification"] .block-title { background-color: rgb(255, 236, 179); }
+.ordering-preview-container { padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+.ordering-target-container, .ordering-source-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; border-radius: 4px; min-height: 50px; align-content: flex-start; }
+.ordering-target-container { border: none; background-color: rgba(240, 243, 245, 0.7); box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 3px inset; }
+.ordering-source-container { background-color: rgb(248, 249, 250); border: 1px solid var(--border-color); }
+.ordering-target-container.drag-over { background-color: rgb(224, 242, 241); border-color: var(--primary-color); }
+.ordering-target-container.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.ordering-target-container.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
+.ordering-item { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; }
+.ordering-item:active { cursor: grabbing; }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item.selected { background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-drop-indicator { width: 4px; height: 30px; background-color: var(--hover-color); border-radius: 2px; align-self: center; }
+.ordering-item.dragging { opacity: 0.5; background-color: transparent; border: 2px dotted var(--hover-color); color: var(--hover-color); }
+.ordering-item-editor { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.ordering-item-editor .editable { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.delete-ordering-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-ordering-item:hover { color: var(--incorrect-color); }
+.ordering-preview-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgb(238, 238, 238); }
+.ordering-preview-item:last-child { border-bottom: none; margin-bottom: 0px; }
+.ordering-item-title { font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; }
+.ordering-item-feedback { margin-left: 8px; font-size: 1.2em; }
+.ordering-source-container { border-style: none; background-color: transparent; padding: 15px 0px 0px; justify-content: flex-start; }
+.block-title-container { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.block-title-container .block-title { margin-bottom: 0px; }
+.math-guide-link { font-size: 0.85em; color: var(--primary-color); text-decoration: none; border-bottom: 1px dashed var(--primary-color); padding-bottom: 1px; transition: 0.2s; }
+.math-guide-link:hover { color: rgb(0, 86, 179); border-bottom-style: solid; }
+#preview .block[data-type="text"]:not(.no-title-block) { background-color: transparent; border-color: transparent; padding: 0px; box-shadow: none; }
+.text-preview-container { margin-bottom: 15px; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; }
+.text-preview-summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; cursor: pointer; list-style: none; }
+.text-preview-summary::-webkit-details-marker { display: none; }
+.text-preview-title-pill { font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(255, 249, 196); padding: 4px 12px; border-radius: 15px; display: inline-flex; align-items: center; }
+.text-preview-toggle-icon { transition: transform 0.2s; padding: 0px 10px; }
+.text-preview-container:not([open]) .text-preview-toggle-icon { transform: rotate(-90deg); }
+.text-preview-content-wrapper { padding: 15px; background-color: transparent; border: none; }
+.text-preview-content { background-color: rgb(255, 255, 255); border: 1px solid rgb(206, 212, 218); padding: 10px 12px; border-radius: 4px; line-height: 2.3; }
+.passage-marker-in-editor { display: block; background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-structure-in-editor { background-color: rgb(241, 243, 245); border: 1px dashed rgb(173, 181, 189); border-radius: 4px; padding: 2px 6px; cursor: pointer; white-space: nowrap; }
+.inline-toggle-in-editor { background-color: rgb(252, 228, 236); border: 1px dashed rgb(244, 143, 177); border-radius: 4px; padding: 2px 6px; cursor: pointer; white-space: nowrap; }
+.inline-toggle-preview { display: inline-block; vertical-align: top; background-color: rgb(248, 249, 250); border: 1px solid rgb(233, 236, 239); border-radius: 5px; margin: 0px 2px; }
+.inline-toggle-preview summary { cursor: pointer; padding: 2px; font-weight: bold; color: rgb(73, 80, 87); background-color: rgb(241, 243, 245); border-radius: 5px 5px 0px 0px; list-style: none; }
+.inline-toggle-preview summary::before { content: "▶ "; font-size: 0.8em; margin-right: 4px; color: rgb(108, 117, 125); }
+.inline-toggle-preview summary::-webkit-details-marker { display: none; }
+.inline-toggle-preview[open] summary::before { content: "▼ "; }
+.inline-toggle-preview .inline-toggle-content { padding: 8px; border-top: 1px solid rgb(233, 236, 239); line-height: 1.6; }
+.interactive-spacing-source { background-color: rgb(253, 240, 213); border: 1px dashed rgb(247, 178, 103); border-radius: 4px; padding: 2px 6px; cursor: pointer; white-space: nowrap; color: rgb(217, 95, 2); }
+span.interactive-spacing[data-state="compact"] { background-color: rgb(253, 240, 213); border: 1px dashed rgb(247, 178, 103); border-radius: 4px; padding: 1px 4px; white-space: nowrap; }
+span.interactive-spacing[data-state="compact"] > span.spacing-marker { display: none; }
+span.interactive-spacing[data-state="expanded"] { background-color: transparent; border: none; padding: 1px 0px; }
+.passage-marker { display: block; position: relative; margin-left: 3.5em; padding-left: 1.5em; border-left: 3px solid var(--border-color); margin-top: 1em; margin-bottom: 1em; }
+.passage-marker::before { content: "[" attr(data-symbol) "]"; position: absolute; top: 50%; transform: translateY(-50%); right: 100%; margin-right: 1em; font-weight: bold; color: var(--hover-color); }
+.interactive-cloze-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cloze-blank { display: inline-block; min-width: 80px; padding: 0px 8px; height: 26px; line-height: 26px; vertical-align: bottom; border-bottom: 2px solid rgb(51, 51, 51); text-align: center; font-weight: bold; color: var(--primary-color); cursor: pointer; }
+.cloze-blank.filled.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); color: var(--correct-color); }
+.cloze-blank.filled.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); color: var(--incorrect-color); }
+.cloze-choices { display: inline-flex; gap: 6px; font-size: 0.9em; flex-wrap: wrap; }
+.cloze-choice { padding: 3px 10px; border: 1px solid rgb(204, 204, 204); background-color: rgb(248, 249, 250); border-radius: 15px; cursor: pointer; transition: background-color 0.2s; }
+.cloze-choice:hover { background-color: rgb(233, 236, 239); border-color: rgb(173, 181, 189); }
+.cloze-choice.used { opacity: 0.4; cursor: not-allowed; background-color: rgb(233, 236, 239); }
+.explainable-in-editor { background-color: rgb(227, 242, 253); color: rgb(13, 71, 161); border-bottom: 1px dashed rgb(144, 202, 249); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.inline-link-from-text { background-color: rgb(227, 242, 253); border: 1px solid rgb(144, 202, 249); border-radius: 4px; padding: 2px 6px; text-decoration: none; color: rgb(13, 71, 161); transition: 0.2s; }
+.inline-link-from-text:hover { background-color: rgb(187, 222, 251); border-color: rgb(66, 165, 245); color: rgb(0, 0, 0); }
+.inline-image-from-text { max-width: 100%; max-height: 300px; border: 1px solid var(--border-color); border-radius: 4px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; vertical-align: middle; margin: 2px 4px; }
+#preview .block:not(.no-title-block) { background-color: rgb(255, 255, 255); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(233, 236, 239) rgb(233, 236, 239) rgb(233, 236, 239) rgb(187, 222, 251); border-image: initial; box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 6px; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+#preview .block:not(.no-title-block):hover { border-left-color: var(--primary-color); box-shadow: rgba(0, 0, 0, 0.08) 0px 5px 15px; transform: translateY(-2px); }
+#preview .block.no-title-block { border-color: transparent; padding: 0px; margin-bottom: 0px; background-color: transparent; box-shadow: none; }
+#preview .block-title { display: inline-flex; width: fit-content; }
+.text-border-black { border: 2px solid black; padding: 0px 2px; border-radius: 3px; }
+.text-border-gray { border: 2px solid gray; padding: 0px 2px; border-radius: 3px; }
+.text-border-red { border: 2px solid red; padding: 0px 2px; border-radius: 3px; }
+.text-border-violet { border: 2px solid violet; padding: 0px 2px; border-radius: 3px; }
+.text-border-blue { border: 2px solid blue; padding: 0px 2px; border-radius: 3px; }
+.text-border-green { border: 2px solid green; padding: 0px 2px; border-radius: 3px; }
+.text-border-circle-black, .text-border-circle-gray, .text-border-circle-red, .text-border-circle-violet, .text-border-circle-blue, .text-border-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-border-circle-black { border-color: black; }
+.text-border-circle-gray { border-color: gray; }
+.text-border-circle-red { border-color: red; }
+.text-border-circle-violet { border-color: violet; }
+.text-border-circle-blue { border-color: blue; }
+.text-border-circle-green { border-color: green; }
+.text-highlight-gray { background-color: rgb(238, 238, 238); border: 2px solid rgb(189, 189, 189); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-violet { background-color: rgb(243, 229, 245); border: 2px solid rgb(206, 147, 216); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-red { background-color: rgb(255, 235, 238); border: 2px solid rgb(229, 115, 115); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-yellow { background-color: rgb(255, 253, 231); border: 2px solid rgb(255, 241, 118); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-blue { background-color: rgb(227, 242, 253); border: 2px solid rgb(144, 202, 249); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-green { background-color: rgb(232, 245, 233); border: 2px solid rgb(165, 214, 167); padding: 1px 3px; border-radius: 3px; }
+.text-highlight-circle-gray, .text-highlight-circle-violet, .text-highlight-circle-red, .text-highlight-circle-yellow, .text-highlight-circle-blue, .text-highlight-circle-green { display: inline-block; border-width: 2px; border-style: solid; border-radius: 999px; padding: 1px 7px; line-height: 1.3; }
+.text-highlight-circle-gray { background-color: rgb(238, 238, 238); border-color: rgb(189, 189, 189); }
+.text-highlight-circle-violet { background-color: rgb(243, 229, 245); border-color: rgb(206, 147, 216); }
+.text-highlight-circle-red { background-color: rgb(255, 235, 238); border-color: rgb(229, 115, 115); }
+.text-highlight-circle-yellow { background-color: rgb(255, 253, 231); border-color: rgb(255, 241, 118); }
+.text-highlight-circle-blue { background-color: rgb(227, 242, 253); border-color: rgb(144, 202, 249); }
+.text-highlight-circle-green { background-color: rgb(232, 245, 233); border-color: rgb(165, 214, 167); }
+#preview .explainable { color: var(--correct-color); border-bottom: 1px dotted var(--correct-color); cursor: pointer; font-weight: bold; transition: 0.2s ease-in-out; }
+#preview .explainable:hover { color: var(--primary-color); border-bottom: 1px solid var(--primary-color); }
+.ox-question-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+.ox-question-row .question-text { flex-grow: 1; padding-left: 1.8em; text-indent: -1.8em; }
+.ox-answer-selector-editor { display: inline-flex; gap: 8px; margin-left: 10px; vertical-align: middle; }
+.ox-choice-btn-editor { display: inline-block; width: 32px; height: 32px; border: 1px solid rgb(204, 204, 204); border-radius: 50%; text-align: center; line-height: 30px; font-weight: bold; cursor: pointer; transition: 0.2s ease-in-out; background-color: rgb(248, 249, 250); }
+.ox-answer-selector-editor input[type="radio"]:checked + .ox-choice-btn-editor { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+#preview .ox-choices button { width: 40px; height: 40px; border: 2px solid var(--border-color); border-radius: 50%; background-color: transparent; font-size: 1.1em; font-weight: bold; color: rgb(136, 136, 136); cursor: pointer; transition: 0.2s ease-in-out; margin: 0px 4px; }
+#preview .ox-choices button:hover { border-color: var(--hover-color); color: var(--hover-color); }
+#preview .ox-choices button.selected { background-color: var(--primary-color); border-color: var(--primary-color); color: white; transform: scale(1.05); }
+.ox-preview-item { margin-bottom: 15px; }
+.ox-choices { flex-shrink: 0; }
+.quiz-title-container-editor, .ox-item-editor, .mcq-option-editor { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.delete-ox-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.2em; font-weight: bold; line-height: 1; margin-left: 8px; }
+.delete-ox-item:hover { color: var(--incorrect-color); }
+.quiz-title-container-editor .editable, .ox-item-editor .editable, .mcq-option-editor .editable { flex-grow: 1; }
+.ox-item-editor { border-top: 1px solid rgb(238, 238, 238); padding-top: 10px; }
+.ox-item-editor:first-child { border-top: none; padding-top: 0px; }
+.mcq-passage-container-editor { margin-bottom: 15px; }
+.mcq-passage-preview { background-color: var(--background-light); border: 1px solid var(--border-color); padding: 12px 15px; margin-bottom: 15px; border-radius: 6px; font-size: 0.95em; line-height: 1.8; }
+.mcq-option-editor { margin-bottom: 5px; }
+.descriptive-editor-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.descriptive-editor-row strong { flex-shrink: 0; }
+.descriptive-editor-row .editable { flex-grow: 1; }
+.quiz-title-preview { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
+.retry-quiz-btn { font-size: 0.8em; margin-left: 10px; cursor: pointer; color: rgb(108, 117, 125); background: rgb(241, 241, 241); border: 1px solid rgb(221, 221, 221); padding: 5px 10px; border-radius: 4px; }
+.mcq-options-preview { margin-left: 20px; }
+#preview .mcq-preview-option { transition: background-color 0.2s; cursor: pointer; padding: 8px 8px 8px 1.3em; border-radius: 4px; text-indent: -1.3em; }
+#preview .mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.mcq-preview-option:hover { background-color: rgb(233, 236, 239); }
+.quiz-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; }
+.quiz-controls .feedback { margin: 0px; padding: 4px 8px; text-align: left; flex-grow: 1; }
+.descriptive-student-answer { width: 100%; min-height: 60px; border: 1px solid var(--border-color); border-radius: 4px; padding: 8px; margin-top: 10px; box-sizing: border-box; }
+.show-answer-btn, .hide-answer-btn, .check-fill-in-btn, .check-line-quiz-btn, .check-answer-btn { padding: 5px 10px; border: 1px solid var(--primary-color); background-color: var(--primary-color); color: white; border-radius: 4px; cursor: pointer; }
+.fill-in-item-editor { padding: 10px; margin-bottom: 5px; border-radius: 4px; background: rgb(255, 255, 255); }
+.fill-in-question-container { display: flex; align-items: center; gap: 8px; position: relative; }
+.fill-in-question.placeholder-active { color: rgb(136, 136, 136); }
+.fill-in-answers-container { margin-left: 2em; margin-top: 5px; font-size: 0.9em; color: rgb(85, 85, 85); }
+.fill-in-answer-wrapper { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.fill-in-answer-input { border: 1px solid rgb(204, 204, 204); border-radius: 3px; padding: 2px 4px; background-color: rgb(227, 242, 253); }
+.fill-in-preview-item { margin-bottom: 15px; }
+#editor .fill-in-question { padding-right: 30px; }
+.blank-input-preview { min-width: 50px; border-top: none; border-right: none; border-left: none; border-image: initial; border-bottom: 1px solid rgb(51, 51, 51); text-align: center; font-family: inherit; font-size: 1em; color: rgb(22, 163, 74) !important; font-weight: bold !important; }
+.blank-input-preview.correct { background-color: rgb(212, 237, 218); border-color: var(--correct-color); }
+.blank-input-preview.incorrect { background-color: rgb(248, 215, 218); border-color: var(--incorrect-color); }
+.table-editor-container > div:not(.table-records-container) { margin-bottom: 15px; }
+.table-title-editor, .table-desc-editor { display: flex; gap: 8px; align-items: center; }
+.table-title-editor .editable, .table-desc-editor .editable { flex-grow: 1; }
+.fields-container { display: flex; gap: 5px; }
+.table-field { flex: 1 1 0%; font-weight: bold; text-align: center; }
+.table-record-row-wrapper { margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid rgb(238, 238, 238); }
+.table-record-row { display: flex; gap: 5px; }
+.table-record-cell { flex: 1 1 0%; }
+.add-table-row-btn { width: 100%; padding: 8px; margin-top: 10px; }
+.table-preview-container table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+.table-preview-container th, .table-preview-container td { border: 1px solid var(--border-color); padding: 8px; text-align: left; word-break: break-all; vertical-align: top; }
+.table-preview-container thead { background-color: var(--background-light); }
+.table-preview-container h3 { margin-bottom: 5px; }
+.table-preview-container p { margin-top: 0px; font-size: 0.9em; color: rgb(102, 102, 102); }
+.math-editor-field { background-color: rgb(255, 255, 255); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; min-height: 40px; }
+.math-editor-field.mq-focused { border-color: var(--primary-color); box-shadow: 0 0 0 1px var(--primary-color); }
+.math-preview-field { padding: 10px; text-align: center; font-size: 1.2em; overflow-x: auto; }
+.line-quiz-item-editor { display: flex; align-items: stretch; gap: 10px; margin-bottom: 5px; }
+.line-quiz-item-editor .editable { flex: 1 1 0%; }
+.line-quiz-item-editor > * { display: flex; align-items: center; }
+.line-quiz-preview { position: relative; display: flex; justify-content: space-between; }
+.line-quiz-column { display: flex; flex-direction: column; gap: 10px; width: 45%; }
+.line-quiz-canvas { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; pointer-events: none; }
+.line-quiz-item { display: flex; align-items: center; padding: 8px; background-color: rgb(248, 249, 250); border: 1px solid rgb(222, 226, 230); border-radius: 5px; min-height: 36px; }
+.line-quiz-item .text { flex-grow: 1; }
+.line-quiz-item .dot { flex-shrink: 0; width: 16px; height: 16px; background-color: rgb(204, 204, 204); border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 3px; }
+.line-quiz-item .dot:hover { background-color: rgb(170, 170, 170); }
+.line-quiz-item .dot.selected { background-color: var(--primary-color); }
+.line-quiz-item .dot.disabled { cursor: default; }
+.feedback { margin-top: 5px; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-align: center; display: none; }
+.feedback.show { display: block; }
+.feedback-answer-box { display: inline-block; padding: 6px 12px; background-color: var(--correct-color); color: white; font-weight: bold; border-radius: 4px; }
+.feedback.correct { color: var(--correct-color); }
+.feedback.incorrect { color: var(--incorrect-color); }
+.feedback .correct-highlight { background-color: var(--correct-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.feedback .incorrect-highlight { background-color: var(--incorrect-color); color: white; padding: 2px 6px; border-radius: 4px; }
+.explanation { background: rgb(255, 251, 230); border: 1px solid rgb(255, 229, 143); padding: 10px; margin-top: 10px; border-radius: 5px; display: none; }
+.explanation.show { display: block; }
+.explanation-popup { position: absolute; background-color: rgb(255, 251, 230); color: rgb(93, 64, 55); border: 1px solid rgb(255, 229, 143); border-radius: 8px; padding: 12px 30px 12px 18px; z-index: 1000; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 12px; max-width: 300px; font-size: 0.9em; white-space: pre-wrap; display: none; opacity: 0; transform: translateY(10px) scale(0.95); transition: opacity 0.2s, transform 0.2s; cursor: grab; }
+.explanation-popup.show { display: block; opacity: 1; transform: translateY(0px) scale(1); }
+.explanation-popup::before { content: ""; position: absolute; bottom: 100%; left: 20px; border-width: 9px; border-style: solid; border-color: transparent transparent rgb(255, 229, 143); border-image: initial; }
+.explanation-popup::after { content: ""; position: absolute; bottom: 100%; left: 21px; border-width: 8px; border-style: solid; border-color: transparent transparent rgb(255, 251, 230); border-image: initial; }
+.popup-close-btn { position: absolute; top: 2px; right: 5px; background: transparent; border: none; font-size: 1.5em; line-height: 1; color: rgb(192, 192, 192); cursor: pointer; transition: color 0.2s; }
+.popup-close-btn:hover { color: rgb(93, 64, 55); }
+.explanation-popup.popup-align-right::before { left: auto; right: 20px; }
+.explanation-popup.popup-align-right::after { left: auto; right: 21px; }
+.mcq-answer-stepper { display: inline-flex; align-items: center; vertical-align: middle; border: 1px solid rgb(204, 204, 204); border-radius: 4px; overflow: hidden; }
+.mcq-answer-btn { background-color: rgb(248, 249, 250); border: none; cursor: pointer; font-size: 1.2em; font-weight: bold; width: 32px; height: 32px; line-height: 32px; text-align: center; color: rgb(73, 80, 87); }
+.mcq-answer-btn:hover { background-color: rgb(233, 236, 239); }
+.mcq-answer-display { width: 40px; height: 32px; line-height: 32px; text-align: center; font-weight: bold; border-left: 1px solid rgb(204, 204, 204); border-right: 1px solid rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
+#preview .mcq-preview-option.selected { font-weight: bold; }
+#preview .mcq-preview-option.selected.correct { background-color: rgb(232, 245, 233); border: 1px solid var(--correct-color); }
+#preview .mcq-preview-option.selected.incorrect { background-color: rgb(255, 235, 238); border: 1px solid var(--incorrect-color); }
+.daily-quiz-editor { display: flex; align-items: center; gap: 10px; padding: 10px; background-color: rgb(245, 245, 245); border-radius: 4px; }
+.daily-quiz-preview { background-color: rgb(255, 250, 240); border-width: 1px 1px 1px 5px; border-style: solid; border-color: rgb(240, 230, 140) rgb(240, 230, 140) rgb(240, 230, 140) rgb(216, 191, 216); border-image: initial; border-radius: 8px; padding: 15px 20px; }
+.daily-quiz-preview .quiz-title-preview { font-size: 1.1em; color: rgb(93, 64, 55); }
+.daily-quiz-preview .mcq-options-preview { margin-left: 0px; }
+.daily-quiz-preview .mcq-preview-option { border: 1px solid rgb(224, 224, 224); margin-bottom: 8px; background-color: rgb(255, 255, 255); }
+.new-proverb-btn { margin-left: auto; background-color: rgb(240, 230, 140); border: 1px solid rgb(216, 191, 216); color: rgb(93, 64, 55); font-weight: bold; }
+.toolbar-btn-group { display: inline-flex; vertical-align: middle; margin: 2px; }
+.toolbar-btn-group button { margin: 0px; border-radius: 0px; border-right-width: 0px; }
+.toolbar-btn-group button:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.toolbar-btn-group button:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-right-width: 1px; }
+.dropdown { position: relative; display: inline-block; vertical-align: middle; }
+.dropdown-toggle { display: flex; align-items: center; gap: 4px; }
+.color-indicator { display: inline-block; width: 14px; height: 4px; background-color: black; border-radius: 2px; }
+.dropdown-menu { display: none; position: absolute; top: 100%; left: 0px; z-index: 1001; background-color: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 5px; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px; }
+.dropdown-menu.show { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.color-palette .color-swatch { width: 28px; height: 28px; margin: 0px; }
+.style-grid-mini { grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 5px; width: auto; }
+.dropdown-menu.style-grid-mini.show { display: grid; }
+.style-grid-mini .color-swatch, .style-grid-mini button { width: 15px; height: 15px; min-width: 0px; margin: 0px; }
+.dropdown-menu-right { left: 50%; transform: translateX(-50%); }
+.explanation-modal-header { padding: 15px 25px; background-color: rgb(248, 249, 250); border-bottom: 1px solid rgb(238, 238, 238); border-radius: 8px 8px 0px 0px; }
+.explanation-modal-header .selected-text-display { color: rgb(108, 117, 125); font-weight: normal; }
+.mini-toolbar { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); }
+.mini-toolbar button { border: 1px solid var(--border-color); background-color: rgb(255, 255, 255); cursor: pointer; padding: 5px; margin: 2px; border-radius: 4px; font-size: 1em; vertical-align: middle; min-width: 32px; }
+.mini-toolbar button:hover { background-color: rgb(226, 230, 234); }
+#explanation-emoji-palette { padding-bottom: 10px; border-bottom: 1px solid rgb(238, 238, 238); margin-bottom: 10px; }
+.modal-emoji { cursor: pointer; font-size: 1.4em; margin-right: 8px; opacity: 0.7; transition: opacity 0.2s; }
+.modal-emoji:hover { opacity: 1; }
+.editor-column .tab-btn { position: relative; padding-right: 28px; }
+.editor-column .tab-btn .delete-tab-btn { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); font-size: 1.1em; line-height: 1; opacity: 0.3; transition: opacity 0.2s; }
+.editor-column .tab-btn:hover .delete-tab-btn { opacity: 1; }
+.editor-column .tab-btn .delete-tab-btn:hover { color: var(--incorrect-color); font-weight: bold; }
+.editor-column .tab-btn.dragging { opacity: 0.5; background: rgb(226, 230, 234); }
+.exported-body .tab-content { display: none; }
+.exported-body .tab-content.active { display: block; }
+.left-panel::-webkit-scrollbar { display: none; }
+@media (max-width: 1024px) {
+  body { padding: 10px; }
+  .container { flex-direction: column; }
+  .left-panel { position: static; width: 100%; height: auto; overflow-y: visible; padding-right: 0px; }
+}
+.blank-container { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.blank-choices { font-size: 0.9em; color: rgb(108, 117, 125); background-color: rgb(248, 249, 250); padding: 2px 6px; border-radius: 4px; border: 1px solid rgb(233, 236, 239); }
+.revealable-cloze { border: 1px dashed var(--primary-color); color: var(--primary-color); padding: 1px 5px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+.revealable-cloze:hover { background-color: rgb(227, 242, 253); }
+.revealed-answer { font-weight: bold; color: var(--correct-color); padding: 1px 5px; cursor: pointer; }
+#scrollToTopBtn { position: sticky; bottom: 30px; margin-left: auto; margin-right: 20px; width: 50px; height: 50px; background-color: var(--primary-color); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.5em; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; z-index: 1000; opacity: 0; visibility: hidden; pointer-events: none; transition: 0.2s ease-in-out; }
+#scrollToTopBtn.show { opacity: 0.8; visibility: visible; pointer-events: auto; }
+#scrollToTopBtn:hover { opacity: 1; transform: translateY(-3px); box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 12px; }
+#scrollToTopBtn:active { transform: translateY(0px); box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px; }
+#spacing-modal-content span.word { cursor: pointer; padding: 2px 4px; border-radius: 3px; transition: background-color 0.2s; }
+#spacing-modal-content span.word:hover { background-color: rgb(227, 242, 253); }
+#spacing-modal-content span.word.spaced::after { content: "^"; color: red; vertical-align: super; font-size: smaller; margin-left: 2px; font-weight: bold; }
+span.interactive-spacing { cursor: pointer; }
+span.interactive-spacing[data-state="compact"] { }
+span.interactive-spacing > span.spacing-marker { display: none; user-select: none; }
+span.interactive-spacing[data-state="expanded"] > span.spacing-marker { display: inline !important; }
+span.interactive-spacing[data-state="expanded"] > span.spacing-marker::before { content: attr(data-marker); vertical-align: super; font-size: smaller; margin: 0px 3px; cursor: default; white-space: pre; color: red !important; }
+.classification-editor-container hr { border: 0px; height: 1px; background-color: var(--border-color); }
+.classification-category-editor-row, .classification-item-editor-row { display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 5px; background-color: rgb(255, 255, 255); border: 1px dashed var(--border-color); border-radius: 4px; }
+.classification-category-editor-row input, .classification-item-editor-row .item-text-input { flex-grow: 1; border: 1px solid rgb(204, 204, 204); padding: 5px; border-radius: 3px; }
+.classification-item-editor-row .item-category-select { flex-basis: 150px; padding: 5px; border: 1px solid rgb(204, 204, 204); border-radius: 3px; background-color: rgb(248, 249, 250); }
+.delete-classification-category, .delete-classification-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; padding: 0px 5px; line-height: 1; }
+.delete-classification-category:hover, .delete-classification-item:hover { color: var(--incorrect-color); }
+.block[data-type="timeline"] .block-title { background-color: rgb(178, 223, 219); }
+.block[data-type="timeline"] hr { border: none; height: 1px; background-color: var(--border-color); margin: 15px 0px; }
+.timeline-item-editor { background-color: transparent; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+.timeline-item-editor:last-child { border-bottom: none; }
+.timeline-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 0.9em; color: rgb(108, 117, 125); }
+.delete-timeline-item { background: transparent; border: none; color: rgb(170, 170, 170); cursor: pointer; font-size: 1.4em; font-weight: bold; }
+.delete-timeline-item:hover { color: var(--incorrect-color); }
+.timeline-item-body { display: flex; gap: 10px; }
+.timeline-date-editor { flex: 1 1 0%; padding: 8px; background-color: rgb(248, 249, 250); border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.timeline-content-editor { flex: 3 1 0%; padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; }
+.timeline-preview-container { position: relative; margin: 20px auto 0px; }
+.timeline-content p:first-child { margin-top: 0px; }
+.timeline-content p:last-child { margin-bottom: 0px; }
+.timeline-preview-container.layout-vertical { padding: 20px 0px; max-width: 700px; }
+.layout-vertical .timeline-line { position: absolute; left: 50%; top: 0px; bottom: 0px; width: 2px; background-image: linear-gradient(rgb(203, 213, 225) 60%, transparent 40%); background-size: 2px 10px; background-repeat: repeat-y; transform: translateX(-50%); z-index: 1; }
+.layout-vertical .timeline-preview-item { display: flex; align-items: center; width: 100%; margin-bottom: 20px; }
+.layout-vertical .timeline-centerpiece { flex-shrink: 0; width: 80px; position: relative; display: flex; justify-content: center; }
+.layout-vertical .timeline-dot { width: 20px; height: 20px; background-color: white; border-radius: 50%; z-index: 2; }
+.layout-vertical .timeline-side { flex: 1 1 0%; }
+.layout-vertical .timeline-side-left { text-align: right; }
+.layout-vertical .timeline-side-right { text-align: left; }
+.layout-vertical .timeline-date { font-size: 1.1em; font-weight: bold; padding: 0px 20px; }
+.layout-vertical .timeline-content { position: relative; display: inline-block; width: auto; max-width: 100%; text-align: left; padding: 12px 15px; color: rgb(51, 51, 51); border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px; word-break: break-all; backdrop-filter: blur(2px); }
+.layout-vertical .timeline-content::before, .layout-vertical .timeline-content::after { content: ""; position: absolute; top: 50%; width: 0px; height: 0px; border-style: solid; }
+.timeline-preview-container.layout-horizontal { display: flex; overflow-x: auto; padding: 20px; min-height: 300px; }
+.layout-horizontal .timeline-line-horizontal { position: absolute; top: 50%; left: 0px; right: 0px; height: 2px; background-image: linear-gradient(to right, rgb(203, 213, 225) 60%, transparent 40%); background-size: 10px 2px; z-index: 1; }
+.layout-horizontal .timeline-horizontal-item { flex: 0 0 220px; position: relative; }
+.layout-horizontal .timeline-dot { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; background-color: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; }
+.layout-horizontal .timeline-date, .layout-horizontal .timeline-content { position: absolute; left: 50%; transform: translateX(-50%); width: 90%; box-sizing: border-box; text-align: center; }
+.layout-horizontal .timeline-content { padding: 10px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px; background-color: white; }
+.layout-horizontal .timeline-content::before { content: ""; position: absolute; left: 50%; transform: translateX(-50%); width: 0px; height: 0px; border-style: solid; }
+.layout-horizontal .timeline-date { font-weight: bold; font-size: 1.1em; }
+.layout-date-left .timeline-date, .layout-horizontal .horizontal-item-bottom .timeline-date { color: var(--hover-color); }
+.layout-date-left .timeline-dot, .layout-horizontal .horizontal-item-bottom .timeline-dot { border: 4px solid var(--hover-color); }
+.layout-date-left .timeline-content, .layout-horizontal .horizontal-item-bottom .timeline-content { border: 1px solid var(--hover-color); background-color: rgba(245, 158, 11, 0.08); }
+.layout-date-left .timeline-content::before { right: 100%; border-width: 8px 8px 8px 0px; border-color: transparent var(--hover-color) transparent transparent; margin-top: -8px; }
+.layout-date-left .timeline-content::after { right: 100%; border-width: 7px 7px 7px 0px; border-color: transparent rgba(245, 158, 11, 0.08) transparent transparent; margin-top: -7px; }
+.layout-horizontal .horizontal-item-bottom .timeline-content::before { bottom: 100%; border-width: 0px 8px 8px; border-color: transparent transparent var(--hover-color) transparent; }
+.layout-content-left .timeline-date, .layout-horizontal .horizontal-item-top .timeline-date { color: var(--primary-color); }
+.layout-content-left .timeline-dot, .layout-horizontal .horizontal-item-top .timeline-dot { border: 4px solid var(--primary-color); }
+.layout-content-left .timeline-content, .layout-horizontal .horizontal-item-top .timeline-content { border: 1px solid var(--primary-color); background-color: rgba(59, 130, 246, 0.08); }
+.layout-content-left .timeline-content::before { left: 100%; border-width: 8px 0px 8px 8px; border-color: transparent transparent transparent var(--primary-color); margin-top: -8px; }
+.layout-content-left .timeline-content::after { left: 100%; border-width: 7px 0px 7px 7px; border-color: transparent transparent transparent rgba(59, 130, 246, 0.08); margin-top: -7px; }
+.layout-horizontal .horizontal-item-top .timeline-content::before { top: 100%; border-width: 8px 8px 0px; border-color: var(--primary-color) transparent transparent transparent; }
+.layout-horizontal .horizontal-item-top .timeline-date { top: 50%; margin-top: 20px; }
+.layout-horizontal .horizontal-item-top .timeline-content { bottom: 50%; margin-bottom: 40px; }
+.layout-horizontal .horizontal-item-bottom .timeline-date { bottom: 50%; margin-bottom: 20px; }
+.layout-horizontal .horizontal-item-bottom .timeline-content { top: 50%; margin-top: 40px; }
+.block[data-type="room-escape"] .block-title { background-color: rgb(176, 190, 197); }
+.room-escape-editor-content, .room-escape-preview-content { border: 2px dashed rgb(207, 216, 220); padding: 15px; margin-top: 10px; border-radius: 5px; background-color: rgb(236, 239, 241); min-height: 100px; }
+.room-escape-editor-content::before { content: "이곳에 다음 단계의 블록을 넣으세요"; color: rgb(120, 144, 156); font-weight: bold; display: block; text-align: center; }
+.room-escape-editor-content:has(.block)::before { display: none; }
+.room-escape-preview-locked { text-align: center; padding: 20px; border: 1px solid rgb(176, 190, 197); border-radius: 8px; background-color: rgb(250, 250, 250); }
+.room-escape-preview-locked input { padding: 8px; border: 1px solid rgb(204, 204, 204); border-radius: 4px; margin-right: 5px; }
+.room-escape-preview-locked.shake { animation: 0.5s ease 0s 1 normal none running shake; }
+@keyframes shake { 
+  0%, 100% { transform: translateX(0px); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.room-escape-preview-unlocked-message { text-align: center; font-weight: bold; color: var(--correct-color); padding: 10px; background-color: rgb(232, 245, 233); border-radius: 5px; margin-bottom: 15px; }
+.icon-grid button.room-escape-usable { position: relative; }
+.icon-grid button.room-escape-usable::after { content: "🗝️"; position: absolute; top: 2px; right: 4px; font-size: 0.6em; text-shadow: rgba(0, 0, 0, 0.4) 1px 1px 2px; }
+.table-preview-container.first-col-narrow table { table-layout: fixed; }
+.table-preview-container.first-col-narrow th:first-child, .table-preview-container.first-col-narrow td:first-child { width: 120px; }
+#editor .table-field { background-color: rgb(255, 255, 255); border: 1px solid rgb(73, 80, 87); }
+.classification-preview-container { margin-top: 15px; }
+.classification-categories-preview { display: flex; gap: 15px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
+.classification-category-bin { flex: 1 0 180px; display: flex; flex-direction: column; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); }
+.classification-category-bin .category-title { font-weight: bold; text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color); background-color: rgb(240, 243, 245); }
+.category-drop-zone { min-height: 80px; padding: 10px; flex-grow: 1; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; transition: background-color 0.2s; }
+.category-drop-zone.drag-over { background-color: rgb(224, 242, 241); }
+.classification-items-source { min-height: 50px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--background-light); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; }
+.classification-item-card { padding: 6px 14px; background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); border-radius: 15px; cursor: grab; user-select: none; box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px; transition: 0.2s; }
+.classification-item-card:active { cursor: grabbing; box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px; }
+.classification-item-card.dragging { opacity: 0.5; }
+.classification-item-card.correct { border-color: var(--correct-color); background-color: rgb(232, 245, 233); }
+.classification-item-card.incorrect { border-color: var(--incorrect-color); background-color: rgb(255, 235, 238); }
+.passage-marker-in-editor { background-color: rgb(224, 242, 241); color: rgb(0, 77, 64); border-bottom: 1px dashed rgb(77, 182, 172); cursor: pointer; border-radius: 3px; padding: 1px 4px; }
+.CtxtMenu_InfoClose { top: 0.2em; right: 0.2em; }
+.CtxtMenu_InfoContent { overflow: auto; text-align: left; font-size: 80%; padding: 0.4em 0.6em; border: 1px inset; margin: 1em 0px; max-height: 20em; max-width: 30em; background-color: rgb(238, 238, 238); white-space: normal; }
+.CtxtMenu_Info.CtxtMenu_MousePost { outline: none; }
+.CtxtMenu_Info { position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: rgb(221, 221, 221); color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuClose { position: absolute; cursor: pointer; display: inline-block; border: 2px solid rgb(170, 170, 170); border-radius: 18px; font-family: "Courier New", Courier; font-size: 24px; color: rgb(240, 240, 240); }
+.CtxtMenu_MenuClose span { display: block; background-color: rgb(170, 170, 170); border: 1.5px solid; border-radius: 18px; line-height: 0; padding: 8px 0px 6px; }
+.CtxtMenu_MenuClose:hover { color: white !important; border: 2px solid rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover span { background-color: rgb(204, 204, 204) !important; }
+.CtxtMenu_MenuClose:hover:focus { outline: none; }
+.CtxtMenu_Menu { position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid rgb(204, 204, 204); margin: 0px; cursor: default; font-style: ; font-variant: normal; font-weight: ; font-stretch: ; font-size: ; font-family: ; font-optical-sizing: ; font-size-adjust: ; font-kerning: ; font-feature-settings: ; font-variation-settings: ; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; box-shadow: rgb(128, 128, 128) 0px 10px 20px; }
+.CtxtMenu_MenuItem { padding: 1px 2em; background: transparent; }
+.CtxtMenu_MenuArrow { position: absolute; right: 0.5em; padding-top: 0.25em; color: rgb(102, 102, 102); font-family: null; font-size: 0.75em; }
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow { color: white; }
+.CtxtMenu_MenuArrow.CtxtMenu_RTL { left: 0.5em; right: auto; }
+.CtxtMenu_MenuCheck { position: absolute; left: 0.7em; font-family: null; }
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuRadioCheck { position: absolute; left: 0.7em; }
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL { right: 0.7em; left: auto; }
+.CtxtMenu_MenuInputBox { padding-left: 1em; right: 0.5em; color: rgb(102, 102, 102); font-family: null; }
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL { left: 0.1em; }
+.CtxtMenu_MenuComboBox { left: 0.1em; padding-bottom: 0.5em; }
+.CtxtMenu_MenuSlider { left: 0.1em; }
+.CtxtMenu_SliderValue { position: absolute; right: 0.1em; padding-top: 0.25em; color: rgb(51, 51, 51); font-size: 0.75em; }
+.CtxtMenu_SliderBar { outline: none; background: rgb(211, 211, 211); }
+.CtxtMenu_MenuLabel { padding: 1px 2em 3px 1.33em; font-style: italic; }
+.CtxtMenu_MenuRule { border-top: 1px solid rgb(221, 221, 221); margin: 4px 3px; }
+.CtxtMenu_MenuDisabled { color: graytext; }
+.CtxtMenu_MenuActive { background-color: rgb(96, 104, 114); color: white; }
+.CtxtMenu_MenuDisabled:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_MenuLabel:focus { background-color: rgb(232, 232, 232); }
+.CtxtMenu_ContextMenu:focus { outline: none; }
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus { outline: none; }
+.CtxtMenu_SelectionMenu { position: relative; float: left; border-bottom: none; box-shadow: none; border-radius: 0px; }
+.CtxtMenu_SelectionItem { padding-right: 1em; }
+.CtxtMenu_Selection { right: 40%; width: 50%; }
+.CtxtMenu_SelectionBox { padding: 0em; max-height: 20em; max-width: none; background-color: rgb(255, 255, 255); }
+.CtxtMenu_SelectionDivider { clear: both; border-top: 2px solid rgb(0, 0, 0); }
+.CtxtMenu_Menu .CtxtMenu_MenuClose { top: -10px; left: -10px; }
+mjx-container[jax="SVG"] { direction: ltr; }
+mjx-container[jax="SVG"] > svg { overflow: visible; min-height: 1px; min-width: 1px; }
+mjx-container[jax="SVG"] > svg a { fill: blue; stroke: blue; }
+mjx-assistive-mml { top: 0px; left: 0px; clip: rect(1px, 1px, 1px, 1px); user-select: none; position: absolute !important; padding: 1px 0px 0px !important; border: 0px !important; display: block !important; width: auto !important; overflow: hidden !important; }
+mjx-assistive-mml[display="block"] { width: 100% !important; }
+mjx-container[jax="SVG"][display="true"] { display: block; text-align: center; margin: 1em 0px; }
+mjx-container[jax="SVG"][display="true"][width="full"] { display: flex; }
+mjx-container[jax="SVG"][justify="left"] { text-align: left; }
+mjx-container[jax="SVG"][justify="right"] { text-align: right; }
+g[data-mml-node="merror"] > g { fill: red; stroke: red; }
+g[data-mml-node="merror"] > rect[data-background] { fill: yellow; stroke: none; }
+g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] { stroke-width: 70px; fill: none; }
+g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed { stroke-dasharray: 140; }
+g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted { stroke-linecap: round; stroke-dasharray: 0, 140; }
+g[data-mml-node="mtable"] > g > svg { overflow: visible; }
+[jax="SVG"] mjx-tool { display: inline-block; position: relative; width: 0px; height: 0px; }
+[jax="SVG"] mjx-tool > mjx-tip { position: absolute; top: 0px; left: 0px; }
+mjx-tool > mjx-tip { display: inline-block; padding: 0.2em; border: 1px solid rgb(136, 136, 136); font-size: 70%; background-color: rgb(248, 248, 248); color: black; box-shadow: rgb(170, 170, 170) 2px 2px 5px; }
+g[data-mml-node="maction"][data-toggle] { cursor: pointer; }
+mjx-status { display: block; position: fixed; left: 1em; bottom: 1em; min-width: 25%; padding: 0.2em 0.4em; border: 1px solid rgb(136, 136, 136); font-size: 90%; background-color: rgb(248, 248, 248); color: black; }
+foreignobject[data-mjx-xml] { font-family: initial; line-height: normal; overflow: visible; }
+mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] { stroke-width: 3; }</style>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathquill/0.10.1/mathquill.min.js"></script>
+                    <script>
+                        window.MathJax = {
+                          tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+                          svg: { fontCache: 'global' }
+                        };
+                    </script>
+                    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+                </head>
+                <body class="exported-body" style="background-color: #f4f7f9; font-family: 'Malgun Gothic', sans-serif;">
+                    <div id="exported-container" style="position: relative; width: 90%; max-width: 1100px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        
+                <div class="preview-top-bar">
+                    <h1 id="preview-main-title">백석</h1>
+                </div>
+                <div id="preview-tab-bar" class="tab-bar preview-tabs">
+                    <div id="preview-tab-buttons"><button class="tab-btn active" data-tab-id="tab-1761907611004">백석 소개</button></div>
+                </div>
+                <div id="preview"><div class="tab-content active" data-tab-content-id="tab-1761907611004"><h2 style="display:none;">백석 소개</h2><div class="block" data-type="text"><details class="text-preview-container" open="">
+                                    <summary class="text-preview-summary">
+                                        <span class="text-preview-title-pill">📝 백석 핵심사항</span>
+                                        <span class="text-preview-toggle-icon">▼</span>
+                                    </summary>
+                                    <div class="text-preview-content-wrapper">
+                                        <div class="text-preview-content"><div><div>​
+                                <details class="inline-toggle-preview">
+                                    <summary>1. 평안도 방언과 향토성, 토속적 소재 사용</summary>
+                                    <div class="inline-toggle-content">
+                                        - 평안북도 정주(定州) 출생.<div>- 선배 시인 김소월도 평안북도 정주임</div><div><br></div><div>-&nbsp;<span style="font-family: inherit;">방언의 기능: 단순히 고향 말을 쓴 게 아니야. 백석에게 평안도 방언은 ①사라져가는 우리 고유의 것(토속어)을 보존하려는 의지이자, ②시의 향토적 정서(Nativism)를 극대화하는 핵심 장치임. 방언을 씀으로써 그 지역의 삶과 정서를 가장 생생하게(감각적으로) 전달함.</span></div><div><div><br></div><div>- 향토적 소재: 시에 등장하는 '음식'들(예: '국수', '가자미식해', '흰밥과 가재미'), '지명', '풍속' 등은 모두 구체적인 삶의 터전을 보여줌.</div></div>
+                                    </div>
+                                </details>
+                            ​<br></div><div><br></div><div>​
+                                <details class="inline-toggle-preview">
+                                    <summary>2. 가족공동체에 대한 그리움</summary>
+                                    <div class="inline-toggle-content">
+                                        <div style=""><div style=""><span style="font-size: 18px; font-family: inherit;">- <b>따뜻한 공동체</b>: 그의 시에 나타나는 고향은 가족, 친척, 이웃이 어우러져 사는 따뜻한 공동체의 모습. (예: '고향', '여승', '여우난골족') 이들은 가난하고 힘들어도 서로 의지하며 살아가는 존재들임.</span></div><div style=""><span style="font-size: 18px;"><br></span></div><div style=""><span style="font-size: 18px;">- <b>그리움의 대상</b>: 백석이 시를 쓰던 시기(일제강점기)는 이런 전통적 공동체가 무너져가던(해체되던) 시기. 그래서 백석에게 '고향의 공동체'는 현재는 잃어버린, 그래서 더더욱 그리운 이상향(理想鄕)이자 '원형적 공간'으로 나타남.</span></div><div style=""><br></div></div>
+                                    </div>
+                                </details>
+                            ​<br></div><div><br></div><div>​
+                                <details class="inline-toggle-preview">
+                                    <summary>3. '유랑 의식'과 '공동체 해체'</summary>
+                                    <div class="inline-toggle-content">
+                                        <div><span style="font-family: inherit;">- 백석의 시 세계는 크게 두 축.&nbsp; '따뜻한 고향(공동체)'과, 그 고향을 떠나 떠도는 '유랑민(流浪民)으로서의 삶'.</span></div><div><br></div><div>- <b>떠도는 자의 슬픔</b>: 고향을 상실하고 만주나 여러 지방을 떠돌며 쓴 시들(예: '흰 바람벽이 있어', '남신의주 유동 박시봉방')에는 고독, 쓸쓸함, 무기력감, 그리고 가족에 대한 절절한 그리움이 담겨 있음.</div><div><br></div><div>- <b>현실 인식</b>: 이는 단순히 개인의 외로움이 아니라, 일제강점기라는 시대적 상황 속에서 삶의 터전을 잃고 뿔뿔이 흩어져야 했던 우리 민족의 비애를 대변.</div>
+                                    </div>
+                                </details>
+                            ​<br></div><div><br></div><div>​
+                                <details class="inline-toggle-preview">
+                                    <summary>4. '감각적 이미지'와 '열거'</summary>
+                                    <div class="inline-toggle-content">
+                                        <div><span style="font-family: inherit;">- <b>이미지의 시인:&nbsp;</b>특히 토속적인 소재들을 구체적인 감각으로 형상화.</span></div><div><br></div><div>- <b>시각, 후각, 미각</b>: 특히 그는 '음식'을 통해 후각과 미각을 자극하는 데 능숙. (예: '국수'에서 묘사하는 냄새와 맛)</div><div><br></div><div>- <b>목록식 열거</b>: 시에 토속적인 사물, 음식, 인물들을 쭉 나열하는(열거하는) 방식을 자주 사용. (예: '여우난골족')</div>
+                                    </div>
+                                </details>
+                            ​<br></div></div><div><br></div></div>
+                                    </div>
+                                </details></div></div></div>
+                <div id="explanationPopup" class="explanation-popup"></div>
+            
+                        <button id="scrollToTopBtn" title="맨 위로 이동">▲</button>
+                    </div>
+                    <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const explanationPopup = document.getElementById('explanationPopup');
+                const previewContainer = document.getElementById('exported-container');
+                let proverbDataCache = {}; // 퀴즈 데이터 캐시
+
+                const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+                if (scrollToTopBtn) {
+                    window.addEventListener('scroll', () => {
+                        if (window.scrollY > 200) {
+                            scrollToTopBtn.classList.add('show');
+                        } else {
+                            scrollToTopBtn.classList.remove('show');
+                        }
+                    });
+                    scrollToTopBtn.addEventListener('click', () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+
+                const tabButtonsContainer = document.querySelector('#preview-tab-buttons');
+                if (tabButtonsContainer) {
+                    tabButtonsContainer.addEventListener('click', e => {
+                        const tabButton = e.target.closest('.tab-btn');
+                        if (!tabButton) return;
+
+                        const tabId = tabButton.dataset.tabId;
+
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                        tabButton.classList.add('active');
+                        const activeContent = document.querySelector('.tab-content[data-tab-content-id="' + tabId + '"]');
+                        if (activeContent) {
+                            activeContent.classList.add('active');
+                            adjustBlankInputWidths(activeContent);
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                window.MathJax.typesetPromise([activeContent]);
+                            }
+                        }
+
+                        if (previewContainer) {
+                            previewContainer.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                }
+                
+                function renderQuizContent(quizData, items, quizBlock) {
+                    const correctAnswer = quizData.proverb;
+                    const currentQuizIndex = items.findIndex(item => item.proverb === correctAnswer);
+                    
+                    let wrongAnswers = [];
+                    while(wrongAnswers.length < 3) {
+                        const randomIndex = Math.floor(Math.random() * items.length);
+                        if (randomIndex !== currentQuizIndex && !wrongAnswers.includes(items[randomIndex].proverb)) {
+                            wrongAnswers.push(items[randomIndex].proverb);
+                        }
+                    }
+
+                    const choices = shuffle([correctAnswer, ...wrongAnswers]);
+                    const answerIndex = choices.indexOf(correctAnswer) + 1;
+                    
+                    let choicesHtml = '';
+                    const numberChars = ['①', '②', '③', '④'];
+                    choices.forEach((choice, index) => {
+                        choicesHtml += `<div class="mcq-preview-option" data-choice="${index + 1}">${numberChars[index]} ${choice}</div>`;
+                    });
+
+                    const quizHtml = `
+                        <div class="daily-quiz-preview">
+                            <div class="mcq-preview-item" data-attempts="0" data-answer="${answerIndex}" data-explanation="${btoa(encodeURIComponent(quizData.example || ''))}" data-current-proverb="${btoa(encodeURIComponent(correctAnswer))}">
+                                <div class="quiz-title-preview"><strong>[오늘의 퀴즈]</strong> 다음 설명에 해당하는 것은 무엇일까요?</div>
+                                <div class="mcq-passage-preview">${quizData.explanation.replace(/\n/g, '<br>')}</div>
+                                <div class="mcq-options-preview">${choicesHtml}</div>
+                                <div class="quiz-controls" style="display: none;">
+                                    <span class="feedback"></span>
+                                    <button class="retry-quiz-btn" style="display:none;">다시 풀기</button>
+                                    <button class="new-proverb-btn" style="display:none;">다른 속담 더 풀어보기</button>
+                                </div>
+                                <div class="explanation"></div>
+                            </div>
+                        </div>
+                    `;
+                    quizBlock.innerHTML = quizHtml;
+                }
+
+                async function renderDailyQuiz(quizBlock) {
+                    try {
+                        const quizType = quizBlock.dataset.quizType;
+                        if (!quizType) throw new Error('퀴즈 종류가 지정되지 않았습니다.');
+                        
+                        const fileName = `quiz_data_${quizType}.json`;
+                        
+                        if (!proverbDataCache[quizType]) {
+                            const response = await fetch(fileName); 
+                            if (!response.ok) throw new Error(`데이터 파일(${fileName})을 불러올 수 없습니다.`);
+                            proverbDataCache[quizType] = await response.json();
+                        }
+                        const items = proverbDataCache[quizType];
+
+                        const now = new Date();
+                        const start = new Date(now.getFullYear(), 0, 0);
+                        const diff = now - start;
+                        const oneDay = 1000 * 60 * 60 * 24;
+                        const dayOfYear = Math.floor(diff / oneDay);
+
+                        const todaysItemIndex = dayOfYear % items.length;
+                        const quizData = items[todaysItemIndex];
+                        
+                        renderQuizContent(quizData, items, quizBlock);
+
+                    } catch (error) {
+                        quizBlock.innerHTML = `<div class="daily-quiz-preview" style="color: var(--incorrect-color); text-align: center;">${error.message}</div>`;
+                    }
+                }
+
+                function adjustBlankInputWidths(container) {
+                    const measureSpan = document.createElement('span');
+                    measureSpan.style.visibility = 'hidden';
+                    measureSpan.style.position = 'absolute';
+                    measureSpan.style.fontFamily = 'inherit';
+                    measureSpan.style.fontSize = '1em';
+                    document.body.appendChild(measureSpan);
+
+                    container.querySelectorAll('.blank-input-preview').forEach(input => {
+                        const encodedAnswer = input.dataset.answer;
+                        if (encodedAnswer) {
+                            try {
+                                const answer = decodeURIComponent(atob(encodedAnswer));
+                                measureSpan.textContent = answer || '____';
+                                const textWidth = measureSpan.offsetWidth;
+                                input.style.width = (textWidth + 10) + 'px';
+                            } catch (e) {}
+                        }
+                    });
+                    document.body.removeChild(measureSpan);
+                }
+
+                function initializeAllInteractiveBlocks() {
+                    document.querySelectorAll('.classification-preview-container').forEach(container => {
+                        const sourceContainer = container.querySelector('.classification-items-source');
+                        if (sourceContainer) {
+                            const allCards = Array.from(sourceContainer.querySelectorAll('.classification-item-card'));
+                            shuffle(allCards).forEach(card => {
+                                sourceContainer.appendChild(card);
+                            });
+                        }
+                    });
+
+                    document.querySelectorAll('.line-quiz-preview').forEach(quizEl => {
+                        initializeLineQuiz(quizEl);
+                    });
+                    
+                    document.querySelectorAll('.block[data-type="daily-quiz"]').forEach(renderDailyQuiz);
+                }
+
+                function shuffle(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                }
+
+                function initializeLineQuiz(quizEl) {
+                    if (quizEl.lineQuizInstance) {
+                        quizEl.lineQuizInstance.reset();
+                        return;
+                    }
+                    const canvas = quizEl.querySelector('.line-quiz-canvas');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const allDots = quizEl.querySelectorAll('.dot');
+                    let selectedDot = null;
+                    let connections = [];
+
+                    const matchItemHeights = () => {
+                        const leftItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item'));
+                        const rightItems = Array.from(quizEl.querySelectorAll('.line-quiz-column:last-child .line-quiz-item'));
+                        const numItems = Math.min(leftItems.length, rightItems.length);
+                        for (let i = 0; i < numItems; i++) {
+                            leftItems[i].style.height = '';
+                            rightItems[i].style.height = '';
+                            const leftHeight = leftItems[i].offsetHeight;
+                            const rightHeight = rightItems[i].offsetHeight;
+                            const maxHeight = Math.max(leftHeight, rightHeight);
+                            if (maxHeight > 36) {
+                                leftItems[i].style.height = maxHeight + 'px';
+                                rightItems[i].style.height = maxHeight + 'px';
+                            }
+                        }
+                    };
+
+                    const resizeCanvas = () => {
+                        if (!quizEl.isConnected) return;
+                        canvas.width = quizEl.clientWidth;
+                        canvas.height = quizEl.clientHeight;
+                        matchItemHeights();
+                        redrawLines();
+                    };
+
+                    const getDotPosition = (dot) => {
+                        const dotRect = dot.getBoundingClientRect();
+                        const canvasRect = canvas.getBoundingClientRect();
+                        return {
+                            x: dotRect.left - canvasRect.left + dotRect.width / 2,
+                            y: dotRect.top - canvasRect.top + dotRect.height / 2
+                        };
+                    };
+                    const redrawLines = () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        connections.forEach(conn => {
+                            const startDot = quizEl.querySelector('.line-quiz-column:first-child .dot[data-id="' + conn.leftId + '"]');
+                            const endDot = quizEl.querySelector('.line-quiz-column:last-child .dot[data-id="' + conn.rightId + '"]');
+                            if (!startDot || !endDot) return;
+                            const startPos = getDotPosition(startDot);
+                            const endPos = getDotPosition(endDot);
+                            ctx.beginPath();
+                            ctx.moveTo(startPos.x, startPos.y);
+                            ctx.lineTo(endPos.x, endPos.y);
+                            ctx.strokeStyle = conn.color || '#007bff';
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                        });
+                    };
+                    const handleDotClick = (e) => {
+                        const dot = e.target;
+                        if (!dot.classList.contains('dot') || dot.classList.contains('disabled')) return;
+                        if (!selectedDot) {
+                            selectedDot = dot;
+                            dot.classList.add('selected');
+                        } else {
+                            if (selectedDot.closest('.line-quiz-column') === dot.closest('.line-quiz-column')) {
+                                selectedDot.classList.remove('selected');
+                                selectedDot = dot;
+                                dot.classList.add('selected');
+                                return;
+                            }
+                            const leftDot = selectedDot.closest('.line-quiz-column:first-child') ? selectedDot : dot;
+                            const rightDot = selectedDot.closest('.line-quiz-column:last-child') ? selectedDot : dot;
+                            const leftId = leftDot.dataset.id;
+                            const rightId = rightDot.dataset.id;
+                            connections = connections.filter(c => c.leftId !== leftId);
+                            connections.push({ leftId, rightId });
+                            redrawLines();
+                            selectedDot.classList.remove('selected');
+                            selectedDot = null;
+                        }
+                    };
+
+                    const instance = {
+                        checkAnswers: () => {
+                            let allConnectionsCorrect = true;
+                            const totalPairs = quizEl.querySelectorAll('.line-quiz-column:first-child .line-quiz-item').length;
+
+                            if (connections.length !== totalPairs) {
+                                allConnectionsCorrect = false;
+                            }
+
+                            connections.forEach(conn => {
+                                const isCorrect = conn.leftId === conn.rightId;
+                                if (!isCorrect) allConnectionsCorrect = false;
+                                conn.color = isCorrect ? '#28a745' : '#dc3545';
+                            });
+                            redrawLines();
+                            allDots.forEach(d => d.classList.add('disabled'));
+                            return allConnectionsCorrect;
+                        },
+                        reset: () => {
+                            connections = [];
+                            selectedDot = null;
+                            allDots.forEach(dot => dot.classList.remove('selected', 'disabled'));
+                            const rightColumnEl = quizEl.querySelector('.line-quiz-column:last-child');
+                            const rightItems = Array.from(rightColumnEl.querySelectorAll('.line-quiz-item'));
+                            shuffle(rightItems);
+                            rightColumnEl.innerHTML = '';
+                            rightItems.forEach(item => rightColumnEl.appendChild(item));
+                            redrawLines();
+                            setTimeout(resizeCanvas, 0);
+                        }
+                    };
+                    quizEl.lineQuizInstance = instance;
+                    quizEl.addEventListener('click', handleDotClick);
+                    const resizeObserver = new ResizeObserver(resizeCanvas);
+                    resizeObserver.observe(quizEl);
+                    instance.reset();
+                }
+
+                let currentDraggedItem = null;
+                let dropIndicator = null; 
+
+                function getDragAfterElementHorizontal(container, x) {
+                    const draggableElements = [...container.querySelectorAll('.ordering-item:not(.dragging)')];
+                    return draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = x - box.left - box.width / 2;
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+                }
+
+                previewContainer.addEventListener('dragstart', e => {
+                    if (e.target.matches('.classification-item-card')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                    }
+                    if (e.target.matches('.drag-source, .ordering-item')) {
+                        currentDraggedItem = e.target;
+                        setTimeout(() => e.target.classList.add('dragging'), 0);
+                        e.dataTransfer.setData('text/plain', e.target.textContent);
+                        if (e.target.matches('.ordering-item')) {
+                            dropIndicator = document.createElement('div');
+                            dropIndicator.className = 'ordering-drop-indicator';
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragend', e => {
+                    const droppedItem = e.target;
+
+                    if (droppedItem.matches('.ordering-item')) {
+                        setTimeout(() => {
+                            // 이전에 있던 로직은 모두 삭제하고, 아래 새로운 로직으로 교체합니다.
+                            const quizContainer = droppedItem.closest('.ordering-preview-container');
+                            if (!quizContainer) return;
+
+                            let allQuestionsCorrect = true;
+
+                            quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                const targetContainer = item.querySelector('.ordering-target-container');
+                                const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                                const studentAnswer = studentItems.join(' // ');
+                                const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+                                const totalItemCount = correctAnswer.split('//').length;
+
+                                if (studentItems.length !== totalItemCount || studentAnswer !== correctAnswer) {
+                                    allQuestionsCorrect = false;
+                                }
+                            });
+
+                            if (allQuestionsCorrect) {
+                                const feedbackEl = quizContainer.querySelector('.feedback');
+                                const isInsideRoomEscape = quizContainer.closest('.room-escape-preview-content');
+                                const answerWord = decodeURIComponent(atob(quizContainer.dataset.answerWord));
+
+                                if (isInsideRoomEscape && answerWord) {
+                                    feedbackEl.innerHTML = '✨ 성공! 다음 암호는 <div class="feedback-answer-box">' + answerWord + '</div> 입니다.';
+                                } else {
+                                    feedbackEl.innerHTML = '✨ 모든 순서를 완벽하게 맞혔습니다!';
+                                }
+                                feedbackEl.className = 'feedback show correct';
+
+                                quizContainer.querySelectorAll('.ordering-item').forEach(item => item.draggable = false);
+                            }
+                        }, 0);
+                    }
+
+                    if (currentDraggedItem) {
+                        currentDraggedItem.classList.remove('dragging');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.removeChild(dropIndicator);
+                        }
+                        dropIndicator = null;
+                        currentDraggedItem = null;
+                    }
+                });
+
+                previewContainer.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.classList.add('drag-over');
+                    }
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-target-container');
+
+                    if (dropTarget || (sourceContainer && currentDraggedItem?.parentElement.classList.contains('drop-target'))) {
+                        e.target.closest('.drop-target, .source-container').classList.add('drag-over');
+                    } else if (orderingContainer && currentDraggedItem?.matches('.ordering-item')) {
+                        orderingContainer.classList.add('drag-over');
+                        const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                        if (afterElement == null) {
+                            if (orderingContainer.lastChild !== dropIndicator) orderingContainer.appendChild(dropIndicator);
+                        } else {
+                            if (afterElement.previousSibling !== dropIndicator) orderingContainer.insertBefore(dropIndicator, afterElement);
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('dragleave', e => {
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone) {
+                        classificationDropZone.classList.remove('drag-over');
+                    }
+                    const relatedTarget = e.relatedTarget;
+                    const dropZone = e.target.closest('.drop-target, .source-container, .ordering-target-container');
+                    if (dropZone && !dropZone.contains(relatedTarget)) {
+                        dropZone.classList.remove('drag-over');
+                    }
+                    if(dropZone && dropIndicator && dropIndicator.parentNode) {
+                        dropIndicator.parentNode.removeChild(dropIndicator);
+                    }
+                });
+
+                previewContainer.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (!currentDraggedItem) return;
+
+                    const classificationDropZone = e.target.closest('.category-drop-zone, .classification-items-source');
+                    if (classificationDropZone && currentDraggedItem?.matches('.classification-item-card')) {
+                        classificationDropZone.appendChild(currentDraggedItem);
+                        classificationDropZone.classList.remove('drag-over');
+
+                        const quizContainer = classificationDropZone.closest('.classification-preview-container');
+                        const hasChecked = quizContainer.querySelector('.classification-item-card.correct, .classification-item-card.incorrect');
+                        
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.classification-item-card').forEach(card => {
+                                card.classList.remove('correct', 'incorrect');
+                            });
+                            quizContainer.querySelector('.retry-quiz-btn').style.display = 'none';
+                            quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            const feedbackEl = quizContainer.querySelector('.feedback');
+                            feedbackEl.className = 'feedback';
+                            feedbackEl.innerHTML = '';
+                        }
+                    }
+
+                    const dropTarget = e.target.closest('.drop-target');
+                    const sourceContainer = e.target.closest('.source-container');
+                    const orderingContainer = e.target.closest('.ordering-source-container, .ordering-target-container');
+
+                    if (dropTarget || (sourceContainer && currentDraggedItem.parentElement.classList.contains('drop-target'))) {
+                        const quizContainer = (dropTarget || sourceContainer).closest('.drag-drop-preview-container');
+                        const hasChecked = quizContainer.querySelector('.drop-target.correct, .drop-target.incorrect');
+
+                        if (hasChecked) {
+                            quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                target.classList.remove('correct', 'incorrect');
+                            });
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls) {
+                                controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                controls.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                                const feedbackEl = controls.querySelector('.feedback');
+                                feedbackEl.className = 'feedback';
+                                feedbackEl.innerHTML = '';
+                            }
+                        }
+
+                        if (dropTarget) {
+                            dropTarget.classList.remove('drag-over');
+                            const existingItem = dropTarget.querySelector('.drag-source');
+                            const mainSourceContainer = quizContainer.querySelector('.source-container');
+                            if (existingItem) {
+                                mainSourceContainer.appendChild(existingItem);
+                            }
+                            dropTarget.appendChild(currentDraggedItem);
+                        } else {
+                            sourceContainer.classList.remove('drag-over');
+                            sourceContainer.appendChild(currentDraggedItem);
+                        }
+                    } 
+                    else if (orderingContainer) {
+                        orderingContainer.classList.remove('drag-over');
+                        if (dropIndicator && dropIndicator.parentNode) {
+                            dropIndicator.parentNode.replaceChild(currentDraggedItem, dropIndicator);
+                        } else {
+                            const afterElement = getDragAfterElementHorizontal(orderingContainer, e.clientX);
+                            if (afterElement == null) orderingContainer.appendChild(currentDraggedItem);
+                            else orderingContainer.insertBefore(currentDraggedItem, afterElement);
+                        }
+                        const quizContainer = orderingContainer.closest('.ordering-preview-container');
+                        if (quizContainer && orderingContainer.classList.contains('ordering-target-container')) {
+                            if (orderingContainer.matches('.correct, .incorrect')) {
+                                orderingContainer.classList.remove('correct', 'incorrect');
+                                const controls = quizContainer.querySelector('.quiz-controls');
+                                if (controls) {
+                                    controls.querySelector('.retry-quiz-btn').style.display = 'none';
+                                    controls.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                                    controls.querySelector('.feedback').className = 'feedback';
+                                }
+                            }
+                        }
+                    }
+                });
+
+                previewContainer.addEventListener('click', e => {
+                    const newProverbBtn = e.target.closest('.new-proverb-btn');
+                    if (newProverbBtn) {
+                        const quizItem = newProverbBtn.closest('.mcq-preview-item');
+                        const quizBlock = newProverbBtn.closest('.block');
+                        const quizType = quizBlock.dataset.quizType;
+                        const items = proverbDataCache[quizType];
+                        const currentProverb = decodeURIComponent(atob(quizItem.dataset.currentProverb));
+
+                        if (items && items.length > 1) {
+                            let newIndex;
+                            let newQuizData;
+                            do {
+                                newIndex = Math.floor(Math.random() * items.length);
+                                newQuizData = items[newIndex];
+                            } while (newQuizData.proverb === currentProverb);
+                            
+                            renderQuizContent(newQuizData, items, quizBlock);
+                        }
+                        return;
+                    }
+
+                    const clozeChoice = e.target.closest('.cloze-choice');
+                    if (clozeChoice) {
+                        const container = clozeChoice.closest('.interactive-cloze-container');
+                        if (container.classList.contains('answered') || clozeChoice.classList.contains('used')) return;
+
+                        const blank = container.querySelector('.cloze-blank');
+                        const studentAnswer = clozeChoice.textContent.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.answer));
+
+                        blank.textContent = studentAnswer;
+                        blank.classList.add('filled');
+                        blank.classList.remove('incorrect');
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            blank.classList.add('correct');
+                            container.classList.add('answered');
+                            container.querySelectorAll('.cloze-choice').forEach(choice => {
+                                choice.classList.add('used');
+                            });
+                        } else {
+                            blank.classList.add('incorrect');
+                            clozeChoice.classList.add('used');
+                        }
+                        return;
+                    }
+
+                    const filledBlank = e.target.closest('.cloze-blank.filled');
+                    if (filledBlank && filledBlank.classList.contains('correct')) {
+                        const container = filledBlank.closest('.interactive-cloze-container');
+                        container.classList.remove('answered');
+                        filledBlank.innerHTML = '&nbsp;';
+                        filledBlank.className = 'cloze-blank';
+                        container.querySelectorAll('.cloze-choice').forEach(choice => {
+                            choice.classList.remove('used');
+                        });
+                        return;
+                    }
+
+                    const cloze = e.target.closest('.revealable-cloze');
+                    const revealed = e.target.closest('.revealed-answer');
+                    if (cloze) {
+                        const answer = decodeURIComponent(atob(cloze.dataset.answer));
+                        cloze.textContent = answer;
+                        cloze.className = 'revealed-answer';
+                        return;
+                    }
+                    if (revealed) {
+                        const hint = decodeURIComponent(atob(revealed.dataset.hint));
+                        revealed.textContent = hint;
+                        revealed.className = 'revealable-cloze';
+                        return;
+                    }
+                    const summary = e.target.closest('.frame-preview-summary, .summary-preview-summary, .text-preview-summary');
+                    if (summary) {
+                        e.preventDefault();
+                        const details = summary.parentElement;
+                        details.open = !details.open;
+                        return;
+                    }
+                    const retryBtn = e.target.closest('.retry-quiz-btn');
+                    const checkAnswerBtn = e.target.closest('.check-answer-btn');
+                    const checkFillInBtn = e.target.closest('.check-fill-in-btn');
+                    const checkLineQuizBtn = e.target.closest('.check-line-quiz-btn');
+                    const checkDragDropBtn = e.target.closest('.check-drag-drop-btn');
+                    const checkOrderingBtn = e.target.closest('.check-ordering-btn');
+                    const checkClassificationBtn = e.target.closest('.check-classification-btn');
+                    const openRoomEscapeBtn = e.target.closest('.room-escape-open-btn');
+                    const youtubePlaceholder = e.target.closest('.youtube-placeholder');
+
+                    if (retryBtn) {
+                        const quizContainer = retryBtn.closest('.quiz-container, .mcq-preview-item, .descriptive-preview-item, .fill-in-container, .table-preview-container, .drag-drop-preview-container, .ordering-preview-container, .classification-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        if (quizContainer) {
+                            
+                            if(quizContainer.classList.contains('mcq-preview-item')) { 
+                                const isDailyQuiz = quizContainer.closest('.daily-quiz-preview');
+                                if (isDailyQuiz) {
+                                    const quizBlock = quizContainer.closest('.block');
+                                    renderDailyQuiz(quizBlock);
+                                    return; // 오늘의 퀴즈 '다시풀기'는 여기서 종료
+                                } 
+                            }
+
+                            quizContainer.dataset.attempts = "0";
+                            const controls = quizContainer.querySelector('.quiz-controls');
+                            if (controls && controls.querySelector('.feedback')) {
+                                controls.querySelector('.feedback').className = 'feedback';
+                                controls.querySelector('.feedback').innerHTML = '';
+                            }
+                            quizContainer.querySelectorAll('.explanation').forEach(el => { el.className = 'explanation'});
+                            
+                            if (quizContainer.querySelector('.ox-preview-item')) {
+                                quizContainer.querySelectorAll('.ox-preview-item .feedback').forEach(fb => {
+                                    fb.className = 'feedback';
+                                    fb.innerHTML = '';
+                                });
+                                quizContainer.querySelectorAll('.ox-choices button').forEach(btn => {
+                                    btn.classList.remove('selected');
+                                });
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
+                            }
+                            
+                            if(quizContainer.classList.contains('mcq-preview-item')) { 
+                                quizContainer.dataset.attempts = "0";
+                                quizContainer.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+                                retryBtn.style.display = 'none';
+                                if (controls) controls.style.display = 'none';
+                                const explanation = quizContainer.querySelector('.explanation');
+                                if (explanation) explanation.classList.remove('show');
+                            }
+                            if(quizContainer.classList.contains('descriptive-preview-item')) {
+                                const studentAnswerEl = quizContainer.querySelector('.descriptive-student-answer');
+                                studentAnswerEl.value = '';
+                                studentAnswerEl.disabled = false;
+                                quizContainer.querySelector('.check-answer-btn').style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+                            
+                            const blankInputs = quizContainer.querySelectorAll('.blank-input-preview');
+                            if (blankInputs.length > 0) {
+                                blankInputs.forEach(input => {
+                                    input.value = '';
+                                    input.disabled = false;
+                                    input.className = 'blank-input-preview';
+                                });
+                                const checkBtn = quizContainer.querySelector('.check-fill-in-btn');
+                                if (checkBtn) checkBtn.style.display = 'inline-block';
+                                retryBtn.style.display = 'none';
+                            }
+
+                            const lineQuizPreview = quizContainer.querySelector('.line-quiz-preview');
+                            if(lineQuizPreview && lineQuizPreview.lineQuizInstance){
+                                lineQuizPreview.lineQuizInstance.reset();
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-line-quiz-btn').style.display = 'inline-block';
+
+                                // ✅ [추가] '다시 풀기' 시 해설(explanation) 요소를 찾아 숨기는 코드
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (explanationEl) {
+                                    explanationEl.style.display = 'none';
+                                    explanationEl.innerHTML = '';
+                                }
+                            }
+                            if (quizContainer.classList.contains('drag-drop-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.source-container');
+                                const allWords = [];
+                                quizContainer.querySelectorAll('.drop-target').forEach(target => {
+                                    if (target.textContent.trim()) { allWords.push(target.textContent.trim()); }
+                                    target.textContent = '';
+                                    target.className = 'drop-target';
+                                });
+                                sourceContainer.querySelectorAll('.drag-source').forEach(source => { allWords.push(source.textContent.trim()); });
+                                const originalAnswers = Array.from(quizContainer.querySelectorAll('.drop-target')).map(t => t.dataset.answer);
+                                while(allWords.length < originalAnswers.length) {
+                                    const wordCount = allWords.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    const originalWordCount = originalAnswers.reduce((acc, word) => { acc[word] = (acc[word] || 0) + 1; return acc; }, {});
+                                    let missingWordFound = false;
+                                    for(const word in originalWordCount) {
+                                        if((wordCount[word] || 0) < originalWordCount[word]) {
+                                            allWords.push(word); missingWordFound = true; break;
+                                        }
+                                    }
+                                    if (!missingWordFound) break;
+                                }
+                                sourceContainer.innerHTML = '';
+                                shuffle(allWords).forEach(word => {
+                                    const newSource = document.createElement('span');
+                                    newSource.className = 'drag-source'; newSource.draggable = true; newSource.textContent = word;
+                                    sourceContainer.appendChild(newSource);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-drag-drop-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('ordering-preview-container')) {
+                                quizContainer.querySelectorAll('.ordering-preview-item').forEach(item => {
+                                    const sourceContainer = item.querySelector('.ordering-source-container');
+                                    const targetContainer = item.querySelector('.ordering-target-container');
+                                    const allItemsForThisQuestion = Array.from(item.querySelectorAll('.ordering-item'));
+                                    shuffle(allItemsForThisQuestion).forEach(card => sourceContainer.appendChild(card));
+                                    targetContainer.className = 'ordering-target-container';
+                                    const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                                    if(feedbackIcon) feedbackIcon.textContent = '';
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-ordering-btn').style.display = 'inline-block';
+                            }
+                            if (quizContainer.classList.contains('classification-preview-container')) {
+                                const sourceContainer = quizContainer.querySelector('.classification-items-source');
+                                const allCards = Array.from(quizContainer.querySelectorAll('.classification-item-card'));
+                                allCards.forEach(card => {
+                                    card.classList.remove('correct', 'incorrect');
+                                });
+                                shuffle(allCards).forEach(card => {
+                                    sourceContainer.appendChild(card);
+                                });
+                                retryBtn.style.display = 'none';
+                                quizContainer.querySelector('.check-classification-btn').style.display = 'inline-block';
+                            }
+                        }
+                    } else if (checkAnswerBtn) {
+                        const item = checkAnswerBtn.closest('.descriptive-preview-item');
+                        const isInsideRoomEscape = checkAnswerBtn.closest('.room-escape-preview-content');
+                        const studentAnswerEl = item.querySelector('.descriptive-student-answer');
+                        const studentAnswer = studentAnswerEl.value.trim();
+                        const feedbackEl = item.querySelector('.feedback');
+                        const retryBtnItem = item.querySelector('.retry-quiz-btn');
+                        const encodedAnswers = item.dataset.answers;
+                        const correctAnswers = JSON.parse(decodeURIComponent(atob(encodedAnswers)));
+                        if (!studentAnswer) { alert('답을 입력해주세요!'); return; }
+                        const isCorrect = correctAnswers.some(ans => ans.toLowerCase() === studentAnswer.toLowerCase());
+                        feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                        feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 훌륭해요! 👍' : '<strong>모범 정답:</strong> ' + correctAnswers.join(', ');
+                        studentAnswerEl.disabled = true;
+                        checkAnswerBtn.style.display = 'none';
+                        retryBtnItem.style.display = 'inline-block';
+                    } else if (checkFillInBtn) {
+                        const container = checkFillInBtn.closest('.fill-in-container, .table-preview-container, .text-content-container, .text-preview-container, .block[data-type="flowchart"]');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let attempts = parseInt(container.dataset.attempts || "0", 10);
+                        attempts++;
+                        container.dataset.attempts = attempts;
+                        let allCorrect = true;
+                        
+                        container.querySelectorAll('.blank-input-preview').forEach(inputEl => {
+                            const studentAnswer = inputEl.value.trim();
+                            const correctAnswer = decodeURIComponent(atob(inputEl.dataset.answer));
+                            if (studentAnswer && studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                inputEl.className = 'blank-input-preview correct';
+                            } else {
+                                inputEl.className = 'blank-input-preview incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+                        } else {
+                            if (attempts < 2) {
+                                feedbackEl.textContent = '아쉬워요. 틀린 문제를 다시 풀어보세요!';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => input.value = '');
+                                return; 
+                            } else {
+                                feedbackEl.textContent = '정답을 확인하세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                                container.querySelectorAll('.blank-input-preview.incorrect').forEach(input => {
+                                    input.value = decodeURIComponent(atob(input.dataset.answer));
+                                    input.disabled = true;
+                                });
+                            }
+                        }
+                        checkFillInBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkLineQuizBtn) {
+                        const quizContainer = checkLineQuizBtn.closest('.quiz-container');
+                        const quizEl = quizContainer.querySelector('.line-quiz-preview');
+                        const feedbackEl = quizContainer.querySelector('.feedback');
+
+                        if (quizEl && quizEl.lineQuizInstance) {
+                            const isAllCorrect = quizEl.lineQuizInstance.checkAnswers();
+
+                            if (isAllCorrect) {
+                                feedbackEl.textContent = '정답입니다! 참 잘했어요! ✨';
+                                feedbackEl.className = 'feedback show correct';
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                const encodedExplanation = quizContainer.dataset.explanation;
+                                if (explanationEl && encodedExplanation) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.innerHTML = decodedExplanation;
+                                        if (tempDiv.textContent.trim()) {
+                                            explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                            explanationEl.style.display = 'block';
+                                        }
+                                    } catch (err) {}
+                                }
+                            } else {
+                                feedbackEl.textContent = '아쉬워요. 틀린 연결이 있는지 확인해보세요.';
+                                feedbackEl.className = 'feedback show incorrect';
+                            }
+
+                            checkLineQuizBtn.style.display = 'none';
+                            checkLineQuizBtn.nextElementSibling.style.display = 'inline-block';
+                        }
+                    } else if (checkDragDropBtn) {
+                        const container = checkDragDropBtn.closest('.drag-drop-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+                        container.querySelectorAll('.drop-target').forEach(target => {
+                            const studentAnswer = target.textContent.trim();
+                            const correctAnswer = target.dataset.answer;
+                            if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                                target.className = 'drop-target correct';
+                            } else {
+                                target.className = 'drop-target incorrect';
+                                allCorrect = false;
+                            }
+                        });
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다!';
+                            feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [추가] 모든 문제가 정답일 때만 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    if (decodedExplanation.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 틀린 문제가 있는지 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkDragDropBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkOrderingBtn) {
+                        const container = checkOrderingBtn.closest('.ordering-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true;
+
+                        container.querySelectorAll('.ordering-preview-item').forEach(item => {
+                            const targetContainer = item.querySelector('.ordering-target-container');
+                            const feedbackIcon = item.querySelector('.ordering-item-feedback');
+                            const studentItems = Array.from(targetContainer.querySelectorAll('.ordering-item')).map(i => i.textContent.trim());
+                            const studentAnswer = studentItems.join(' // ');
+                            const correctAnswer = decodeURIComponent(atob(item.dataset.answer));
+
+                            if (studentAnswer === correctAnswer) {
+                                targetContainer.classList.remove('incorrect');
+                                targetContainer.classList.add('correct');
+                                if(feedbackIcon) feedbackIcon.textContent = '⭕';
+                            } else {
+                                targetContainer.classList.remove('correct');
+                                targetContainer.classList.add('incorrect');
+                                if(feedbackIcon) feedbackIcon.textContent = '❌';
+                                allCorrect = false;
+                            }
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정답입니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] isInsideRoomEscape 조건을 삭제했습니다.
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. ❌ 표시된 문제를 다시 확인해보세요.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+
+                        checkOrderingBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (checkClassificationBtn) {
+                        const container = checkClassificationBtn.closest('.classification-preview-container');
+                        const feedbackEl = container.querySelector('.feedback');
+                        let allCorrect = true; 
+
+                        const sourceContainer = container.querySelector('.classification-items-source');
+                        if (sourceContainer.querySelector('.classification-item-card')) {
+                            allCorrect = false; 
+                        }
+
+                        container.querySelectorAll('.classification-category-bin').forEach(bin => {
+                            const categoryName = bin.querySelector('.category-drop-zone').dataset.categoryName;
+                            bin.querySelectorAll('.classification-item-card').forEach(card => {
+                                if (card.dataset.correctCategory.trim() === categoryName.trim()) {
+                                    card.classList.add('correct');
+                                    card.classList.remove('incorrect');
+                                } else {
+                                    card.classList.add('incorrect');
+                                    card.classList.remove('correct');
+                                    allCorrect = false; 
+                                }
+                            });
+                        });
+
+                        if (allCorrect) {
+                            feedbackEl.textContent = '모두 정확하게 분류했습니다! 완벽해요! ✨';
+                            feedbackEl.className = 'feedback show correct';
+
+                            // ✅ [핵심 수정] 해설을 보여주는 로직
+                            const explanationEl = container.querySelector('.explanation');
+                            const encodedExplanation = container.dataset.explanation;
+                            if (explanationEl && encodedExplanation) {
+                                try {
+                                    const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                    const tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = decodedExplanation;
+                                    if (tempDiv.textContent.trim()) {
+                                        explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                        explanationEl.style.display = 'block';
+                                    }
+                                } catch (err) {}
+                            }
+                        } else {
+                            feedbackEl.textContent = '아쉬워요. 잘못 분류되었거나, 분류하지 않은 항목이 있습니다.';
+                            feedbackEl.className = 'feedback show incorrect';
+                        }
+                        checkClassificationBtn.style.display = 'none';
+                        container.querySelector('.retry-quiz-btn').style.display = 'inline-block';
+                    } else if (openRoomEscapeBtn) {
+                        const container = openRoomEscapeBtn.closest('.room-escape-preview-container');
+                        const lockedDiv = container.querySelector('.room-escape-preview-locked');
+                        const unlockedDiv = container.querySelector('.room-escape-preview-content');
+                        const inputEl = container.querySelector('.room-escape-password-preview');
+
+                        const studentAnswer = inputEl.value.trim();
+                        const correctAnswer = decodeURIComponent(atob(container.dataset.password));
+
+                        if (studentAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                            lockedDiv.style.display = 'none';
+                            unlockedDiv.style.display = 'block';
+
+                            const allDoorsNodeList = document.querySelectorAll('.room-escape-preview-container');
+                            const allDoorsArray = Array.from(allDoorsNodeList);
+                            const currentIndex = allDoorsArray.indexOf(container);
+                            const nextDoor = allDoorsArray[currentIndex + 1];
+
+                            if (nextDoor) {
+                                nextDoor.style.display = 'block';
+                            }
+
+                            if (unlockedDiv.querySelector('.line-quiz-preview')) {
+                                initializeLineQuiz(unlockedDiv.querySelector('.line-quiz-preview'));
+                            }
+                        } else {
+                            lockedDiv.classList.add('shake');
+                            inputEl.value = '';
+                            setTimeout(() => {
+                                lockedDiv.classList.remove('shake');
+                            }, 500);
+                        }
+                    } else if (youtubePlaceholder) {
+                        const videoId = youtubePlaceholder.dataset.videoId;
+                        if(videoId) {
+                            const iframeWrapper = document.createElement('div');
+                            iframeWrapper.className = 'youtube-iframe-wrapper';
+                            iframeWrapper.dataset.videoId = videoId;
+                            iframeWrapper.innerHTML = '<button class="youtube-close-btn" title="영상 닫기">&times;</button><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                            youtubePlaceholder.replaceWith(iframeWrapper);
+                        }
+                    } else {
+                        const youtubeCloseBtn = e.target.closest('.youtube-close-btn');
+                        if (youtubeCloseBtn) {
+                            const iframeWrapper = youtubeCloseBtn.parentElement;
+                            const videoId = iframeWrapper.dataset.videoId;
+                            if(videoId) {
+                                const placeholder = document.createElement('div');
+                                placeholder.className = 'youtube-placeholder';
+                                placeholder.dataset.videoId = videoId;
+                                placeholder.innerHTML = '🎬<div class="youtube-placeholder-text">클릭하여 영상 보기</div>';
+                                iframeWrapper.replaceWith(placeholder);
+                            }
+                        } else {
+                            const oxChoiceBtn = e.target.closest('.ox-choices button');
+                            const mcqOptionDiv = e.target.closest('.mcq-preview-option');
+                            const explainable = e.target.closest('.explainable');
+                            if (oxChoiceBtn) {
+                                const allChoiceBtns = oxChoiceBtn.parentElement.querySelectorAll('button');
+                                allChoiceBtns.forEach(btn => btn.classList.remove('selected'));
+                                oxChoiceBtn.classList.add('selected');
+
+                                const item = oxChoiceBtn.closest('.ox-preview-item');
+                                const choicesDiv = item.querySelector('.ox-choices');
+                                const choice = oxChoiceBtn.dataset.choice;
+                                const answer = choicesDiv.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                const isCorrect = (choice === answer);
+
+                                feedbackEl.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                                feedbackEl.innerHTML = isCorrect ? '<span class="correct-highlight">정답!</span> 참 잘했어요! ✨' : '<span class="incorrect-highlight">아쉬워요.</span> 다시 생각해 볼까요? 🤔';
+
+                                const quizContainer = item.closest('.quiz-container');
+                                const allItems = quizContainer.querySelectorAll('.ox-preview-item');
+                                const allCorrect = Array.from(allItems).every(i => {
+                                    const selectedBtn = i.querySelector('.ox-choices button.selected');
+                                    return selectedBtn && selectedBtn.dataset.choice === i.querySelector('.ox-choices').dataset.answer;
+                                });
+
+                                const explanationEl = quizContainer.querySelector('.explanation');
+                                if (allCorrect) {
+                                    const encodedExplanation = quizContainer.dataset.explanation;
+                                    if (explanationEl && encodedExplanation) {
+                                        try {
+                                            const decodedExplanation = decodeURIComponent(atob(encodedExplanation));
+                                            const tempDiv = document.createElement('div');
+                                            tempDiv.innerHTML = decodedExplanation;
+                                            if (tempDiv.textContent.trim()) {
+                                                explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                                explanationEl.style.display = 'block';
+                                            }
+                                        } catch (err) {}
+                                    }
+                                } else {
+                                    if (explanationEl) {
+                                        explanationEl.style.display = 'none';
+                                    }
+                                }
+                            } else if (mcqOptionDiv) {
+                                const item = mcqOptionDiv.closest('.mcq-preview-item');
+                                const isInsideRoomEscape = item.closest('.room-escape-preview-content'); // ✅ 방탈출 안에 있는지 확인
+
+                                let attempts = parseInt(item.dataset.attempts, 10);
+                                if (item.querySelector('.feedback.correct')) return;
+
+                                const controls = item.querySelector('.quiz-controls');
+                                if (controls) controls.style.display = 'flex';
+
+                                item.querySelectorAll('.mcq-preview-option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+
+                                attempts++;
+                                item.dataset.attempts = attempts;
+
+                                const choice = mcqOptionDiv.dataset.choice;
+                                const answer = item.dataset.answer;
+                                const feedbackEl = item.querySelector('.feedback');
+                                const explanationEl = item.querySelector('.explanation');
+                                const isCorrect = (choice === answer);
+
+                                mcqOptionDiv.classList.add('selected');
+
+                                if (isCorrect) {
+                                    mcqOptionDiv.classList.add('correct');
+                                    feedbackEl.className = 'feedback show correct';
+                                    feedbackEl.innerHTML = '<span class="correct-highlight">정답!</span> 훌륭해요, 💯';
+                                    item.dataset.attempts = 2;
+                                    if(explanationEl) explanationEl.className = 'explanation show';
+                                } else {
+                                    mcqOptionDiv.classList.add('incorrect');
+                                    feedbackEl.className = 'feedback show incorrect';
+
+                                    if (isInsideRoomEscape) {
+                                        feedbackEl.innerHTML = '<span class="incorrect-highlight">오답</span> 다시 생각해보세요. 🤔';
+                                    } else {
+                                        if (attempts < 2) {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">아쉬워요.</span> 한 번 더 신중하게 풀어보세요!';
+                                        } else {
+                                            feedbackEl.innerHTML = '<span class="incorrect-highlight">오답!</span> 정답은 ' + answer + '번 💪';
+                                            if(explanationEl) explanationEl.className = 'explanation show';
+                                        }
+                                    }
+                                }
+
+                                if(explanationEl && explanationEl.classList.contains('show')) {
+                                    try {
+                                        const decodedExplanation = decodeURIComponent(atob(item.dataset.explanation));
+                                        if (decodedExplanation.trim()) explanationEl.innerHTML = '<strong>해설:</strong> ' + decodedExplanation;
+                                    } catch(err) {}
+                                }
+
+                                if (isCorrect || (!isInsideRoomEscape && attempts >= 2)) {
+                                    const retryButton = item.querySelector('.retry-quiz-btn');
+                                    if (retryButton) retryButton.style.display = 'inline-block';
+                                }
+                            } else if (explainable) {
+                                explanationPopup.innerHTML = explainable.dataset.explanation + '<button class="popup-close-btn" title="닫기">&times;</button>';
+                                explanationPopup.classList.add('show');
+
+                                const rect = explainable.getBoundingClientRect();
+                                const containerRect = previewContainer.getBoundingClientRect();
+
+                                const popupWidth = explanationPopup.offsetWidth;
+                                const containerWidth = previewContainer.clientWidth;
+
+                                explanationPopup.classList.remove('popup-align-right');
+
+                                // Calculate position relative to the container
+                                const topPos = rect.bottom - containerRect.top + 12;
+                                let leftPos = rect.left - containerRect.left;
+
+                                // Adjust for overflow
+                                if (leftPos + popupWidth > containerWidth - 20) {
+                                    leftPos = rect.right - containerRect.left - popupWidth;
+                                    explanationPopup.classList.add('popup-align-right');
+                                }
+
+                                explanationPopup.style.top = topPos + 'px';
+                                explanationPopup.style.left = leftPos + 'px';
+
+                                e.stopPropagation();
+                            }
+                        }
+                    }
+                });
+
+                document.addEventListener('click', e => { 
+                    if (!e.target.closest('.explainable') && !e.target.closest('.explanation-popup')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                explanationPopup.addEventListener('click', e => {
+                    if (e.target.classList.contains('popup-close-btn')) {
+                        explanationPopup.classList.remove('show');
+                    }
+                });
+                
+                // ✨ [추가 시작] 내보내기용 인터랙티브 띄어쓰기 클릭 이벤트
+                    previewContainer.addEventListener('click', e => {
+                        const spacingSpan = e.target.closest('span.interactive-spacing');
+                        if (spacingSpan) {
+                            const currentState = spacingSpan.dataset.state;
+                            if (currentState === 'compact') {
+                                spacingSpan.dataset.state = 'expanded';
+                            } else {
+                                spacingSpan.dataset.state = 'compact';
+                            }
+                            // 띄어쓰기 외 다른 미리보기 클릭 로직과 충돌하지 않도록 여기서 return 합니다.
+                            // 만약 다른 요소와 중첩되어 클릭되는 경우가 있다면 return을 제거하고
+                            // 아래 다른 버튼/요소 처리 로직과 통합해야 할 수도 있습니다.
+                            // 하지만 현재 띄어쓰기 span은 단순 토글만 하므로 return이 안전합니다.
+                            return; 
+                        }
+                        
+                        // 👇 참고: 띄어쓰기 span이 아닌 다른 요소를 클릭했을 때의 기존 로직은
+                        //    이 아래에 그대로 두면 됩니다. (예: 퀴즈 버튼, 구절풀이 등)
+                        //    (기존 코드 내용이 이 아래에 계속 이어집니다)
+
+                    }); // <<<--- 여기까지 추가된 띄어쓰기 이벤트 리스너 닫는 중괄호 // ✨ [추가 끝]
+
+                    
+                initializeAllInteractiveBlocks();
+                // ✅ [추가] 모든 '비밀의 문'을 숨기고 첫 번째 문만 표시
+                const allDoors = document.querySelectorAll('.room-escape-preview-container');
+                allDoors.forEach(door => door.style.display = 'none');
+                if (allDoors.length > 0) {
+                    allDoors[0].style.display = 'block';
+                }
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise();
+                }
+                document.querySelectorAll('.tab-content').forEach(adjustBlankInputWidths);
+
+                // --- 팝업 드래그 기능 시작 ---
+                const exportExplanationPopup = document.getElementById('explanationPopup'); // 내보낸 파일의 팝업 요소
+                if (exportExplanationPopup) { // 팝업 요소가 있을 때만 실행
+                    let isDraggingPopupExport = false;
+                    let popupStartXExport, popupStartYExport, initialPopupXExport, initialPopupYExport;
+
+                    exportExplanationPopup.addEventListener('mousedown', (e) => {
+                        if (e.target.classList.contains('popup-close-btn') || window.getSelection().toString()) {
+                            return;
+                        }
+                        if (e.target === exportExplanationPopup || exportExplanationPopup.contains(e.target) && e.target.tagName !== 'BUTTON') {
+                            isDraggingPopupExport = true;
+                            popupStartXExport = e.clientX;
+                            popupStartYExport = e.clientY;
+                            // ✅ [수정] getComputedStyle 사용: style 속성에 값이 없을 경우 대비
+                            const styles = window.getComputedStyle(exportExplanationPopup);
+                            initialPopupXExport = parseFloat(styles.left || 0);
+                            initialPopupYExport = parseFloat(styles.top || 0);
+                            
+                            exportExplanationPopup.style.cursor = 'grabbing';
+                            exportExplanationPopup.style.userSelect = 'none';
+                            
+                            document.addEventListener('mousemove', handlePopupMoveExport);
+                            document.addEventListener('mouseup', handlePopupUpExport);
+                            e.preventDefault();
+                        }
+                    });
+
+                    function handlePopupMoveExport(e) {
+                        if (!isDraggingPopupExport) return;
+                        const dx = e.clientX - popupStartXExport;
+                        const dy = e.clientY - popupStartYExport;
+                        exportExplanationPopup.style.left = `${initialPopupXExport + dx}px`;
+                        exportExplanationPopup.style.top = `${initialPopupYExport + dy}px`;
+                    }
+
+                    function handlePopupUpExport() {
+                        if (isDraggingPopupExport) {
+                            isDraggingPopupExport = false;
+                            exportExplanationPopup.style.cursor = 'default';
+                            exportExplanationPopup.style.userSelect = '';
+                            document.removeEventListener('mousemove', handlePopupMoveExport);
+                            document.removeEventListener('mouseup', handlePopupUpExport);
+                        }
+                    }
+                }
+                // --- 팝업 드래그 기능 끝 ---
+            });
+            </script>
+                </body>
+                </html>
