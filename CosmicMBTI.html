@@ -1,0 +1,263 @@
+import React, { useState } from 'react';
+import { RefreshCw, ArrowRight, Star, Sparkles, Moon, Sun, Globe, Home } from 'lucide-react';
+
+// --- 데이터 및 상수 정의 ---
+
+// MBTI별 행성 매칭 데이터
+const PLANET_RESULTS = {
+  ESTP: { name: '목성 (Jupiter)', icon: '🪐', title: '거침없는 모험가', desc: '태양계의 큰 형님! 압도적인 존재감과 행동력으로 우주를 휘젓고 다니는 당신은 목성입니다.', color: 'from-orange-400 to-red-500' },
+  ESFP: { name: '태양 (The Sun)', icon: '☀️', title: '핵인싸 슈퍼스타', desc: '당신이 없으면 우주가 어두워요. 언제나 밝은 에너지를 뿜어내는 당신은 태양 그 자체!', color: 'from-yellow-400 to-orange-500' },
+  ENFP: { name: '나선 은하 (Spiral Galaxy)', icon: '🌀', title: '상상력 폭발', desc: '어디로 튈지 모르는 매력! 무한한 가능성과 창의력을 품고 회전하는 아름다운 나선 은하입니다.', color: 'from-pink-400 to-purple-500' },
+  ENTP: { name: '수성 (Mercury)', icon: '☿️', title: '재치 만점 스피드 레이서', desc: '빠른 두뇌 회전과 재치있는 입담! 태양계에서 가장 빠른 공전 속도를 자랑하는 수성입니다.', color: 'from-gray-300 to-blue-300' },
+  ENTJ: { name: '화성 (Mars)', icon: '🔥', title: '불타는 지휘관', desc: '목표를 향한 불굴의 의지! 뜨거운 열정과 리더십으로 개척해나가는 붉은 행성, 화성입니다.', color: 'from-red-500 to-orange-700' },
+  ESFJ: { name: '달 (The Moon)', icon: '🌕', title: '다정한 수호자', desc: '지구 곁을 묵묵히 지키며 밤을 비춰주는 따뜻함. 주변 사람들을 세심하게 챙기는 당신은 달입니다.', color: 'from-yellow-100 to-gray-200' },
+  ENFJ: { name: '궁수자리 성운 (Lagoon Nebula)', icon: '✨', title: '카리스마 리더', desc: '별들이 탄생하는 곳! 사람들의 잠재력을 이끌어내고 성장시키는 웅장한 궁수자리 성운입니다.', color: 'from-pink-500 to-indigo-500' },
+  ESTJ: { name: '블랙홀 (Black Hole)', icon: '⚫', title: '엄격한 관리자', desc: '벗어날 수 없는 강력한 중력! 규칙과 질서를 완벽하게 장악하는 카리스마, 블랙홀입니다.', color: 'from-gray-800 to-black' },
+  INTP: { name: '천왕성 (Uranus)', icon: '❄️', title: '독특한 천재', desc: '남들과 다르게 누워서 자전하는 행성! 독창적인 시각으로 우주를 분석하는 천왕성입니다.', color: 'from-cyan-300 to-blue-400' },
+  INFP: { name: '오리온 성운 (Orion Nebula)', icon: '🌌', title: '몽환적인 예술가', desc: '밤하늘의 보석! 풍부한 감수성과 아름다운 내면을 지닌 신비로운 오리온 성운입니다.', color: 'from-purple-400 to-indigo-600' },
+  ISFP: { name: '금성 (Venus)', icon: '💎', title: '우아한 평화주의자', desc: '태양계의 샛별! 감각적이고 온화하며 아름다움을 사랑하는 당신은 금성입니다.', color: 'from-yellow-300 to-orange-300' },
+  INTJ: { name: '명왕성 (Pluto)', icon: '🌑', title: '고독한 전략가', desc: '멀리서 조용히 큰 그림을 그립니다. 작지만 확실한 존재감과 깊이를 가진 명왕성입니다.', color: 'from-gray-400 to-slate-600' },
+  ISTP: { name: '백색 왜성 (White Dwarf)', icon: '⚪', title: '냉철한 장인', desc: '작지만 엄청난 밀도와 에너지! 효율적이고 논리적이며 내실이 꽉 찬 백색 왜성입니다.', color: 'from-blue-100 to-white' },
+  INFJ: { name: '해왕성 (Neptune)', icon: '🔱', title: '신비로운 예언자', desc: '깊고 푸른 바다 같은 속마음. 통찰력이 뛰어나고 이상을 꿈꾸는 신비로운 해왕성입니다.', color: 'from-blue-500 to-blue-800' },
+  ISFJ: { name: '지구 (Earth)', icon: '🌍', title: '성실한 평화지킴이', desc: '생명을 품은 따뜻한 대지. 묵묵히 책임을 다하며 조화를 이루는 소중한 행성, 지구입니다.', color: 'from-green-400 to-blue-500' },
+  ISTJ: { name: '토성 (Saturn)', icon: '🪐', title: '원칙주의자', desc: '아름답고 견고한 고리처럼! 철저한 계획과 원칙으로 흔들림 없이 궤도를 도는 토성입니다.', color: 'from-yellow-600 to-brown-700' },
+};
+
+// 질문 리스트
+const QUESTIONS = [
+  // 1단계: E vs I
+  { id: 1, step: 'Energy', type: 'E', text: "일정 없는 날에도\n주변 소음이나 사람 움직임이\n좀 있어야 편안한가요?", target: 'E' },
+  { id: 2, step: 'Energy', type: 'E', text: "하루 종일 말 없이 있으면\n입에 가시가 돋는 것처럼\n답답~한 느낌이 드나요?", target: 'E' },
+  { id: 3, step: 'Energy', type: 'E', text: "새로운 곳에 가면\n'여기 분위기 어때?' 하고\n스캔부터 쫙~ 하시나요?", target: 'E' },
+  
+  // 2단계: S vs N
+  { id: 4, step: 'Recognition', type: 'S', text: "처음 보는 물건 발견!\n'일단 이게 뭐에 쓰는 거지?'\n사용법부터 확인하나요?", target: 'S' },
+  { id: 5, step: 'Recognition', type: 'S', text: "새 일을 시작할 때,\n큰 그림보다는 '지금 당장 할 일'\n리스트가 먼저 떠오르나요?", target: 'S' },
+  { id: 6, step: 'Recognition', type: 'S', text: "먼 미래의 대박 가능성보단\n'지금 내 눈앞의 현실'이\n훨씬 중요한가요?", target: 'S' },
+
+  // 3단계: T vs F
+  { id: 7, step: 'Decision', type: 'T', text: "친구가 우울해하면\n위로보다는 '해결책'이 먼저\n입 밖으로 튀어나오나요?", target: 'T' },
+  { id: 8, step: 'Decision', type: 'T', text: "규칙 적용할 때,\n'사정 봐주는 것'보다는\n'공평함'이 짱이라고 보나요?", target: 'T' },
+  { id: 9, step: 'Decision', type: 'T', text: "상대가 기분 상할 수 있어도,\n업무 정확성을 위해 잘못을\n직설적으로 지적하는 편인가요?", target: 'T' },
+
+  // 4단계: J vs P
+  { id: 10, step: 'Life', type: 'J', text: "갑작스러운 일정 변경?!\n계획 틀어지면\n스트레스 지수 확 오르나요?", target: 'J' },
+  { id: 11, step: 'Life', type: 'J', text: "마감 직전의 똥줄(?)\n보다는 미리미리 끝내놓는 게\n마음 편한가요?", target: 'J' },
+  { id: 12, step: 'Life', type: 'J', text: "여행 갈 때,\n'발길 닿는 대로' 보다는\n'맛집 리스트'가 필수인가요?", target: 'J' },
+];
+
+export default function App() {
+  const [currentStep, setCurrentStep] = useState('intro'); // intro, test, result
+  const [qIndex, setQIndex] = useState(0);
+  const [scores, setScores] = useState({ E: 0, S: 0, T: 0, J: 0 }); // Key값이 Yes일 때 증가
+  
+  // 진행률 계산
+  const progress = Math.min(((qIndex) / QUESTIONS.length) * 100, 100);
+
+  // 테스트 시작 함수
+  const startTest = () => {
+    setCurrentStep('test');
+    setQIndex(0);
+    setScores({ E: 0, S: 0, T: 0, J: 0 });
+  };
+
+  // 홈(인트로)으로 돌아가는 함수
+  const goHome = () => {
+    setCurrentStep('intro');
+    setQIndex(0);
+    setScores({ E: 0, S: 0, T: 0, J: 0 });
+  };
+
+  const handleAnswer = (isYes) => {
+    const currentQ = QUESTIONS[qIndex];
+    
+    // 점수 업데이트 (Yes일 경우 해당 타입 점수 증가)
+    if (isYes) {
+      setScores(prev => ({ ...prev, [currentQ.target]: prev[currentQ.target] + 1 }));
+    }
+
+    // 다음 단계로
+    if (qIndex < QUESTIONS.length - 1) {
+      setQIndex(prev => prev + 1);
+    } else {
+      setCurrentStep('result');
+    }
+  };
+
+  const getResult = () => {
+    // 3문제 중 2문제 이상이면 해당 성향, 아니면 반대 성향
+    const E_or_I = scores.E >= 2 ? 'E' : 'I';
+    const S_or_N = scores.S >= 2 ? 'S' : 'N';
+    const T_or_F = scores.T >= 2 ? 'T' : 'F';
+    const J_or_P = scores.J >= 2 ? 'J' : 'P';
+    
+    const mbti = `${E_or_I}${S_or_N}${T_or_F}${J_or_P}`;
+    return { mbti, data: PLANET_RESULTS[mbti] };
+  };
+
+  // --- 컴포넌트들 ---
+
+  // 1. 인트로 화면
+  const IntroScreen = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-8 animate-fade-in">
+      <div className="bg-white/10 p-6 rounded-full border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.3)] mb-4">
+        <Sparkles size={80} className="text-yellow-300 animate-pulse" />
+      </div>
+      <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 drop-shadow-lg">
+        나의 우주적<br/>본캐 찾기
+      </h1>
+      <p className="text-xl md:text-2xl text-blue-100 font-light leading-relaxed">
+        광활한 우주 속,<br/>
+        당신은 어떤 행성에서 왔을까요?
+      </p>
+      <button 
+        onClick={startTest}
+        className="group relative px-10 py-5 bg-white/20 hover:bg-white/30 border border-white/40 rounded-3xl backdrop-blur-md transition-all duration-300 shadow-xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95"
+      >
+        <span className="text-2xl font-bold text-white flex items-center gap-2">
+          우주 여행 시작하기 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+        </span>
+      </button>
+    </div>
+  );
+
+  // 2. 질문 화면
+  const TestScreen = () => {
+    const q = QUESTIONS[qIndex];
+    // 단계 표시 (총 4단계)
+    const stepTitle = qIndex < 3 ? "1단계 : 에너지 방향" : 
+                      qIndex < 6 ? "2단계 : 인식 방식" : 
+                      qIndex < 9 ? "3단계 : 판단 기준" : "4단계 : 생활 양식";
+
+    return (
+      <div className="w-full max-w-2xl mx-auto h-full flex flex-col justify-center p-6 animate-fade-in">
+        {/* 진행바 */}
+        <div className="w-full bg-gray-700/50 rounded-full h-3 mb-8 backdrop-blur-sm border border-white/10">
+          <div 
+            className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(168,85,247,0.7)]" 
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+
+        {/* 질문 카드 */}
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          {/* 장식용 배경 원 */}
+          <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500/30 rounded-full blur-3xl"></div>
+
+          <div className="relative z-10 text-center space-y-8">
+            <span className="inline-block px-4 py-1 rounded-full bg-white/10 border border-white/20 text-blue-200 text-sm md:text-base font-medium mb-4">
+              {stepTitle} ({Math.min(3, (qIndex % 3) + 1)}/3)
+            </span>
+            
+            <h2 className="text-2xl md:text-4xl font-bold text-white leading-normal break-keep whitespace-pre-line">
+              {q.text}
+            </h2>
+            
+            <div className="flex flex-col gap-4 mt-8 pt-4">
+              <button 
+                onClick={() => handleAnswer(true)}
+                className="w-full py-5 rounded-2xl bg-gradient-to-r from-blue-500/80 to-blue-600/80 hover:from-blue-400 hover:to-blue-500 text-white text-2xl font-bold transition-all transform hover:-translate-y-1 shadow-lg border border-white/20"
+              >
+                YES! (그렇다)
+              </button>
+              <button 
+                onClick={() => handleAnswer(false)}
+                className="w-full py-5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xl font-medium transition-all transform hover:-translate-y-1 shadow-lg border border-white/20"
+              >
+                NO (아니다)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 3. 결과 화면
+  const ResultScreen = () => {
+    const { mbti, data } = getResult();
+
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center p-6 animate-fade-in overflow-y-auto">
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-2xl border border-white/30 rounded-3xl p-8 text-center shadow-[0_0_60px_rgba(0,0,0,0.5)] relative">
+          
+          {/* 결과 뱃지 */}
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-pink-500 to-violet-500 px-6 py-2 rounded-full shadow-lg border border-white/30">
+            <span className="text-white font-black tracking-widest text-lg">{mbti}</span>
+          </div>
+
+          {/* 행성 아이콘/비주얼 */}
+          <div className={`w-40 h-40 mx-auto mt-8 mb-6 rounded-full bg-gradient-to-br ${data.color} shadow-[0_0_40px_rgba(255,255,255,0.4)] flex items-center justify-center text-7xl animate-bounce-slow border-4 border-white/20`}>
+            {data.icon}
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-2">{data.name}</h2>
+          <p className="text-blue-200 text-lg font-bold mb-6">{data.title}</p>
+          
+          <div className="bg-black/30 rounded-xl p-6 mb-8 border border-white/10">
+            <p className="text-white text-xl leading-relaxed break-keep">
+              {data.desc}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button 
+              onClick={goHome}
+              className="w-full py-4 bg-white text-purple-900 rounded-xl font-bold text-xl hover:bg-purple-50 transition-colors flex items-center justify-center gap-2 shadow-lg"
+            >
+              <Home size={24} /> 처음 화면으로
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 공통 CSS 애니메이션을 React의 `<style>` 컴포넌트 대신 일반 `<style>` 태그로 변경하여 경고를 제거합니다.
+  const commonStyles = `
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(-5px); }
+      50% { transform: translateY(5px); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out forwards;
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 3s infinite ease-in-out;
+    }
+    .animate-pulse-slow {
+      animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  `;
+
+  return (
+    <div className="min-h-screen w-full bg-[#0a0a2a] text-white font-sans overflow-hidden relative selection:bg-purple-500 selection:text-white">
+      {/* 우주 배경 효과 (CSS only for performance) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a2a] to-black"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] animate-pulse-slow delay-1000"></div>
+        {/* 별들 (가상) */}
+        <div className="absolute top-10 right-10 text-yellow-100/40 text-xs">✦</div>
+        <div className="absolute bottom-20 left-10 text-blue-100/40 text-xl">★</div>
+        <div className="absolute top-1/2 left-10 text-white/20 text-sm">.</div>
+        <div className="absolute bottom-10 right-1/3 text-white/30 text-xs">.</div>
+      </div>
+
+      {/* 메인 콘텐츠 영역 */}
+      <div className="relative z-10 w-full h-screen flex flex-col">
+        {currentStep === 'intro' && <IntroScreen />}
+        {currentStep === 'test' && <TestScreen />}
+        {currentStep === 'result' && <ResultScreen />}
+      </div>
+
+      {/* CSS 애니메이션 정의 (경고 제거를 위해 분리) */}
+      <style dangerouslySetInnerHTML={{ __html: commonStyles }} />
+    </div>
+  );
+}
