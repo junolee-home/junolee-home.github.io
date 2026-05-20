@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>2026 수련활동 가이드</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Reset and mobile-first container styles */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+
+    /* Outer wrapper to center the card on desktop and make it full screen on mobile */
+    .app-viewport {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 448px; /* max-w-md size */
+      height: 100%;
+      height: 100dvh;
+      background-color: #f9fafb; /* bg-gray-50 */
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) {
+      .app-container {
+        height: 850px;
+        max-height: 90vh;
+        border-radius: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+    }
+
+    /* Hide standard scrollbars for a clean app look */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* View active/inactive states transitions */
+    .view-content {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .view-hidden {
+      display: none !important;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .view-visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+    <div class="app-container">
+      
+      <!-- Top Sticky Header -->
+      <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 px-5 h-16 flex items-center border-b border-gray-100 shrink-0">
+        <h1 class="font-extrabold text-lg tracking-tight text-indigo-900 uppercase">
+          K-Retreat <span class="text-indigo-400">2026</span>
+        </h1>
+        <div class="ml-auto w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+          <span class="text-[10px] font-black text-indigo-600">GW</span>
+        </div>
+      </header>
+
+      <!-- Main Content Container with dynamic subviews -->
+      <main class="flex-1 overflow-y-auto no-scrollbar pb-32">
+        
+        <!-- ================= HOME VIEW ================= -->
+        <div id="view-home" class="view-content view-visible p-6 space-y-6">
+          <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-36 h-36 rounded-full bg-white/10 blur-xl"></div>
+            <h2 id="home-title" class="text-2xl font-bold mb-2 leading-tight">2026학년도 1학년 현장체험학습</h2>
+            <p id="home-school" class="text-xs uppercase font-extrabold tracking-widest text-indigo-200 mb-1">강릉여자고등학교</p>
+            <p id="home-dates" class="opacity-95 text-sm font-medium">2026.5.18(월) ~ 5.20(수)</p>
+            <p id="home-location" class="opacity-90 text-xs mt-1">모나용평 (빌라콘도)</p>
+            <div class="mt-4 flex gap-3 text-xs font-semibold">
+              <span class="bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm">학생 <span id="home-students-count">202</span>명</span>
+              <span class="bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm">인솔교사 <span id="home-teachers-count">12</span>명</span>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Link Cards -->
+          <div class="grid grid-cols-2 gap-4">
+            <button onclick="switchTab('schedule')" class="bg-blue-50 text-blue-600 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center border border-blue-100/30">
+              <i data-lucide="calendar" class="w-7 h-7"></i>
+              <span class="font-bold text-sm text-gray-800">전체 일정</span>
+            </button>
+            <button onclick="switchTab('bus')" class="bg-amber-50 text-amber-600 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center border border-amber-100/30">
+              <i data-lucide="bus" class="w-7 h-7"></i>
+              <span class="font-bold text-sm text-gray-800">차량 안내</span>
+            </button>
+            <button onclick="switchTab('class')" class="bg-green-50 text-green-600 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center border border-green-100/30">
+              <i data-lucide="users" class="w-7 h-7"></i>
+              <span class="font-bold text-sm text-gray-800">학급/숙소</span>
+            </button>
+            <button onclick="switchTab('care')" class="bg-rose-50 text-rose-600 p-5 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-center border border-rose-100/30">
+              <i data-lucide="phone-call" class="w-7 h-7"></i>
+              <span class="font-bold text-sm text-gray-800">안전/연락망</span>
+            </button>
+          </div>
+
+          <!-- Preparations Card -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-extrabold text-gray-800 mb-3 flex items-center gap-2">
+              <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-500"></i>
+              준비물 (학생)
+            </h3>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              여벌의 옷, 드라이기, 양말, 속옷, 수건, 외투, 운동화, 개인의약품, 필기도구, 세면도구(칫솔, 치약, 비누, 샴푸 등)
+            </p>
+          </div>
+        </div>
+
+        <!-- ================= SCHEDULE VIEW ================= -->
+        <div id="view-schedule" class="view-content view-hidden p-4 space-y-4">
+          <div class="flex bg-gray-100/80 p-1 rounded-xl">
+            <button onclick="setScheduleDay(1)" id="day-btn-1" class="flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all bg-white shadow-sm text-indigo-600">1일차</button>
+            <button onclick="setScheduleDay(2)" id="day-btn-2" class="flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all text-gray-500">2일차</button>
+            <button onclick="setScheduleDay(3)" id="day-btn-3" class="flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all text-gray-500">3일차</button>
+          </div>
+
+          <div class="space-y-6 pt-2">
+            <div class="flex items-baseline gap-2">
+              <h2 id="schedule-day-title" class="text-2xl font-black text-indigo-950 italic uppercase tracking-tight">BEGINNING</h2>
+              <span id="schedule-day-date" class="text-gray-400 text-xs font-semibold">2026.05.18</span>
+            </div>
+
+            <!-- Morning Schedule -->
+            <div id="schedule-morning-wrapper" class="space-y-3">
+              <h3 class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 px-1">오전</h3>
+              <div id="schedule-morning-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Afternoon Schedule -->
+            <div id="schedule-afternoon-wrapper" class="space-y-3">
+              <h3 class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 px-1">오후</h3>
+              <div id="schedule-afternoon-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Night Schedule -->
+            <div id="schedule-night-wrapper" class="space-y-3">
+              <h3 class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 px-1">야간</h3>
+              <div id="schedule-night-list" class="space-y-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BUS VIEW ================= -->
+        <div id="view-bus" class="view-content view-hidden p-4 space-y-4">
+          
+          <div id="bus-list-container" class="space-y-4">
+            <h2 class="text-xl font-bold text-gray-800 px-1">차량 탑승 안내</h2>
+            <div id="bus-buttons-grid" class="grid gap-3"></div>
+          </div>
+
+          <!-- Bus Detail Sub-view -->
+          <div id="bus-detail-container" class="hidden space-y-6 pb-6">
+            <button onclick="showBusList()" class="text-indigo-600 font-bold flex items-center gap-1.5 text-sm transition-all py-1 px-2 rounded-lg hover:bg-indigo-50 self-start">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기
+            </button>
+            
+            <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+              <div class="absolute -right-12 -bottom-12 w-40 h-40 rounded-full bg-white/10 blur-xl"></div>
+              <h2 id="bus-detail-title" class="text-2xl font-black">1호차 전좌석</h2>
+              <p id="bus-detail-teachers" class="opacity-80 text-xs mt-1 font-medium">인솔: </p>
+              <div id="bus-detail-classes" class="mt-4 flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Seating Plan Grid -->
+            <div class="bg-gray-100 p-5 rounded-3xl border border-gray-200 shadow-inner">
+              <div class="grid grid-cols-4 gap-2.5 min-w-[280px]">
+                <div class="col-span-1 bg-gray-300 h-10 rounded-lg flex items-center justify-center text-[11px] font-extrabold text-gray-600 shadow-sm">운전석</div>
+                <div class="col-span-3"></div>
+                
+                <div id="bus-seating-grid" class="contents"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= CLASS/ROOM VIEW ================= -->
+        <div id="view-class" class="view-content view-hidden p-4 space-y-4">
+          
+          <div id="class-list-container" class="space-y-4">
+            <h2 class="text-xl font-bold text-gray-800 px-1">학급 및 숙소 안내</h2>
+            <div id="class-buttons-grid" class="grid grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- Class Detail Sub-view -->
+          <div id="class-detail-container" class="hidden space-y-6">
+            <button onclick="showClassList()" class="text-indigo-600 font-bold flex items-center gap-1.5 text-sm transition-all py-1 px-2 rounded-lg hover:bg-indigo-50 self-start">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> 뒤로가기
+            </button>
+
+            <div class="bg-green-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+              <div class="absolute -right-12 -bottom-12 w-40 h-40 rounded-full bg-white/10 blur-xl"></div>
+              <h2 id="class-detail-title" class="text-2xl font-black">1학년 1반</h2>
+              <p id="class-detail-stats" class="opacity-85 text-xs mt-1 font-semibold">참가인원: 0명</p>
+            </div>
+
+            <div class="space-y-4">
+              <h3 class="font-extrabold text-gray-800 px-1 flex items-center gap-2">
+                <span class="w-1.5 h-4 bg-green-500 rounded-full"></span>
+                숙소 배정
+              </h3>
+              <div id="class-rooms-list" class="space-y-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SAFETY VIEW ================= -->
+        <div id="view-care" class="view-content view-hidden p-4 space-y-8">
+          <section class="space-y-4">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2 px-1">
+              <i data-lucide="phone-call" class="text-rose-500 w-5 h-5"></i>
+              비상 연락망
+            </h2>
+            <div id="care-emergency-list" class="grid gap-2.5"></div>
+          </section>
+
+          <section class="space-y-4">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2 px-1">
+              <i data-lucide="clipboard-list" class="text-amber-500 w-5 h-5"></i>
+              인솔 교사 직무
+            </h2>
+            <div id="care-teachers-list" class="space-y-2.5"></div>
+          </section>
+        </div>
+
+      </main>
+
+      <!-- Bottom Navigation bar -->
+      <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 h-20 flex justify-around items-center px-4 z-50 rounded-t-3xl shadow-[0_-5px_22px_rgba(0,0,0,0.06)] shrink-0">
+        
+        <button id="nav-btn-home" onclick="switchTab('home')" class="flex flex-col items-center gap-1 flex-1 py-2 text-indigo-600 scale-105 transition-all duration-200">
+          <i data-lucide="home" class="w-5.5 h-5.5 stroke-[2.5]"></i>
+          <span class="text-[10px] font-bold">홈</span>
+        </button>
+
+        <button id="nav-btn-schedule" onclick="switchTab('schedule')" class="flex flex-col items-center gap-1 flex-1 py-2 text-gray-400 hover:text-gray-600 transition-all duration-200">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold opacity-85">일정</span>
+        </button>
+
+        <button id="nav-btn-bus" onclick="switchTab('bus')" class="flex flex-col items-center gap-1 flex-1 py-2 text-gray-400 hover:text-gray-600 transition-all duration-200">
+          <i data-lucide="bus" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold opacity-85">차량</span>
+        </button>
+
+        <button id="nav-btn-class" onclick="switchTab('class')" class="flex flex-col items-center gap-1 flex-1 py-2 text-gray-400 hover:text-gray-600 transition-all duration-200">
+          <i data-lucide="users" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold opacity-85">학급/숙소</span>
+        </button>
+
+        <button id="nav-btn-care" onclick="switchTab('care')" class="flex flex-col items-center gap-1 flex-1 py-2 text-gray-400 hover:text-gray-600 transition-all duration-200">
+          <i data-lucide="phone-call" class="w-5 h-5"></i>
+          <span class="text-[10px] font-bold opacity-85">안전</span>
+        </button>
+
+      </nav>
+
+    </div>
+  </div>
+
+  <script>
+    // --- Application State and Retreat Data ---
+    const RETREAT_DATA = {
+      title: "2026학년도 1학년 현장체험학습",
+      school: "강릉여자고등학교",
+      location: "모나용평 (빌라콘도)",
+      dates: "2026.5.18(월) ~ 5.20(수)",
+      stats: {
+        students: 202,
+        teachers: 12,
+      },
+      schedule: [
+        {
+          day: 1,
+          title: "BEGINNING",
+          morning: [
+            { time: "10:00", task: "집합" },
+            { time: "10:00~10:30", task: "인원 점검" },
+            { time: "10:40", task: "수련원으로 GO!" },
+            { time: "11:30", task: "도착" }
+          ],
+          afternoon: [
+            { time: "12:00", task: "점심식사" },
+            { time: "13:30", task: "입소식 / 안전교육 / 숙소배치" },
+            { time: "14:00", task: "오후 체험활동 (신체활동)" }
+          ],
+          night: [
+            { time: "17:30", task: "저녁식사" },
+            { time: "19:00", task: "단체 활동 (미션게임)" },
+            { time: "21:00", task: "점검준비 및 취침" }
+          ]
+        },
+        {
+          day: 2,
+          title: "RUNNING",
+          morning: [
+            { time: "07:00", task: "기상 및 세면" },
+            { time: "07:30", task: "아침식사" },
+            { time: "09:00", task: "오전 체험활동 (발왕산 케이블카, 스카이워크, 천년주목숲길)" }
+          ],
+          afternoon: [
+            { time: "12:00", task: "점심식사" },
+            { time: "14:00", task: "오후 체험활동 (용평루지 체험 2회, 사계절 썰매 2회)" }
+          ],
+          night: [
+            { time: "17:30", task: "저녁식사 및 봉사활동" },
+            { time: "19:00", task: "단체 활동 (장기자랑/레크리에이션)" },
+            { time: "21:30", task: "취침" }
+          ]
+        },
+        {
+          day: 3,
+          title: "TAKING",
+          morning: [
+            { time: "07:00", task: "기상 및 짐 정리" },
+            { time: "07:30", task: "아침식사" },
+            { time: "09:00", task: "오전 체험활동 (미니 올림픽)" }
+          ],
+          afternoon: [
+            { time: "11:30", task: "퇴소식" },
+            { time: "12:00", task: "점심식사" },
+            { time: "13:30", task: "복귀 준비" },
+            { time: "14:00", task: "강릉으로 출발" },
+            { time: "16:00", task: "강릉 도착" }
+          ],
+          night: []
+        }
+      ],
+      buses: [
+        {
+          id: 1,
+          teachers: ["양세아", "최순희", "주재용"],
+          classes: [{ classId: 1, count: 26 }, { classId: 6, count: 12 }],
+          total: 41,
+          seating: [
+            ["곽은별", "구한별", "양세아", "공석"],
+            ["김리언", "김민서", "공석", "최순희"],
+            ["김보정", "김유리", "김나경", "김나륜"],
+            ["김예솔", "김지후", "김연아", "박다흰"],
+            ["김현희", "마윤서", "박려원", "박서희"],
+            ["박가희", "박예원", "박소율", "엄수민"],
+            ["배소민", "안소희", "엄지원", "오채은"],
+            ["안수빈", "우수민", "정채영", "정윤솔"],
+            ["윤단아", "윤서윤", "주재용", "공석"],
+            ["이윤지", "이해인", "홍채희", "이하은"],
+            ["임효언", "정휘린", "진채원", "탁예서"]
+          ]
+        },
+        {
+          id: 2,
+          teachers: ["주승연", "김현정"],
+          classes: [{ classId: 4, count: 25 }, { classId: 6, count: 14 }],
+          total: 41,
+          seating: [
+            ["김규린", "김민지", "주승연", "공석"],
+            ["김태연", "김혜민", "김동은", "김빈"],
+            ["심경빈", "심하은", "김성령", "김슬아"],
+            ["엄시윤", "원소미", "김하윤", "박한별"],
+            ["유향미", "이나경", "정예현", "유하예슬"],
+            ["이다현", "이다희", "전지연", "차수안"],
+            ["이지원", "이하음", "최미서", "한소연"],
+            ["임효정", "정가은", "허지윤", "최연아"],
+            ["조나윤", "조의진", "김현정", "공석"],
+            ["주혜원", "천수림", "공석", "홍려원"],
+            ["최승연", "최하민", "최현경", "한서윤"]
+          ]
+        },
+        {
+          id: 3,
+          teachers: ["류명지", "이준호"],
+          classes: [{ classId: 7, count: 26 }, { classId: 2, count: 14 }],
+          total: 42,
+          seating: [
+            ["강보빈", "권나현", "류명지", "공석"],
+            ["김나윤", "김민진", "심건희", "윤서인"],
+            ["김민채", "김예나", "윤채현", "이나인"],
+            ["박규리", "박소현", "이연서", "장서현"],
+            ["서예름", "손유진", "장하원", "전유나"],
+            ["신이수", "오수현", "정시연", "정효은"],
+            ["유수안", "이다나", "추민선", "홍채현"],
+            ["이륜경", "이세아", "신하은", "신아영"],
+            ["이지인", "이채아", "이준호", "공석"],
+            ["정의선", "정지영", "허유주", "홍채아"],
+            ["조수인", "조아라", "최보정", "한예소"]
+          ]
+        },
+        {
+          id: 4,
+          teachers: ["신재훈", "임준호"],
+          classes: [{ classId: 5, count: 23 }, { classId: 2, count: 11 }, { classId: 3, count: 8 }],
+          total: 44,
+          seating: [
+            ["김예원", "엄신혜", "임준호", "PIAO"],
+            ["이슬혜", "조윤채", "곽민서", "권나우"],
+            ["태은빈", "한채윤", "김예지", "김온유"],
+            ["홍지유", "김가연", "김윤주", "김은유"],
+            ["김모은", "김민서", "김지우", "박민지"],
+            ["석혜원", "이소민", "박서린", "박세은"],
+            ["조유진", "한가인", "이하영", "심윤서"],
+            ["김소율", "김수아", "강해나", "김민정"],
+            ["김지유", "선윤서", "김주아", "김희진"],
+            ["이연서", "정하은", "백하음", "최민서"],
+            ["최예서", "최윤서", "함정민", "신재훈"]
+          ]
+        },
+        {
+          id: 5,
+          teachers: ["이정훈", "윤정연"],
+          classes: [{ classId: 8, count: 24 }, { classId: 3, count: 18 }],
+          total: 44,
+          seating: [
+            ["권나원", "이정훈", "윤정연", "최가온"],
+            ["김래아", "김미서", "권명은", "권유민"],
+            ["김선아", "김시은", "도윤", "김민서"],
+            ["김예빈", "김윤하", "김보정", "김신우"],
+            ["김은효", "김평지", "김지유", "김초아"],
+            ["김태연", "박소율", "신다진", "이소민"],
+            ["박유주", "박정은", "이소은", "이지연"],
+            ["백승희", "서지민", "이현서", "장유정"],
+            ["유지민", "이민영", "전연서", "전희영"],
+            ["이수현", "이윤하", "정유진", "홍혜연"],
+            ["이채미", "전아린", "전유민", "진주하"]
+          ]
+        }
+      ],
+      classes: [
+        { id: 1, rooms: [{ roomId: "41평", target: "김리언 외 5", students: ["김리언", "곽은별", "김유리", "마윤서", "박예원", "윤서윤"] }, { roomId: "41평", target: "배소민 외 5", students: ["배소민", "김현희", "안소희", "이윤지", "이해인", "이하은"] }, { roomId: "41평", target: "박가희 외 5", students: ["박가희", "구한별", "김예솔", "안수빈", "정휘린", "홍채희"] }, { roomId: "28평", target: "김보정 외 3", students: ["김보정", "윤단아", "임효언", "탁예서"] }, { roomId: "28평", target: "김지후 외 3", students: ["김지후", "김민서", "우수민", "진채원"] }] },
+        { id: 2, rooms: [{ roomId: "41평", target: "권나우 외 4", students: ["권나우", "심건희", "장하원", "이연서", "전유나"] }, { roomId: "41평", target: "박민지 외 5", students: ["박민지", "이나인", "장서현", "정효은", "홍채현", "신하은"] }, { roomId: "41평", target: "김예지 외 5", students: ["김예지", "김온유", "박서린", "신아영", "윤서인", "윤채현"] }, { roomId: "28평", target: "김윤주 외 3", students: ["김윤주", "김지우", "박세은", "정시연"] }, { roomId: "28평", target: "곽민서 외 3", students: ["곽민서", "김은유", "PIAO", "추민선"] }] },
+        { id: 3, rooms: [{ roomId: "41평", students: ["김도윤", "이소은", "김지유", "김보정", "김신우", "권명은"] }, { roomId: "41평", students: ["김희진", "김민정", "백하음", "강해나", "이소민", "장유정"] }, { roomId: "41평", students: ["이현서", "신다진", "전연서", "이지연", "김초아", "권유민"] }, { roomId: "28평", students: ["홍혜연", "정유진", "김민서", "전희영"] }, { roomId: "28평", students: ["심윤서", "최민서", "이하영", "김주아"] }] },
+        { id: 4, rooms: [{ roomId: "41평", students: ["엄시윤", "최현경", "최하민", "천수림", "이다현", "임효정"] }, { roomId: "41평", students: ["심경빈", "이다희", "심하은", "주혜원", "이지원", "이나경"] }, { roomId: "41평", students: ["김태연", "이하음", "최승연", "김규린", "유향미", "홍려원"] }, { roomId: "28평", students: ["김민지", "원소미", "정가은", "조나윤"] }, { roomId: "28평", students: ["조의진", "김혜민", "한서윤"] }] },
+        { id: 5, rooms: [{ roomId: "41평", students: ["김지유", "선윤서", "엄신혜", "정하은", "조유진", "한가인"] }, { roomId: "41평", students: ["김가연", "김모은", "김수아", "김예원", "석혜원", "이소민"] }, { roomId: "28평", students: ["김소율", "조윤채", "태은빈", "함정민"] }, { roomId: "28평", students: ["김민서", "이슬혜", "한채윤", "홍지유"] }, { roomId: "28평", students: ["이연서", "최예서", "최윤서"] }] },
+        { id: 6, rooms: [{ roomId: "41평", students: ["박서희", "박소율", "심예현", "엄지원", "유하예슬", "허지윤"] }, { roomId: "41평", students: ["김성령", "김슬아", "김하윤", "전지연", "차수안"] }, { roomId: "28평", students: ["한소연", "박려원", "박한별", "최연아"] }, { roomId: "28평", students: ["김동은", "김빈", "정채영", "최미서"] }, { roomId: "28평", students: ["김연아", "박다흰", "엄수민", "조윤솔"] }, { roomId: "28평", students: ["김나경", "김나륜", "오채은"] }] },
+        { id: 7, rooms: [{ roomId: "41평", students: ["유수안", "이세아", "조아라", "허유주", "홍채아"] }, { roomId: "41평", students: ["김나윤", "서예름", "오수현", "정의선", "정지영", "조수인"] }, { roomId: "28평", students: ["손유진", "신이수", "이다나", "한예소"] }, { roomId: "28평", students: ["강보빈", "김민진", "박소현", "이지인"] }, { roomId: "28평", students: ["권나현", "김민채", "김예나", "이륜경"] }, { roomId: "28평", students: ["박규리", "이채아", "최보정"] }] },
+        { id: 8, rooms: [{ roomId: "41평", students: ["이민영", "전아린", "김은효", "진주하", "서지민", "김래아"] }, { roomId: "41평", students: ["박유주", "김윤하", "최가온", "김미서", "김태연", "박정은"] }, { roomId: "28평", students: ["전유민", "김평지", "권나원", "백승희"] }, { roomId: "28평", students: ["박소율", "김시은", "김선아", "이수현"] }, { roomId: "28평", students: ["김예빈", "이채미", "이윤하", "유지민"] }] }
+      ],
+      teachers: [
+        { name: "최순희", role: "1학년부장", phone: "010-8828-8293" },
+        { name: "양세아", role: "1-1 담임", phone: "010-9977-5872" },
+        { name: "임준호", role: "1-2 담임", phone: "010-6742-1476" },
+        { name: "윤정연", role: "1-3 담임", phone: "010-9850-7769" },
+        { name: "주승연", role: "1-4 담임", phone: "010-9991-1044" },
+        { name: "신재훈", role: "1-5 담임", phone: "010-9503-8606" },
+        { name: "김수경", role: "1-6 담임", phone: "010-8820-0084" },
+        { name: "류명지", role: "1-7 담임", phone: "010-2276-6788" },
+        { name: "이정훈", role: "1-8 담임", phone: "010-2229-6361" },
+        { name: "김현정", role: "부담임", phone: "010-8232-9218" },
+        { name: "이준호", role: "부담임", phone: "010-9902-0871" },
+        { name: "주재용", role: "부담임", phone: "010-9639-3560" }
+      ],
+      emergency: [
+        { label: "학교장 (주향숙)", phone: "033-650-9901" },
+        { label: "교무실", phone: "033-650-9910" },
+        { label: "행정실", phone: "033-650-9904" },
+        { label: "모나용평 빌라콘도", phone: "033-330-8594" },
+        { label: "청소년수련원 운영부", phone: "010-8985-5903" },
+        { label: "발왕산관광", phone: "033-645-0099" },
+        { label: "횡계삼성의원", phone: "033-334-4046" },
+        { label: "횡계의원", phone: "033-336-8052" },
+        { label: "강릉아산병원", phone: "033-610-3114" },
+        { label: "강릉동인병원", phone: "033-651-6161" }
+      ]
+    };
+
+    let currentView = 'home';
+    let scheduleActiveDay = 1;
+
+    // Initialize application on load
+    window.addEventListener('load', () => {
+      document.getElementById('home-title').innerText = RETREAT_DATA.title;
+      document.getElementById('home-school').innerText = RETREAT_DATA.school;
+      document.getElementById('home-dates').innerText = RETREAT_DATA.dates;
+      document.getElementById('home-location').innerText = RETREAT_DATA.location;
+      document.getElementById('home-students-count').innerText = RETREAT_DATA.stats.students;
+      document.getElementById('home-teachers-count').innerText = RETREAT_DATA.stats.teachers;
+
+      renderSchedule();
+      renderBusList();
+      renderClassList();
+      renderSafetyAndEmergency();
+
+      lucide.createIcons();
+    });
+
+    // Navigation and Tab switching Handler
+    function switchTab(viewId) {
+      const views = ['home', 'schedule', 'bus', 'class', 'care'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        el.classList.add('view-hidden');
+        el.classList.remove('view-visible');
+        
+        const btn = document.getElementById(`nav-btn-${v}`);
+        btn.className = "flex flex-col items-center gap-1 flex-1 py-2 text-gray-400 hover:text-gray-600 transition-all duration-200";
+        btn.querySelector('i').classList.remove('stroke-[2.5]');
+        btn.querySelector('i').style.width = '20px';
+        btn.querySelector('i').style.height = '20px';
+      });
+
+      const activeEl = document.getElementById(`view-${viewId}`);
+      activeEl.classList.remove('view-hidden');
+      activeEl.classList.add('view-visible');
+
+      const activeBtn = document.getElementById(`nav-btn-${viewId}`);
+      activeBtn.className = "flex flex-col items-center gap-1 flex-1 py-2 text-indigo-600 scale-105 transition-all duration-200";
+      activeBtn.querySelector('i').classList.add('stroke-[2.5]');
+      activeBtn.querySelector('i').style.width = '22px';
+      activeBtn.querySelector('i').style.height = '22px';
+
+      currentView = viewId;
+      document.querySelector('main').scrollTop = 0;
+      lucide.createIcons();
+    }
+
+    // --- SCHEDULE SECTION ---
+    function setScheduleDay(dayNum) {
+      scheduleActiveDay = dayNum;
+      [1, 2, 3].forEach(d => {
+        const btn = document.getElementById(`day-btn-${d}`);
+        if (d === dayNum) {
+          btn.className = "flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all bg-white shadow-sm text-indigo-600";
+        } else {
+          btn.className = "flex-1 py-2.5 rounded-lg text-sm font-extrabold transition-all text-gray-500";
+        }
+      });
+      renderSchedule();
+    }
+
+    function renderSchedule() {
+      const dayData = RETREAT_DATA.schedule.find(d => d.day === scheduleActiveDay);
+      document.getElementById('schedule-day-title').innerText = dayData.title;
+      document.getElementById('schedule-day-date').innerText = `2026.05.${17 + scheduleActiveDay}`;
+
+      const periods = ['morning', 'afternoon', 'night'];
+      periods.forEach(p => {
+        const listContainer = document.getElementById(`schedule-${p}-list`);
+        const wrapper = document.getElementById(`schedule-${p}-wrapper`);
+        listContainer.innerHTML = '';
+
+        if (!dayData[p] || dayData[p].length === 0) {
+          wrapper.style.display = 'none';
+        } else {
+          wrapper.style.display = 'block';
+          dayData[p].forEach(item => {
+            const card = document.createElement('div');
+            card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4 transition-all";
+            card.innerHTML = `
+              <span class="text-indigo-600 font-mono text-sm font-semibold shrink-0">${item.time}</span>
+              <span class="text-gray-800 font-medium text-sm text-left">${item.task}</span>
+            `;
+            listContainer.appendChild(card);
+          });
+        }
+      });
+    }
+
+    // --- BUS SECTION ---
+    function renderBusList() {
+      const btnGrid = document.getElementById('bus-buttons-grid');
+      btnGrid.innerHTML = '';
+
+      RETREAT_DATA.buses.forEach(bus => {
+        const btn = document.createElement('button');
+        btn.onclick = () => showBusDetail(bus.id);
+        btn.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:bg-gray-50 transition-all";
+        btn.innerHTML = `
+          <div class="flex items-center gap-4 text-left">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center font-black text-xl">
+              ${bus.id}
+            </div>
+            <div>
+              <p class="font-bold text-gray-800">${bus.id}호차 (45인승)</p>
+              <p class="text-xs text-gray-500 mt-0.5">
+                ${bus.classes.map(c => `${c.classId}반`).join(', ')} | ${bus.teachers[0]} 외 ${bus.teachers.length - 1}명
+              </p>
+            </div>
+          </div>
+          <span class="text-gray-300 group-hover:text-amber-500 transition-colors font-semibold text-lg">→</span>
+        `;
+        btnGrid.appendChild(btn);
+      });
+    }
+
+    function showBusDetail(busId) {
+      const bus = RETREAT_DATA.buses.find(b => b.id === busId);
+      if (!bus) return;
+
+      document.getElementById('bus-list-container').classList.add('hidden');
+      document.getElementById('bus-detail-container').classList.remove('hidden');
+
+      document.getElementById('bus-detail-title').innerText = `${bus.id}호차 전좌석`;
+      document.getElementById('bus-detail-teachers').innerText = `인솔: ${bus.teachers.join(', ')}`;
+
+      const classesContainer = document.getElementById('bus-detail-classes');
+      classesContainer.innerHTML = '';
+      bus.classes.forEach(c => {
+        const tag = document.createElement('span');
+        tag.className = "bg-white/20 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm";
+        tag.innerText = `${c.classId}반 (${c.count}명)`;
+        classesContainer.appendChild(tag);
+      });
+
+      const seatingGrid = document.getElementById('bus-seating-grid');
+      seatingGrid.innerHTML = '';
+
+      bus.seating.forEach(row => {
+        row.forEach(seat => {
+          const seatDiv = document.createElement('div');
+          let seatBgClass = 'bg-white shadow-sm text-gray-700';
+          if (seat === '공석') {
+            seatBgClass = 'bg-white/50 text-gray-300 border border-dashed border-gray-200';
+          } else if (bus.teachers.includes(seat)) {
+            seatBgClass = 'bg-indigo-100 text-indigo-700 font-extrabold border border-indigo-200';
+          }
+
+          seatDiv.className = `h-12 rounded-lg flex items-center justify-center text-[11px] font-semibold p-1 text-center leading-tight transition-all ${seatBgClass}`;
+          seatDiv.innerText = seat;
+          seatingGrid.appendChild(seatDiv);
+        });
+      });
+
+      document.querySelector('main').scrollTop = 0;
+    }
+
+    function showBusList() {
+      document.getElementById('bus-list-container').classList.remove('hidden');
+      document.getElementById('bus-detail-container').classList.add('hidden');
+    }
+
+    // --- CLASS/ROOM SECTION ---
+    function renderClassList() {
+      const classGrid = document.getElementById('class-buttons-grid');
+      classGrid.innerHTML = '';
+
+      RETREAT_DATA.classes.forEach(c => {
+        const btn = document.createElement('button');
+        btn.onclick = () => showClassDetail(c.id);
+        btn.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center gap-2 active:bg-gray-50 transition-all";
+        btn.innerHTML = `
+          <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-black text-xl shadow-sm">
+            ${c.id}
+          </div>
+          <span class="font-bold text-gray-800 tracking-tight text-sm">1학년 ${c.id}반</span>
+        `;
+        classGrid.appendChild(btn);
+      });
+    }
+
+    function showClassDetail(classId) {
+      const classData = RETREAT_DATA.classes.find(c => c.id === classId);
+      if (!classData) return;
+
+      document.getElementById('class-list-container').classList.add('hidden');
+      document.getElementById('class-detail-container').classList.remove('hidden');
+
+      document.getElementById('class-detail-title').innerText = `1학년 ${classId}반`;
+      const totalStudents = classData.rooms.reduce((acc, r) => acc + r.students.length, 0);
+      document.getElementById('class-detail-stats').innerText = `참가인원: ${totalStudents}명`;
+
+      const roomsContainer = document.getElementById('class-rooms-list');
+      roomsContainer.innerHTML = '';
+
+      classData.rooms.forEach((room, idx) => {
+        const roomCard = document.createElement('div');
+        roomCard.className = "bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-3.5 transition-all text-left";
+        
+        let tagsHtml = '';
+        room.students.forEach(st => {
+          tagsHtml += `
+            <span class="bg-gray-50 px-3 py-1.5 rounded-lg text-xs text-gray-700 font-bold border border-gray-100 select-none">
+              ${st}
+            </span>
+          `;
+        });
+
+        roomCard.innerHTML = `
+          <div class="flex justify-between items-center border-b border-gray-50 pb-2.5">
+            <span class="bg-green-100 text-green-700 text-xs font-black px-2.5 py-1 rounded uppercase tracking-wide">
+              ${room.roomId}
+            </span>
+            <span class="text-xs text-gray-400 font-bold">인원: ${room.students.length}명</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            ${tagsHtml}
+          </div>
+        `;
+        roomsContainer.appendChild(roomCard);
+      });
+
+      document.querySelector('main').scrollTop = 0;
+    }
+
+    function showClassList() {
+      document.getElementById('class-list-container').classList.remove('hidden');
+      document.getElementById('class-detail-container').classList.add('hidden');
+    }
+
+    // --- SAFETY/CONTACT SECTION ---
+    function renderSafetyAndEmergency() {
+      const emergencyList = document.getElementById('care-emergency-list');
+      emergencyList.innerHTML = '';
+
+      RETREAT_DATA.emergency.forEach(item => {
+        const link = document.createElement('a');
+        const dialNumber = item.phone.replace(/-/g, '');
+        link.href = `tel:${dialNumber}`;
+        link.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition-all text-left";
+        link.innerHTML = `
+          <div>
+            <p class="font-bold text-gray-800 text-sm">${item.label}</p>
+            <p class="text-gray-400 font-mono text-xs mt-0.5">${item.phone}</p>
+          </div>
+          <div class="w-8 h-8 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shadow-sm">
+            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          </div>
+        `;
+        emergencyList.appendChild(link);
+      });
+
+      const teachersList = document.getElementById('care-teachers-list');
+      teachersList.innerHTML = '';
+
+      RETREAT_DATA.teachers.forEach(t => {
+        const div = document.createElement('div');
+        div.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 transition-all text-left";
+        div.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-gray-800 text-sm">${t.name} 선생님</span>
+            <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-extrabold uppercase tracking-wider">${t.role}</span>
+          </div>
+        `;
+        teachersList.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
